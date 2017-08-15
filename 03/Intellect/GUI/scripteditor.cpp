@@ -20,6 +20,8 @@ ScriptEditor::ScriptEditor(QWidget *parent) : QPlainTextEdit(parent),
 
   this->setLineWrapMode(QPlainTextEdit::NoWrap);
 
+  setTabStopWidth(fontMetrics().width("  "));
+
   connect(this, &ScriptEditor::textChanged, this, &ScriptEditor::on_textChanged);
 
   lineNumberArea_ = new LineNumberArea(this);
