@@ -4,6 +4,7 @@
 #include <intellect.h>
 
 #include <QMessageBox>
+#include <QPainter>
 
 ScriptEditor::ScriptEditor(QWidget *parent) : QPlainTextEdit(parent),
   h_(new Highlighter(this->document()))
@@ -20,6 +21,15 @@ ScriptEditor::ScriptEditor(QWidget *parent) : QPlainTextEdit(parent),
   this->setLineWrapMode(QPlainTextEdit::NoWrap);
 
   connect(this, &ScriptEditor::textChanged, this, &ScriptEditor::on_textChanged);
+
+  lineNumberArea_ = new LineNumberArea(this);
+
+  connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
+  connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
+  connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
+
+  updateLineNumberAreaWidth(0);
+  highlightCurrentLine();
 }
 
 MemoryWrapper *ScriptEditor::mem() const
@@ -96,6 +106,14 @@ void ScriptEditor::keyPressEvent(QKeyEvent *kev)
   QPlainTextEdit::keyPressEvent(kev);
 }
 
+void ScriptEditor::resizeEvent(QResizeEvent *e)
+{
+  QPlainTextEdit::resizeEvent(e);
+
+  QRect cr = contentsRect();
+  lineNumberArea_->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+}
+
 void ScriptEditor::checkForSave()
 {
   if(timerId_)
@@ -133,8 +151,8 @@ void ScriptEditor::doReturn()
   //this->textCursor().setBlockCharFormat(format);
   //this->textCursor().insertBlock();
 
-  int pos = this->textCursor().position();
-  textCursor().movePosition(QTextCursor::Left);
+  //int pos = this->textCursor().position();
+  //textCursor().movePosition(QTextCursor::Left);
   //this->textCursor().insertText("\n ");
 }
 
@@ -190,6 +208,41 @@ void ScriptEditor::on_textChanged()
   }
 }
 
+void ScriptEditor::updateLineNumberAreaWidth(int /*newBlockCount*/)
+{
+  setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
+}
+
+void ScriptEditor::highlightCurrentLine()
+{
+  QList<QTextEdit::ExtraSelection> extraSelections;
+
+  if (!isReadOnly()) {
+    QTextEdit::ExtraSelection selection;
+
+    QColor lineColor = QColor(Qt::yellow).lighter(160);
+
+    selection.format.setBackground(lineColor);
+    selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+    selection.cursor = textCursor();
+    selection.cursor.clearSelection();
+    extraSelections.append(selection);
+  }
+
+  setExtraSelections(extraSelections);
+}
+
+void ScriptEditor::updateLineNumberArea(const QRect &rect, int dy)
+{
+  if (dy)
+    lineNumberArea_->scroll(0, dy);
+  else
+    lineNumberArea_->update(0, rect.y(), lineNumberArea_->width(), rect.height());
+
+  if (rect.contains(viewport()->rect()))
+    updateLineNumberAreaWidth(0);
+}
+
 Intellect *ScriptEditor::intellect() const
 {
   return intellect_;
@@ -198,6 +251,52 @@ Intellect *ScriptEditor::intellect() const
 void ScriptEditor::setIntellect(Intellect *intellect)
 {
   intellect_ = intellect;
+}
+
+void ScriptEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
+{
+  QPainter painter(lineNumberArea_);
+  painter.fillRect(event->rect(), Qt::lightGray);
+  //lineNumberAreaPaintEvent() вызываетс€ из LineNumberArea вс€кий раз при получении событи€ рисовани€. Ќачинаем рисование фона виджета.
+
+  QTextBlock block = firstVisibleBlock();
+  int blockNumber = block.blockNumber();
+  int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
+  int bottom = top + (int) blockBoundingRect(block).height();
+  //“еперь пройдЄмс€ по всем видимым строкам и отрисуем дл€ каждой строки номер в дополнительной области.
+  //«аметьте, что при редактировании обычного текста кажда€ строка будет состо€ть из одного QTextBlock;
+  //тем не менее, если включен перенос строк, то строка может занимать несколько строк в области просмотра редактора текста.
+
+  //ѕолучим верхнюю и нижнюю y-координаты первого текстового блока,
+  //и подгоним эти значени€ к высоте текущего текстового блока в каждой итерации цикла.
+
+  while (block.isValid() && top <= event->rect().bottom()) {
+    if (block.isVisible() && bottom >= event->rect().top()) {
+      QString number = QString::number(blockNumber + 1);
+      painter.setPen(Qt::black);
+      painter.drawText(0, top, lineNumberArea_->width(), fontMetrics().height(),
+                       Qt::AlignRight, number);
+    }
+
+    block = block.next();
+    top = bottom;
+    bottom = top + (int) blockBoundingRect(block).height();
+    ++blockNumber;
+  }
+}
+
+int ScriptEditor::lineNumberAreaWidth()
+{
+  int digits = 1;
+  int max = qMax(1, blockCount());
+  while (max >= 10) {
+    max /= 10;
+    ++digits;
+  }
+
+  int space = 3 + fontMetrics().width(QLatin1Char('9')) * digits;
+
+  return space;
 }
 
 void ScriptEditor::showVal()
@@ -211,5 +310,9 @@ void ScriptEditor::showVal()
   {
     this->setPlainText("");
   }
+
+  updateLineNumberAreaWidth(0);
+  //updateLineNumberArea(contentsRect(), 0);
+
   this->blockSignals(false);
 }
