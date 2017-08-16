@@ -65,6 +65,8 @@ private:
 
   QString m_msg;
 
+  bool m_debug = true;
+
   void deleteScript();
   void initPlugins();
 };
@@ -86,7 +88,6 @@ public:
 private:
   QJSEngine m_jsengine;
   //std::thread m_thr;
-  bool m_debug = false;
 
   void deleteJSengine();
   void initPlugins();

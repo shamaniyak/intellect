@@ -1,6 +1,7 @@
 #include "scriptwrapper.h"
 #include "Plugins/qtwidgetsplugin.h"
 #include <QScriptEngineDebugger>
+#include <QMainWindow>
 
 #include <Plugins/memoryplugin.h>
 #include <Plugins/intellectplugin.h>
@@ -65,7 +66,10 @@ QScriptEngine *ScriptWrapper::script()
     initPlugins();
     add_objects(m_parent);
 
-    m_debugger->attachTo(script());
+    if(m_debug) {
+      m_debugger->attachTo(script());
+      m_debugger->standardWindow()->setWindowModality(Qt::ApplicationModal);
+    }
   }
   return m_script;
 }
