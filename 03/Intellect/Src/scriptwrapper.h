@@ -40,7 +40,7 @@ public:
   virtual void abort();
 
   virtual bool compile();
-  virtual bool execute();
+  virtual bool evaluate(const QString &txt);
 
   QString msg() const;
   void setMsg(const QString &msg);
@@ -53,6 +53,8 @@ protected:
   void add_objects(const ScriptWrapper* parent);
 
   void insertObjectsInScript();
+
+  virtual bool execute();
 
 private:
   ScriptWrapper *m_parent = nullptr;
@@ -81,9 +83,10 @@ public:
   JSEngineWrapper(const JSEngineWrapper &val);
   JSEngineWrapper & operator =(const JSEngineWrapper &);
 
-  virtual bool execute() override;
-
   bool addObject(QObject *_o, const QString &_name=QString()) override;
+
+protected:
+  virtual bool execute() override;
 
 private:
   QJSEngine m_jsengine;

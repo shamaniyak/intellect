@@ -47,7 +47,7 @@ bool IObject::run(const QString &path, const QVariant &/*params*/)
     res = execute( me->val().toString() );
   }
   else {
-    msg_ = "Object " + objectName() + ": Элемент памяти не найден.";
+    msg_ = QString("Object ") + objectName() + ": Элемент памяти не найден.";
     add_msg(msg_);
   }
 
@@ -64,8 +64,8 @@ bool IObject::execute(const QString &text)
   bool res = false;
 
   if(!text.isEmpty()) {
-    scr_->setText(text);
-    res = scr_->execute();
+    //scr_->setText(text);
+    res = scr_->evaluate(text);
 
     add_msg("Result = " + scr_->msg());
   }

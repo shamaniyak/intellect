@@ -132,7 +132,14 @@ bool ScriptWrapper::execute()
 
   //m_debugger->attachTo(script());
 
-  QScriptValue _val = script()->evaluate(m_text);
+  auto _val = evaluate(m_text);
+
+  return _val;
+}
+
+bool ScriptWrapper::evaluate(const QString &txt)
+{
+  QScriptValue _val = script()->evaluate(txt);
 
   if(m_script->hasUncaughtException()){
     m_msg = m_script->uncaughtException().toString();
