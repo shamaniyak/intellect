@@ -348,7 +348,7 @@ TME *TMemory::get(const QString &path)
     return nullptr;
 
   //path.remove()
-  auto path_ = path.split('\\', QString::SkipEmptyParts);
+  auto path_ = path.split(QRegExp("[\\\\/]"), QString::SkipEmptyParts);
   auto me = get_me();
   for(const auto &s: path_)
   {
