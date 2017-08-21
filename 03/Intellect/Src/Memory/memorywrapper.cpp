@@ -31,7 +31,7 @@ bool MemoryWrapper::addFrom(MEWrapper *parent, MEWrapper *mefrom, bool recurs)
   if(!parent)
     parent = getME();
 
-  bool res = mem_->add_from(parent->me_, mefrom->me_, recurs);
+  bool res = mem_->addFrom(parent->me_, mefrom->me_, recurs);
 
   if(res)
     doChange(parent, EMemoryChange::mcAddFrom);
@@ -52,7 +52,7 @@ void MemoryWrapper::del(const QString &path)
 
 MEWrapper *MemoryWrapper::getME()
 {
-  return CreateMEW(mem_->get_me());
+  return CreateMEW(mem_->getTopME());
 }
 
 void MemoryWrapper::addCount(MEWrapper *parent, int count)
@@ -81,7 +81,7 @@ MEWrapper *MemoryWrapper::getById(uint id)
 
 bool MemoryWrapper::autosave() const
 {
-  return mem_->autosave();
+  return mem_->getAutosave();
 }
 
 void MemoryWrapper::setAutosave(bool autosave)
@@ -101,19 +101,19 @@ bool MemoryWrapper::open(const QString &fileName)
 
 bool MemoryWrapper::save()
 {
-  if(mem_->changed())
+  if(mem_->getChanged())
     return mem_->save();
   return false;
 }
 
 QString MemoryWrapper::file_path() const
 {
-  return mem_->file_path();
+  return mem_->getFilePath();
 }
 
 void MemoryWrapper::setFile_path(const QString &file_path)
 {
-  mem_->setFile_path(file_path);
+  mem_->setfilePath(file_path);
 }
 
 QVariant MemoryWrapper::getVal(const QString &path)
@@ -137,7 +137,7 @@ void MemoryWrapper::setSelected(MEWrapper *me)
 
 MEWrapper *MemoryWrapper::selected()
 {
-  return CreateMEW(mem_->selected());
+  return CreateMEW(mem_->getSelected());
 }
 
 void MemoryWrapper::doChange(MEWrapper *me, EMemoryChange idMsg)
@@ -151,7 +151,7 @@ void MemoryWrapper::doChange(MEWrapper *me, EMemoryChange idMsg)
       //mem_->save();//будем сохранять каждое изменение
   }
 
-  if(mem_->can_change()) {
+  if(mem_->canChange()) {
     emit on_change(me, idMsg);
 
     ChangeEvent ev;
@@ -185,17 +185,17 @@ void MemoryWrapper::move(MEWrapper *me, MEWrapper *parent, int pos)
 
 bool MemoryWrapper::canChange() const
 {
-  return mem_->can_change();
+  return mem_->canChange();
 }
 
 void MemoryWrapper::setCanChange(bool val)
 {
-  mem_->set_can_change(val);
+  mem_->setCanChange(val);
 }
 
 bool MemoryWrapper::changed() const
 {
-  return mem_->changed();
+  return mem_->getChanged();
 }
 
 void MemoryWrapper::undoBackup()

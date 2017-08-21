@@ -43,7 +43,7 @@ QString TME::name() const
 {
   TMemory *m = this->mem();
   if(m)
-    return m->get_word(id_name_);
+    return m->getWord(id_name_);
   return "";
 }
 
@@ -51,7 +51,7 @@ void TME::setName(const QString &name)
 {
   TMemory *m = this->mem();
   if(m) {
-    id_name_ = m->get_word_idx(name);
+    id_name_ = m->getWordIdx(name);
   }
 }
 
@@ -93,7 +93,7 @@ TME *TME::Add(const QString &name)
   //if(!me)
   {
     if(m){
-      idx = m->get_word_idx(name);
+      idx = m->getWordIdx(name);
       me = childs_.add(idx, /*m,*/ this);
     }
   }
@@ -107,7 +107,7 @@ TME *TME::Get(const QString &name)
   TMemory *m = this->mem();
 
   if(m)
-    idx = m->get_word_idx(name);
+    idx = m->getWordIdx(name);
 
   if(idx >=0)
     return childs_.get_by_id_name(idx);

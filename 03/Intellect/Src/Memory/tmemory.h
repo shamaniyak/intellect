@@ -17,7 +17,7 @@ class Backup;
 class IMemory
 {
 public:
-  virtual ~IMemory(){}
+  virtual void release() = 0;
   virtual void clear() = 0;
 };
 
@@ -28,19 +28,20 @@ class TAbstractMemory : public IMemory
 public:
   explicit TAbstractMemory();
   virtual ~TAbstractMemory();
+  virtual void release() override final { delete this; }
 
   void clear() override;
 
-  TME* get_me();
+  TME* getTopME();
 
-  TME *selected() const;
-  void setSelected(TME *selected);
+  TME *getSelected() const;
+  void setSelected(TME *getSelected);
 
-  bool changed() const;
-  void setChanged(bool changed);
+  bool getChanged() const;
+  void setChanged(bool getChanged);
 
-  bool can_change() const;
-  void set_can_change(bool canChange);
+  bool canChange() const;
+  void setCanChange(bool canChange);
 
   TME * createNew(TME *parent=nullptr, int count = 1);
 
@@ -78,18 +79,18 @@ public:
   QString getName(TME *me) const;
   void setName(TME *me, const QString &name);
 
-  QString file_path() const;
-  void setFile_path(const QString &file_path);
+  QString getFilePath() const;
+  void setfilePath(const QString &path);
 
   QStringList& words();
 
-  bool autosave() const;
-  void setAutosave(bool autosave);
+  bool getAutosave() const;
+  void setAutosave(bool val);
 
   // Добавить элемент памяти.
   // Если успешно, то указатель
   TME* add(TME *parent=nullptr, const QString &name="");
-  bool add_from(TME *parent, TME *mefrom, bool recurs);
+  bool addFrom(TME *parent, TME *mefrom, bool recurs);
   // Удалить элемент памяти
   bool del(const QString &path);
   //
@@ -97,21 +98,21 @@ public:
   //
   TME* get(const QString &path);
   //
-  TME* get_subelement(TME *mep, const QString &name);
+  TME* getSubelement(TME *mep, const QString &name);
   //
-  QString get_element_path(TME *get_me) const;
+  QString getElementPath(TME *getTopME) const;
   // получить слово по индексу
-  QString get_word(int idx) const;
+  QString getWord(int idx) const;
   // Возвращает индекс слова в списке, если оно есть. Иначе индекс нового добавленного.
-  int get_word_idx(const QString &w);
+  int getWordIdx(const QString &w);
   //
-  bool move_element(TME *parent, TME *me, int idx=-1);
+  bool moveElement(TME *parent, TME *me, int idx=-1);
 
   bool open(const QString &fileName);
 
   bool save();
 
-  bool save_to(const QString &fileName);
+  bool saveTo(const QString &fileName);
 
   TME* operator[](const QString &path);
 
@@ -131,11 +132,11 @@ protected:
 
   TME* add(const QString &path);
 
-  bool load_memory();
+  bool loadMemory();
 
-  void save_backup();
+  void saveBackup();
 
-  bool add_from_recurse(TME *parent, TME *mefrom);
+  bool addFromRecurse(TME *parent, TME *mefrom);
 
   void createBackup();
 

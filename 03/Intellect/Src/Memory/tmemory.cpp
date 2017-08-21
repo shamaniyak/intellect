@@ -41,12 +41,12 @@ void TAbstractMemory::clear()
 //  return *this;
 //}
 
-bool TAbstractMemory::can_change() const
+bool TAbstractMemory::canChange() const
 {
   return can_change_;
 }
 
-void TAbstractMemory::set_can_change(bool canChange)
+void TAbstractMemory::setCanChange(bool canChange)
 {
   can_change_ = canChange;
 }
@@ -82,12 +82,12 @@ void TAbstractMemory::unlock(TME *me)
   em_.unlock(me);
 }
 
-TME *TAbstractMemory::get_me()
+TME *TAbstractMemory::getTopME()
 {
   return top_me_;
 }
 
-bool TAbstractMemory::changed() const
+bool TAbstractMemory::getChanged() const
 {
   return changed_;
 }
@@ -97,7 +97,7 @@ void TAbstractMemory::setChanged(bool changed)
   changed_ = changed;
 }
 
-TME *TAbstractMemory::selected() const
+TME *TAbstractMemory::getSelected() const
 {
   return selected_;
 }
@@ -132,7 +132,7 @@ TMemory::TMemory(const QString &path, const QString &name): TAbstractMemory(),
 
 TMemory::~TMemory()
 {
-  if(changed() && autosave_)
+  if(getChanged() && autosave_)
     save();
   setSelected(nullptr);
   delete (TopME*)top_me_;
@@ -178,7 +178,7 @@ QString TMemory::getName(TME *me) const
 {
   auto it = id_names_.find(me);
   if(it !=id_names_.end())
-    return get_word(*it);
+    return getWord(*it);
   return "";
 }
 
@@ -187,19 +187,19 @@ void TMemory::setName(TME *me, const QString &name)
   if(!me)
     return;
   if(!id_names_.contains(me))
-    id_names_.insert(me, get_word_idx(name));
+    id_names_.insert(me, getWordIdx(name));
   else
-    id_names_[me] = get_word_idx(name);
+    id_names_[me] = getWordIdx(name);
 }
 
-QString TMemory::file_path() const
+QString TMemory::getFilePath() const
 {
   return file_path_;
 }
 
-void TMemory::setFile_path(const QString &file_path)
+void TMemory::setfilePath(const QString &path)
 {
-  file_path_ = file_path;
+  file_path_ = path;
 }
 
 QStringList &TMemory::words()
@@ -207,14 +207,14 @@ QStringList &TMemory::words()
   return words_;
 }
 
-bool TMemory::autosave() const
+bool TMemory::getAutosave() const
 {
   return autosave_;
 }
 
-void TMemory::setAutosave(bool autosave)
+void TMemory::setAutosave(bool val)
 {
-  autosave_ = autosave;
+  autosave_ = val;
 }
 
 TME *TMemory::add(const QString &path)
@@ -243,7 +243,7 @@ TME *TMemory::add(TME *parent, const QString &name)
   TME *me = nullptr;
 
   if(!parent)
-    parent = get_me();
+    parent = getTopME();
 
   //me = createNew(parent);
 
@@ -262,7 +262,7 @@ TME *TMemory::add(TME *parent, const QString &name)
   return me;
 }
 
-bool TMemory::add_from_recurse(TME *parent, TME *mefrom)
+bool TMemory::addFromRecurse(TME *parent, TME *mefrom)
 {
   if(!parent || !mefrom)
     return false;
@@ -275,22 +275,22 @@ bool TMemory::add_from_recurse(TME *parent, TME *mefrom)
     {
       me2->setVal(me1->val());
 
-      add_from_recurse(me2, me1);
+      addFromRecurse(me2, me1);
     }
   }
 
   return true;
 }
 
-bool TMemory::add_from(TME *parent, TME *mefrom, bool recurs)
+bool TMemory::addFrom(TME *parent, TME *mefrom, bool recurs)
 {
   bool res = false;
   if(!mefrom)
     return res;
   if(!parent)
-    parent = get_me();
+    parent = getTopME();
 
-  set_can_change(false);
+  setCanChange(false);
 
   auto elements = mefrom->getElements();
   for(int i =0; i <elements.count(); ++i)
@@ -303,11 +303,11 @@ bool TMemory::add_from(TME *parent, TME *mefrom, bool recurs)
       me2->setVal(me1->val());
 
       if(recurs)
-        add_from_recurse(me2, me1);
+        addFromRecurse(me2, me1);
     }
   }
 
-  set_can_change(true);
+  setCanChange(true);
 
   res = true;
 
@@ -349,7 +349,7 @@ TME *TMemory::get(const QString &path)
 
   //path.remove()
   auto path_ = path.split(QRegExp("[\\\\/]"), QString::SkipEmptyParts);
-  auto me = get_me();
+  auto me = getTopME();
   for(const auto &s: path_)
   {
     me = me->Get(s);
@@ -363,20 +363,20 @@ TME *TMemory::get(const QString &path)
   return me;
 }
 
-TME *TMemory::get_subelement(TME *mep, const QString &name)
+TME *TMemory::getSubelement(TME *mep, const QString &name)
 {
   if(!mep)
-    mep = get_me();
+    mep = getTopME();
   return mep->Get(name);
 }
 
-QString TMemory::get_element_path(TME *me) const
+QString TMemory::getElementPath(TME *me) const
 {
   if(!me)
     return "";
   else
   {
-    QString res = get_element_path(me->parent());
+    QString res = getElementPath(me->parent());
     if(!res.isEmpty())
       res += "\\";
     res += me->name();
@@ -384,7 +384,7 @@ QString TMemory::get_element_path(TME *me) const
   }
 }
 
-QString TMemory::get_word(int idx) const
+QString TMemory::getWord(int idx) const
 {
   if(idx >=0 && idx <words_.size())
     return words_[idx];
@@ -393,7 +393,7 @@ QString TMemory::get_word(int idx) const
   //return w;
 }
 
-int TMemory::get_word_idx(const QString &w)
+int TMemory::getWordIdx(const QString &w)
 {
 //  auto it = std::find(std::begin(words_), std::end(words_), w);
 //  if(it != std::end(words_))
@@ -419,7 +419,7 @@ int TMemory::get_word_idx(const QString &w)
 //  return id;
 }
 
-bool TMemory::move_element(TME *parent, TME *me, int idx)
+bool TMemory::moveElement(TME *parent, TME *me, int idx)
 {
   if(!parent || !me)
     return false;
@@ -431,14 +431,14 @@ bool TMemory::move_element(TME *parent, TME *me, int idx)
 bool TMemory::open(const QString &fileName)
 {
   bool res = false;
-  if(changed() && autosave_) {
+  if(getChanged() && autosave_) {
     res = save();
     if(!res)
       return res;//не сохранено почему то
   }
 
   file_path_ = fileName;
-  res = load_memory();
+  res = loadMemory();
 
   createBackup();
 
@@ -447,7 +447,7 @@ bool TMemory::open(const QString &fileName)
 
 bool TMemory::save()
 {
-  save_backup();
+  saveBackup();
 
   QFile file(file_path_);
   file.remove();
@@ -463,12 +463,12 @@ bool TMemory::save()
 
   out << words_;
 
-  get_me()->save(out);
+  getTopME()->save(out);
 
   // сохранить текущий
   QString path;
-  if(selected())
-    path = selected()->getPath();
+  if(getSelected())
+    path = getSelected()->getPath();
 
   out << path;
 
@@ -477,11 +477,11 @@ bool TMemory::save()
   return true;
 }
 
-bool TMemory::save_to(const QString &fileName)
+bool TMemory::saveTo(const QString &fileName)
 {
   if(fileName.isEmpty())
     return false;
-  setFile_path(fileName);
+  setfilePath(fileName);
   return save();
 }
 
@@ -493,7 +493,7 @@ TME *TMemory::operator[](const QString &path)
 bool TMemory::undo()
 {
   // Прежде чем отменить, нужно сохранить
-  if(changed() && autosave_)
+  if(getChanged() && autosave_)
     if(!save())
       return false;
 
@@ -521,7 +521,7 @@ bool TMemory::canRedo()
   return backup_->canRedo();
 }
 
-bool TMemory::load_memory()
+bool TMemory::loadMemory()
 {
   QFile file(file_path_);
   if(!file.open(QIODevice::ReadOnly))
@@ -537,11 +537,11 @@ bool TMemory::load_memory()
   words_.clear();
   in >> words_;
 
-  get_me()->clear();
-  get_me()->load(in);
+  getTopME()->clear();
+  getTopME()->load(in);
 
   // установить текущий
-  TME *me = get_me();
+  TME *me = getTopME();
   if(ver >0)
   {
     QString path;
@@ -549,14 +549,14 @@ bool TMemory::load_memory()
 
     me = get(path);
     if(!me)
-      me = get_me();
+      me = getTopME();
   }
   setSelected(me);
 
   return true;
 }
 
-void TMemory::save_backup()
+void TMemory::saveBackup()
 {
 //  if(!backup_.get())
 //    backup_ = std::make_shared<Backup>(this);
@@ -614,7 +614,7 @@ void Backup::save()
   QString new_name = name_ + dt.toString("yyyy.MM.dd hh.mm.ss") + ".moi";
   QString new_fn = path_ + new_name;
 
-  QFile::copy(mem_->file_path(), new_fn);
+  QFile::copy(mem_->getFilePath(), new_fn);
 
   files_ << new_name;
 
@@ -670,7 +670,7 @@ void Backup::setPathAndName()
   if(!mem_)
     return;
 
-  QFile file(mem_->file_path());
+  QFile file(mem_->getFilePath());
   if(!file.exists())
     return;
 
@@ -694,10 +694,10 @@ void Backup::loadFileList()
 bool Backup::loadFile()
 {
   auto file = path_ + files_[current_];
-  if(QFile::remove(mem_->file_path()))
+  if(QFile::remove(mem_->getFilePath()))
   {
-    if(QFile::copy(file, mem_->file_path()))
-      return mem_->load_memory();
+    if(QFile::copy(file, mem_->getFilePath()))
+      return mem_->loadMemory();
   }
 
   return false;
