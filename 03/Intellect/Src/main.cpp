@@ -18,6 +18,8 @@ int main(int argc, char *argv[])
 
     int result = a.exec();
 
+    pI->stop();
+
     delete w;// просмоторщики должны удалиться раньше модели
 
     return result;

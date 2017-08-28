@@ -57,7 +57,7 @@ protected:
   
 private slots:
   void memory_change(MEWrapper *me, EMemoryChange idMsg);
-  void on_memory_change(const MemoryWrapper::ChangeEvent &event);
+  void on_memory_change(const ChangeEvent &event);
   void header_change(MEWrapper *me, EMemoryChange idMsg);
 
 private:

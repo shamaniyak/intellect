@@ -34,7 +34,7 @@ void MEWrapper::clearR(Memory::TME *me)
 
 void MEWrapper::clear()
 {
-  if(mem_) {
+  if(mem_ && me_) {
     mem_->doChange(this, EMemoryChange::mcClear);
 
     Memory::TME::Elements &childs = me_->getElements();
@@ -44,9 +44,8 @@ void MEWrapper::clear()
       clearR(childs.get(i));
       //mem_->DeleteMEW(childs.get(i));
     }
+    me_->clear();
   }
-
-  me_->clear();
 }
 
 Memory::TME *MEWrapper::getMe() const
@@ -66,13 +65,20 @@ void MEWrapper::setMem(MemoryWrapper *mem)
 
 void MEWrapper::deleteMe(MEWrapper *me)
 {
-  if(me && mem_)
+  if(me && mem_ && me_)
   {
-    mem_->doChange(me, EMemoryChange::mcDel);
+    ChangeEvent ev;
+    ev.type = EMemoryChange::mcDel;
+    ev.me = me;
+    ev.parent = me->parent();
+    ev.row = me->getIndex();
+    ev.count = me->count();
 
     auto me1 = me->me_;
     clearR(me1);
     me_->Del(me1);
+
+    mem_->doChange(ev);
     //mem_->DeleteMEW(me->me_);
     // из-за того что мы не можем обращатьс€ к самому элементу, т. к. он удален,
     // то мы просто обновл€ем его владельца
@@ -85,11 +91,15 @@ void MEWrapper::deleteMe(MEWrapper *me)
 
 QString MEWrapper::name() const
 {
+  if(!me_)
+    return "";
   return me_->name();
 }
 
 void MEWrapper::setName(const QString &name)
 {
+  if(!me_)
+    return;
   if(name == this->name())
     return;
 
@@ -102,11 +112,15 @@ void MEWrapper::setName(const QString &name)
 
 QVariant MEWrapper::val() const
 {
+  if(!me_)
+    return QVariant();
   return me_->val();
 }
 
 void MEWrapper::setVal(const QVariant &val)
 {
+  if(!me_)
+    return;
   if(val == this->val())
     return;
 
@@ -119,11 +133,15 @@ void MEWrapper::setVal(const QVariant &val)
 
 QString MEWrapper::getPath() const
 {
+  if(!me_)
+    return "";
   return me_->getPath();
 }
 
 MEWrapper *MEWrapper::add(const QString &name, bool checkExist)
 {
+  if(!me_)
+    return nullptr;
   MEWrapper *me = nullptr;
 
   if(!name.isEmpty() && checkExist)
@@ -142,14 +160,14 @@ MEWrapper *MEWrapper::add(const QString &name, bool checkExist)
 
 MEWrapper *MEWrapper::get(const QString &name)
 {
-  if(mem_)
+  if(mem_ && me_)
     return mem_->CreateMEW(me_->Get(name));
   return nullptr;
 }
 
 MEWrapper *MEWrapper::getByI(int i)
 {
-  if(mem_) {
+  if(mem_ && me_) {
     return mem_->CreateMEW(me_->getElements().get(i));
   }
 
@@ -158,12 +176,16 @@ MEWrapper *MEWrapper::getByI(int i)
 
 void MEWrapper::del(const QString &name)
 {
+  if(!me_)
+    return;
   auto me = get(name); //me_->Get(name);
   deleteMe(me);
 }
 
 void MEWrapper::delByI(int i)
 {
+  if(!me_)
+    return;
   auto me = getByI(i);
   deleteMe(me);
 }
@@ -173,24 +195,24 @@ void MEWrapper::delByMe(MEWrapper *me)
   deleteMe(me);
 }
 
-
-
 MEWrapper *MEWrapper::parent() const
 {
-  if(mem_)
+  if(mem_ && me_)
     return mem_->CreateMEW(me_->parent());
   return nullptr;
 }
 
-
-
 int MEWrapper::count() const
 {
+  if(!me_)
+    return 0;
   return me_->getElements().count();
 }
 
 int MEWrapper::getIndex() const
 {
+  if(!me_)
+    return -1;
   return me_->get_index();
 }
 

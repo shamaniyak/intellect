@@ -27,6 +27,15 @@ enum EMemoryChange {
   mcNone, mcAdd, mcAddFrom, mcDel, mcEditName, mcEditVal, mcUpdate, mcSelect, mcClear, mcMove
 };
 
+struct ChangeEvent
+{
+  EMemoryChange type = mcNone;
+  MEWrapper *me = nullptr;
+  MEWrapper *parent = nullptr;
+  int row = 0;
+  int count = 0;
+};
+
 class MemoryWrapper : public QObject//QMemoryModel
 {
   Q_OBJECT
@@ -37,15 +46,6 @@ class MemoryWrapper : public QObject//QMemoryModel
 
 public:
 
-  struct ChangeEvent
-  {
-    EMemoryChange type = mcNone;
-    MEWrapper *me = nullptr;
-    MEWrapper *parent = nullptr;
-    int row = 0;
-    int count = 0;
-  };
-
   explicit MemoryWrapper(QObject *parent = 0);
   ~MemoryWrapper();
 
@@ -53,6 +53,8 @@ public:
 
   MEWrapper *CreateMEW(Memory::TME *me);
   void DeleteMEW(Memory::TME *me);
+
+  void doChange(const ChangeEvent &ev);
 
 signals:
   // посылается перед удалением
@@ -170,5 +172,6 @@ private:
 
 //
 Q_DECLARE_METATYPE(MemoryWrapper*)
+Q_DECLARE_METATYPE(ChangeEvent)
 
 #endif // MEMORYWRAPPER_H

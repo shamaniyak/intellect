@@ -262,12 +262,46 @@ QScriptValue EMemoryChangeToScriptValue(QScriptEngine *engine, EMemoryChange con
 void EMemoryChangeFromScriptValue(const QScriptValue &object, EMemoryChange &out)
 { out = (EMemoryChange)(object.toInt32()); }
 
+//struct ChangeEvent
+//{
+//  EMemoryChange type = mcNone;
+//  MEWrapper *me = nullptr;
+//  MEWrapper *parent = nullptr;
+//  int row = 0;
+//  int count = 0;
+//};
+
+QScriptValue ChangeEventToScriptValue(QScriptEngine *engine, ChangeEvent const &in)
+{
+  QScriptValue obj = engine->newObject();
+  // поля
+  QScriptValue type = EMemoryChangeToScriptValue(engine, in.type);
+  QScriptValue me = MEWrapperToScriptValue(engine, in.me);
+  QScriptValue parent = MEWrapperToScriptValue(engine, in.parent);
+  obj.setProperty("type", type,
+                  QScriptValue::ReadOnly|QScriptValue::Undeletable);
+  obj.setProperty("me", me,
+                  QScriptValue::ReadOnly|QScriptValue::Undeletable);
+  obj.setProperty("parent", parent,
+                  QScriptValue::ReadOnly|QScriptValue::Undeletable);
+  obj.setProperty("row", in.row,
+                  QScriptValue::ReadOnly|QScriptValue::Undeletable);
+  return obj;
+}
+
+void ChangeEventFromScriptValue(const QScriptValue &object, ChangeEvent &out)
+{
+  out.type = EMemoryChange(object.property("type").toInt32());
+  out.row = object.property("row").toInt32();
+}
+
 MemoryPlugin::MemoryPlugin(QScriptEngine *engine)
 {
   if(engine){
     qScriptRegisterMetaType(engine, MemoryWrapperToScriptValue, MemoryWrapperFromScriptValue);
     qScriptRegisterMetaType(engine, MEWrapperToScriptValue, MEWrapperFromScriptValue);
     qScriptRegisterMetaType(engine, EMemoryChangeToScriptValue, EMemoryChangeFromScriptValue);
+    qScriptRegisterMetaType(engine, ChangeEventToScriptValue, ChangeEventFromScriptValue);
 
     QScriptValue obj = engine->globalObject();
 

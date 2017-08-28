@@ -164,6 +164,24 @@ void MemoryWrapper::doChange(MEWrapper *me, EMemoryChange idMsg)
   }
 }
 
+void MemoryWrapper::doChange(const ChangeEvent &ev)
+{
+  bool changed = ev.type !=EMemoryChange::mcSelect && ev.type != EMemoryChange::mcUpdate;
+  if(changed)
+  {
+    mem_->setChanged(changed);
+
+    //if(mem_->autosave())
+      //mem_->save();//будем сохранять каждое изменение
+  }
+
+  if(mem_->canChange()) {
+    emit on_change(ev.me, ev.type);
+
+    emit change(ev);
+  }
+}
+
 void MemoryWrapper::clear()
 {
   setSelected(getME());
@@ -269,6 +287,8 @@ void MemoryWrapper::DeleteMEW(Memory::TME *me)
     deleted_.push_back(mew);
   }
 }
+
+
 
 std::shared_ptr<MemoryLogger> MemoryWrapper::getLogger()
 {

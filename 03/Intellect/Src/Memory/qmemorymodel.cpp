@@ -314,7 +314,7 @@ void QMemoryModel::memory_change(MEWrapper *me, EMemoryChange idMsg)
   }
 }
 
-void QMemoryModel::on_memory_change(const MemoryWrapper::ChangeEvent &event)
+void QMemoryModel::on_memory_change(const ChangeEvent &event)
 {
   EMemoryChange idMsg = event.type;
 
