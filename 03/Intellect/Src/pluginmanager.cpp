@@ -12,15 +12,12 @@ PluginManager::PluginManager(QObject *parent) : QObject(parent)
 
 PluginManager::~PluginManager()
 {
-  clear();
+
 }
 
 void PluginManager::clear()
 {
-//  foreach (auto x, this->plugins_) {
-//    delete x;
-//  }
-//  this->plugins_.clear();
+
 }
 
 void PluginManager::loadPlugins()
@@ -40,14 +37,10 @@ void PluginManager::addPlugin(QObject *pobj)
 {
   if(pobj)
     pobj->setParent(this);
-  //pobj->setParent(this);
-//  if(pobj)
-//    this->plugins_.push_back(pobj);
 }
 
 int PluginManager::count() const
 {
-  //return(plugins_.size());
   return(this->children().size());
 }
 
@@ -55,7 +48,6 @@ QObject *PluginManager::get(unsigned int i) const
 {
   if(i < (unsigned int)count())
     return(this->children()[i]);
-    //return(plugins_[i]);
   return nullptr;
 }
 
