@@ -305,7 +305,7 @@ MemoryPlugin::MemoryPlugin(QScriptEngine *engine)
 
     QScriptValue obj = engine->globalObject();
 
-    //mcNone, mcAdd, mcAddFrom, mcDel, mcEditName, mcEditVal, mcUpdate, mcSelect, mcClear
+    //mcNone, mcAdd, mcAddFrom, mcDel, mcEditName, mcEditVal, mcUpdate, mcSelect, mcClear, mcMove
     obj.setProperty("mcNone", mcNone, QScriptValue::ReadOnly|QScriptValue::Undeletable);
     obj.setProperty("mcAdd", mcAdd, QScriptValue::ReadOnly|QScriptValue::Undeletable);
     obj.setProperty("mcAddFrom", mcAddFrom, QScriptValue::ReadOnly|QScriptValue::Undeletable);
@@ -315,6 +315,7 @@ MemoryPlugin::MemoryPlugin(QScriptEngine *engine)
     obj.setProperty("mcUpdate", mcUpdate, QScriptValue::ReadOnly|QScriptValue::Undeletable);
     obj.setProperty("mcSelect", mcSelect, QScriptValue::ReadOnly|QScriptValue::Undeletable);
     obj.setProperty("mcClear", mcClear, QScriptValue::ReadOnly|QScriptValue::Undeletable);
+    obj.setProperty("mcMove", mcMove, QScriptValue::ReadOnly|QScriptValue::Undeletable);
   }
 }
 

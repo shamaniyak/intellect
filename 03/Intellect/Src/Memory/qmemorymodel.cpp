@@ -73,7 +73,7 @@ QVariant QMemoryModel::data(const QModelIndex &index, int role) const
     return var;
   }
 
-  if(role != Qt::DisplayRole && role != Qt::EditRole)
+  if(role != Qt::DisplayRole && role != Qt::EditRole && role != Qt::ToolTipRole)
     return var;
 
   auto me = static_cast<MEWrapper*>(index.internalPointer());

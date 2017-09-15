@@ -140,22 +140,26 @@ QString MEWrapper::getPath() const
 
 MEWrapper *MEWrapper::add(const QString &name, bool checkExist)
 {
-  if(!me_)
-    return nullptr;
-  MEWrapper *me = nullptr;
+  if(mem_)
+    return mem_->add(this, name);
+  return nullptr;
 
-  if(!name.isEmpty() && checkExist)
-    me = get(name);
+//  if(!me_)
+//    return nullptr;
+//  MEWrapper *me = nullptr;
 
-  if(!me) {
-    if(mem_) {
-      me = mem_->CreateMEW(me_->Add(name));
-      if(me)
-        mem_->doChange(me, EMemoryChange::mcAdd);
-    }
-  }
+//  if(!name.isEmpty() && checkExist)
+//    me = get(name);
 
-  return me;
+//  if(!me) {
+//    if(mem_) {
+//      me = mem_->CreateMEW(me_->Add(name));
+//      if(me)
+//        mem_->doChange(me, EMemoryChange::mcAdd);
+//    }
+//  }
+
+//  return me;
 }
 
 MEWrapper *MEWrapper::get(const QString &name)

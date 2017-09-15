@@ -1,6 +1,120 @@
 #include "memorywrapper.h"
 #include "tmemory.h"
 
+#include <QUndoStack>
+
+class BaseCommand : public QUndoCommand
+{
+public:
+  explicit BaseCommand(MemoryWrapper *m, QUndoCommand *parent = Q_NULLPTR) :
+    QUndoCommand(parent), m_(m) {}
+  explicit BaseCommand(MemoryWrapper *m, const QString &text, QUndoCommand *parent = Q_NULLPTR) :
+    QUndoCommand(text, parent), m_(m) {}
+  virtual ~BaseCommand() {}
+
+protected:
+  MemoryWrapper *m_ = nullptr;
+};
+
+class AddCommand : public BaseCommand
+{
+  // QUndoCommand interface
+public:
+  AddCommand(MemoryWrapper *m, MEWrapper *parent, const QString &name) :
+    BaseCommand(m, "Add"), parent_(parent), name_(name) {}
+  virtual void undo() override
+  {
+    m_->doChange(m_->CreateMEW(newMe_), mcDel);
+    parent_->getMe()->Del(newMe_);
+  }
+  virtual void redo() override
+  {
+    newMe_ = parent_->getMe()->Add(name_);
+    m_->doChange(m_->CreateMEW(newMe_), mcAdd);
+  }
+
+  Memory::TME *newMe() const { return newMe_; }
+
+private:
+  MEWrapper *parent_ = nullptr;
+  QString name_;
+  Memory::TME *newMe_ = nullptr;
+};
+
+class AddFromCommand : public BaseCommand
+{
+  // QUndoCommand interface
+public:
+  virtual void undo() override
+  {
+  }
+  virtual void redo() override
+  {
+  }
+};
+
+class DelCommand : public BaseCommand
+{
+  // QUndoCommand interface
+public:
+  virtual void undo() override
+  {
+  }
+  virtual void redo() override
+  {
+  }
+};
+
+class EditNameCommand : public BaseCommand
+{
+  // QUndoCommand interface
+public:
+  virtual void undo() override
+  {
+  }
+  virtual void redo() override
+  {
+  }
+};
+
+class EditValCommand : public BaseCommand
+{
+  // QUndoCommand interface
+public:
+  virtual void undo() override
+  {
+  }
+  virtual void redo() override
+  {
+  }
+};
+
+class ClearCommand : public BaseCommand
+{
+  // QUndoCommand interface
+public:
+  virtual void undo() override
+  {
+  }
+  virtual void redo() override
+  {
+  }
+};
+
+class MoveCommand : public BaseCommand
+{
+  // QUndoCommand interface
+public:
+  virtual void undo() override
+  {
+  }
+  virtual void redo() override
+  {
+  }
+};
+
+//  MemoryWrapper
+
 MemoryWrapper::MemoryWrapper(QObject *parent) : QObject(parent),//QMemoryModel(parent),
   mem_(new Memory::TMemory())
 {
@@ -18,9 +132,32 @@ MEWrapper *MemoryWrapper::add(MEWrapper *parent, const QString &name)
   if(!parent)
     parent = getME();
 
-  MEWrapper *newME = parent->add(name);
+  MEWrapper *me = nullptr;
 
-  return newME;
+  auto meParent = parent->getMe();
+  if(!meParent)
+    return me;
+
+  if(!name.isEmpty())
+    me = parent->get(name);
+
+  if(!me)
+  {
+    auto s = getStack();
+    if(s) {
+      AddCommand *cmd = new AddCommand(this, parent, name);
+      s->push(cmd);
+      me = CreateMEW(cmd->newMe());
+    }
+    else
+    {
+      me = CreateMEW(meParent->Add(name));
+      if(me)
+        doChange(me, EMemoryChange::mcAdd);
+    }
+  }
+
+  return me;
 }
 
 bool MemoryWrapper::addFrom(MEWrapper *parent, MEWrapper *mefrom, bool recurs)
@@ -79,7 +216,7 @@ MEWrapper *MemoryWrapper::getById(uint id)
   return map_mew_[me];
 }
 
-bool MemoryWrapper::autosave() const
+bool MemoryWrapper::getAutosave() const
 {
   return mem_->getAutosave();
 }
@@ -94,7 +231,7 @@ bool MemoryWrapper::open(const QString &fileName)
   if(!mem_->open(fileName))
     return false;
 
-  setSelected(selected());
+  setSelected(getSelected());
 
   return true;
 }
@@ -106,12 +243,12 @@ bool MemoryWrapper::save()
   return false;
 }
 
-QString MemoryWrapper::file_path() const
+QString MemoryWrapper::getFilePath() const
 {
   return mem_->getFilePath();
 }
 
-void MemoryWrapper::setFile_path(const QString &file_path)
+void MemoryWrapper::setFilePath(const QString &file_path)
 {
   mem_->setfilePath(file_path);
 }
@@ -135,7 +272,7 @@ void MemoryWrapper::setSelected(MEWrapper *me)
   doChange(me, EMemoryChange::mcSelect);
 }
 
-MEWrapper *MemoryWrapper::selected()
+MEWrapper *MemoryWrapper::getSelected()
 {
   return CreateMEW(mem_->getSelected());
 }
@@ -185,7 +322,7 @@ void MemoryWrapper::doChange(const ChangeEvent &ev)
 void MemoryWrapper::clear()
 {
   setSelected(getME());
-  selected()->clear();
+  getSelected()->clear();
   //mem_->clear();
 
   //doChange(getME(), EMemoryChange::mcClear);
@@ -201,7 +338,7 @@ void MemoryWrapper::move(MEWrapper *me, MEWrapper *parent, int pos)
     doChange(me, mcMove);
 }
 
-bool MemoryWrapper::canChange() const
+bool MemoryWrapper::getCanChange() const
 {
   return mem_->canChange();
 }
@@ -262,6 +399,25 @@ void MemoryWrapper::clearMeWrappers()
   map_mew_.clear();
 }
 
+bool MemoryWrapper::getCanUndo() const
+{
+  return canUndo_;
+}
+
+void MemoryWrapper::setCanUndo(bool canUndo)
+{
+  canUndo_ = canUndo;
+  if(!canUndo_)
+    delete stack_;
+}
+
+QUndoStack *MemoryWrapper::getStack()
+{
+  if(!stack_ && canUndo_)
+    stack_ = new QUndoStack(this);
+  return stack_;
+}
+
 MEWrapper *MemoryWrapper::CreateMEW(Memory::TME *me)
 {
   if(!me)
@@ -290,9 +446,5 @@ void MemoryWrapper::DeleteMEW(Memory::TME *me)
 
 
 
-std::shared_ptr<MemoryLogger> MemoryWrapper::getLogger()
-{
-  if(!logger_.get())
-    logger_ = std::make_shared<MemoryLogger>(this);
-  return logger_;
-}
+
+

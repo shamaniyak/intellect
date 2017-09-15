@@ -58,7 +58,7 @@ void ScriptEditor::setMem(MemoryWrapper *mem)
   connectMem();
   if(mem_)
   {
-    memory_change(mem_->selected(), mcSelect);
+    memory_change(mem_->getSelected(), mcSelect);
   }
 }
 

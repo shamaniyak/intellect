@@ -1,10 +1,13 @@
 #include "intellect.h"
 #include "GUI/mainwindowex.h"
 #include <QApplication>
+#include <Test/TestSppzCartography/testsppzcartography.h>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    //TestSppzCartography test;
 
     // создать модель
     // парент нам нужен для того, чтобы при уничтожении скрипта, не уничтожалась модель
@@ -14,7 +17,7 @@ int main(int argc, char *argv[])
     MainWindowEx *w = new MainWindowEx(pI);
     w->showMaximized();
 
-    pI->start();// запустить модель
+    emit pI->start();// запустить модель
 
     int result = a.exec();
 

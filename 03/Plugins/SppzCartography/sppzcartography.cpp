@@ -6,6 +6,7 @@
 #include <QLibrary>
 #include <QPixmap>
 #include <QtWin>
+#include <QtDebug>
 
 // Получение указателя на объект, реализующий логику работы
 // с картой на основе функций картографии СППЗ
@@ -38,6 +39,10 @@ void SppzCartography::initLibrary()
     FunCreateCartography fun = (FunCreateCartography)lib->resolve("_CreateCartography");
     if(fun)
       cart_ = dynamic_cast<ICartographyIntf*>( fun() );
+  }
+  else
+  {
+    qDebug() << lib->errorString();
   }
 
 }

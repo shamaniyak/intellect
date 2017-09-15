@@ -75,17 +75,9 @@ QString Intellect::compileText(const QString &str)
 
 int Intellect::loadPlugins()
 {
-  QDir dir(QApplication::applicationDirPath());
-  if (!dir.cd("plugins")) {
-    return 1;
-  }
+  PM()->loadPlugins();
 
-  foreach (QString strFileName, dir.entryList(QDir::Files)) {
-    QPluginLoader loader(dir.absoluteFilePath(strFileName));
-    addPlugin(qobject_cast<QObject*>(loader.instance()));
-  }
-
-  return 0;
+  return PM()->count();
 }
 
 void Intellect::addPlugin(QObject *obj)
@@ -116,6 +108,7 @@ void Intellect::on_start()
 {
   disconnect(this, &TAlgorithm::start, this, &Intellect::on_start);
 
+  loadPlugins();
   obj()->run("Intellect\\Create");
 }
 

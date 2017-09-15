@@ -38,7 +38,7 @@ void QMemorySelectionModel::setMem(MemoryWrapper *mem)
 
   if(mem_)
   {
-    setSelected(mem_->selected());
+    setSelected(mem_->getSelected());
 
     connect(mem_, &MemoryWrapper::on_change,
             this, &QMemorySelectionModel::memory_change);

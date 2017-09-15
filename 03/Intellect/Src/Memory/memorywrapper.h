@@ -21,7 +21,7 @@ namespace Memory
   class TME;
 }
 
-class MemoryLogger;// Объявлен дальше
+class QUndoStack;
 
 enum EMemoryChange {
   mcNone, mcAdd, mcAddFrom, mcDel, mcEditName, mcEditVal, mcUpdate, mcSelect, mcClear, mcMove
@@ -34,27 +34,47 @@ struct ChangeEvent
   MEWrapper *parent = nullptr;
   int row = 0;
   int count = 0;
+  int first = 0;
+  int last = 0;
 };
 
 class MemoryWrapper : public QObject//QMemoryModel
 {
   Q_OBJECT
-  Q_PROPERTY(QString file_path READ file_path WRITE setFile_path)
   Q_PROPERTY(MEWrapper *me READ getME)
-  Q_PROPERTY(MEWrapper* selected READ selected WRITE setSelected)
-  Q_PROPERTY(bool canChange READ canChange WRITE setCanChange)
+  Q_PROPERTY(QString filePath READ getFilePath WRITE setFilePath)
+  Q_PROPERTY(MEWrapper* selected READ getSelected WRITE setSelected)
+  Q_PROPERTY(bool canChange READ getCanChange WRITE setCanChange)
+  Q_PROPERTY(bool autosave READ getAutosave WRITE setAutosave)
 
 public:
 
   explicit MemoryWrapper(QObject *parent = 0);
   ~MemoryWrapper();
 
-  std::shared_ptr<MemoryLogger> getLogger();
+  MEWrapper *getME();
 
   MEWrapper *CreateMEW(Memory::TME *me);
   void DeleteMEW(Memory::TME *me);
 
   void doChange(const ChangeEvent &ev);
+
+  bool getAutosave() const;
+  void setAutosave(bool autosave);
+
+  bool getCanChange() const;
+  void setCanChange(bool val);
+
+  QString getFilePath() const;
+  void setFilePath(const QString &filePath);
+
+  void setSelected(MEWrapper *me);
+  MEWrapper *getSelected();
+
+  QUndoStack *getStack();
+
+  bool getCanUndo() const;
+  void setCanUndo(bool canUndo);
 
 signals:
   // посылается перед удалением
@@ -63,7 +83,6 @@ signals:
   change(const ChangeEvent &ev);
 
 public slots:
-  MEWrapper *getME();
 
   void addCount(MEWrapper *parent, int count = 1);
   MEWrapper* add(MEWrapper *parent, const QString &name);
@@ -74,28 +93,16 @@ public slots:
   MEWrapper *get(const QString &path);
   MEWrapper *getById(uint id);
 
-  bool autosave() const;
-  void setAutosave(bool autosave);
-
   bool open(const QString &fileName);
   bool save();
 
-  QString file_path() const;
-  void setFile_path(const QString &file_path);
-
   QVariant getVal(const QString &path);
-
-  void setSelected(MEWrapper *me);
-  MEWrapper *selected();
 
   void doChange(MEWrapper *me, EMemoryChange idMsg);
 
   void clear();
 
   void move(MEWrapper *me, MEWrapper *parent, int pos);
-
-  bool canChange() const;
-  void setCanChange(bool val);
 
   bool changed() const;
 
@@ -115,61 +122,12 @@ private:
 
   std::shared_ptr<Memory::TMemory> mem_;
   t_mapMeWrappers map_mew_;  // Обертки над TME
-  std::shared_ptr<MemoryLogger> logger_;
   t_vecMeWrappers deleted_; // Список удаленных
+  QUndoStack *stack_ = nullptr;
+  bool canUndo_ = false;
 
   friend class MEWrapper;
 };
-
-// Предназначен для хранения команд обращений к памяти
-class MemoryLogger
-{
-public:
-
-  MemoryLogger(MemoryWrapper *m) : mem_(m)
-  {
-    init();
-  }
-
-  void init()
-  {
-
-  }
-
-  void save()
-  {
-
-  }
-
-  bool undo()
-  {
-    return false;
-  }
-
-  bool redo()
-  {
-    return false;
-  }
-
-  bool canUndo()
-  {
-    return false;
-  }
-
-  bool canRedo()
-  {
-    return false;
-  }
-
-protected:
-
-
-private:
-  MemoryWrapper *mem_;
-
-  int current_ = -1;
-};
-
 //
 Q_DECLARE_METATYPE(MemoryWrapper*)
 Q_DECLARE_METATYPE(ChangeEvent)

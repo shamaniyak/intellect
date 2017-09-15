@@ -7,7 +7,7 @@
 
 PluginManager::PluginManager(QObject *parent) : QObject(parent)
 {
-  loadPlugins();
+  //loadPlugins();
 }
 
 PluginManager::~PluginManager()

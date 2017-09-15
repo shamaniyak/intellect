@@ -16,8 +16,8 @@ class IObject : public QObject
 {
   Q_OBJECT
   Q_PROPERTY(MemoryWrapper* mem READ mem)
-  Q_PROPERTY(WindowManager* wm READ WM)
-  Q_PROPERTY(QObject* cm READ CM)
+  Q_PROPERTY(WindowManager* WM READ getWM)
+  //Q_PROPERTY(QObject* cm READ CM)
   Q_PROPERTY(QObject* OM READ getOM)
   //Q_PROPERTY(QString msg READ msg)
 public:
@@ -73,7 +73,7 @@ public slots:
 
   // Оконный мэнеджер
   // Если объект не создан, то создать. Вернуть объект
-  WindowManager *WM();
+  WindowManager *getWM();
 
   //
   QObject *CM();

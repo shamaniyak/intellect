@@ -294,7 +294,7 @@ void DialogMemoryEditor::ShowMemory()
   if(!intellect_)
     return;
 
-  memory_change(intellect_->obj()->mem()->selected(), mcSelect);
+  memory_change(intellect_->obj()->mem()->getSelected(), mcSelect);
 
   //ShowMeValues(intellect_->obj()->mem()->selected());
 }
@@ -469,7 +469,7 @@ void DialogMemoryEditor::edit_undo_triggered(bool )
   intellect_->obj()->mem()->undoBackup();
 
   ShowMemory();
-  ShowMeValues(intellect_->obj()->mem()->selected());
+  ShowMeValues(intellect_->obj()->mem()->getSelected());
 }
 
 void DialogMemoryEditor::edit_redo_triggered(bool )
@@ -480,7 +480,7 @@ void DialogMemoryEditor::edit_redo_triggered(bool )
   intellect_->obj()->mem()->redoBackup();
 
   ShowMemory();
-  ShowMeValues(intellect_->obj()->mem()->selected());
+  ShowMeValues(intellect_->obj()->mem()->getSelected());
 }
 
 void DialogMemoryEditor::actSave_triggered(bool /*checked*/)

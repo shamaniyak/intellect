@@ -56,8 +56,8 @@ void MainWindowEx::initIntellect()
 
 void MainWindowEx::loadPlugins()
 {
-  if (intellect_->loadPlugins() == 1) {
-    QMessageBox::critical(0, "", "plugins directory does not exist");
+  if (intellect_->loadPlugins() == 0) {
+    QMessageBox::critical(0, "", "No plugins.");
     return;
   }
 }
@@ -249,7 +249,7 @@ void MainWindowEx::saveSettings()
   QString filePath = QApplication::applicationDirPath() + "/settings.moi";
   MemoryWrapper mSettings;
   mSettings.setAutosave(true);
-  mSettings.setFile_path(filePath);
+  mSettings.setFilePath(filePath);
 
   auto meSettings = mSettings.add(nullptr, "Intellect")->add("Settings");
 

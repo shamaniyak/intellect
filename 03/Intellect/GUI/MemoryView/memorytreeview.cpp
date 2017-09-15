@@ -130,7 +130,7 @@ void MemoryTreeView::setMem(MemoryWrapper *mem)
 
     }
 
-    this->setCurrentIndex(model_->getIndexByMe(mem_->selected()));
+    this->setCurrentIndex(model_->getIndexByMe(mem_->getSelected()));
 
     expandItems();
   }

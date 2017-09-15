@@ -99,7 +99,7 @@ void IObject::add_msg(const QString &msg)
     A->addResult(msg);
 }
 
-WindowManager *IObject::WM()
+WindowManager *IObject::getWM()
 {
   if(!WM_)
     WM_ = new WindowManager(this);

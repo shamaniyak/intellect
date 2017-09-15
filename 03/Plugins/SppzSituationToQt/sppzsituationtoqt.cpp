@@ -3,6 +3,7 @@
 #include <isituationintf.h>
 
 #include <QLibrary>
+#include <QtDebug>
 
 //  PropertiesWrapper
 
@@ -232,6 +233,11 @@ void SppzSituationToQt::initLibrary()
     FunCreateClassifier fun = (FunCreateClassifier)lib->resolve("_CreateSituation");
     if(fun)
       sit_ = dynamic_cast<ISituationIntf*>( fun() );
+  }
+  else
+  {
+    qDebug() << lib->errorString();
+    //qDebug() << "d:\\Work\\sppz\\Exe\\situation not load";
   }
 
 }
