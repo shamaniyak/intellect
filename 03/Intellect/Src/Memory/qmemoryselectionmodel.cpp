@@ -83,10 +83,14 @@ void QMemorySelectionModel::on_itemSelectionChanged(const QModelIndex &current, 
 
 void QMemorySelectionModel::setSelected(MEWrapper *me)
 {
-  auto name = me->name();
-  select(getIndexByMe(me),
-         QItemSelectionModel::ClearAndSelect
-         |QItemSelectionModel::Rows);
+  QModelIndex index = getIndexByMe(me);
+//  auto me1 = static_cast<MEWrapper*>(index.internalPointer());
+//  auto name = me->name();
+//  auto name1 = me1->name();
+
+  setCurrentIndex(index, QItemSelectionModel::ClearAndSelect);
+  //select(index,
+  //       QItemSelectionModel::ClearAndSelect);
 }
 
 QModelIndex QMemorySelectionModel::getIndexByMe(MEWrapper *me)

@@ -127,7 +127,7 @@ MemoryWrapper::~MemoryWrapper()
   clearMeWrappers();
 }
 
-MEWrapper *MemoryWrapper::add(MEWrapper *parent, const QString &name)
+MEWrapper *MemoryWrapper::add(MEWrapper *parent, const QString &name, bool checkExist)
 {
   if(!parent)
     parent = getME();
@@ -138,7 +138,7 @@ MEWrapper *MemoryWrapper::add(MEWrapper *parent, const QString &name)
   if(!meParent)
     return me;
 
-  if(!name.isEmpty())
+  if(!name.isEmpty() && checkExist)
     me = parent->get(name);
 
   if(!me)

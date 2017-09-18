@@ -85,7 +85,7 @@ signals:
 public slots:
 
   void addCount(MEWrapper *parent, int count = 1);
-  MEWrapper* add(MEWrapper *parent, const QString &name);
+  MEWrapper* add(MEWrapper *parent, const QString &name, bool checkExist = true);
   bool addFrom(MEWrapper *parent, MEWrapper *mefrom, bool recurs);
   // Удалить элемент памяти
   void del(const QString &path);

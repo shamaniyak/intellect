@@ -141,7 +141,7 @@ QString MEWrapper::getPath() const
 MEWrapper *MEWrapper::add(const QString &name, bool checkExist)
 {
   if(mem_)
-    return mem_->add(this, name);
+    return mem_->add(this, name, checkExist);
   return nullptr;
 
 //  if(!me_)
