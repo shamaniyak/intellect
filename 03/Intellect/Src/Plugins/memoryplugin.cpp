@@ -189,14 +189,29 @@ QScriptValue moveMe(QScriptContext *ctx, QScriptEngine *eng)
 {
   QScriptValue obj = ctx->thisObject();
   checkObjectData(eng, obj);
-  QScriptValue result;
+  QScriptValue result = false;
 
   auto me = getMEWrapperFromScriptValue(obj);
   if(me && ctx->argumentCount() >0)
   {
-    auto meParent = getMEWrapperFromScriptValue( ctx->argument(0).toObject() );
+    auto meParent = me->parent();// getMEWrapperFromScriptValue( ctx->argument(0).toObject() );
     int pos = ctx->argument(1).toInt32();
-    me->getMem()->move(me, meParent, pos);
+    result = me->getMem()->move(me, meParent, pos);
+  }
+
+  return result;
+}
+
+QScriptValue getCountChildren(QScriptContext *ctx, QScriptEngine *eng)
+{
+  QScriptValue obj = ctx->thisObject();
+  checkObjectData(eng, obj);
+  QScriptValue result = 0;
+
+  auto me = getMEWrapperFromScriptValue(obj);
+  if(me)
+  {
+    result = me->count();
   }
 
   return result;
@@ -244,6 +259,8 @@ QScriptValue MEWrapperToScriptValue(QScriptEngine *engine, MEWrapper* const &in)
   obj.setProperty("delByI", engine->newFunction(delByIndexChildMe),
                   QScriptValue::Undeletable);
   obj.setProperty("move", engine->newFunction(moveMe),
+                  QScriptValue::Undeletable);
+  obj.setProperty("count", engine->newFunction(getCountChildren),
                   QScriptValue::Undeletable);
   return obj;
 }

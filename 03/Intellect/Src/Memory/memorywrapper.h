@@ -102,7 +102,7 @@ public slots:
 
   void clear();
 
-  void move(MEWrapper *me, MEWrapper *parent, int pos);
+  bool move(MEWrapper *me, MEWrapper *parent, int pos);
 
   bool changed() const;
 

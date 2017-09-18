@@ -267,9 +267,10 @@ void MemoryWrapper::setSelected(MEWrapper *me)
   if(!me)
     return;
 
-  mem_->setSelected(me->me_);
-
-  doChange(me, EMemoryChange::mcSelect);
+  if(mem_->getSelected() != me->me_) {
+    mem_->setSelected(me->me_);
+    doChange(me, EMemoryChange::mcSelect);
+  }
 }
 
 MEWrapper *MemoryWrapper::getSelected()
@@ -328,14 +329,19 @@ void MemoryWrapper::clear()
   //doChange(getME(), EMemoryChange::mcClear);
 }
 
-void MemoryWrapper::move(MEWrapper *me, MEWrapper *parent, int pos)
+bool MemoryWrapper::move(MEWrapper *me, MEWrapper *parent, int pos)
 {
   if(!me || !parent)
-    return;
+    return false;
+  // запрещаем перенос из одного владельца в другого
+  if(me->parent() != parent)
+    return false;
 
   bool ok = me->getMe()->move_to(parent->getMe(), pos);
   if(ok)
     doChange(me, mcMove);
+
+  return ok;
 }
 
 bool MemoryWrapper::getCanChange() const

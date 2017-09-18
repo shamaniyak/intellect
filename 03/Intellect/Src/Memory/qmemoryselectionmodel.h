@@ -21,7 +21,8 @@ public:
 
 private slots:
   void memory_change(MEWrapper *me, EMemoryChange idMsg);
-  void on_itemSelectionChanged(const QModelIndex &current, const QModelIndex &previous);
+  void on_currentChanged(const QModelIndex &current, const QModelIndex &previous);
+  void on_selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
   MemoryWrapper *mem_ = nullptr;

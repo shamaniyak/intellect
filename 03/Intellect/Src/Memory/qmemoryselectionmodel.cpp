@@ -21,7 +21,9 @@ QMemorySelectionModel::~QMemorySelectionModel()
 void QMemorySelectionModel::init()
 {
   connect(this, &QItemSelectionModel::currentChanged,
-          this, &QMemorySelectionModel::on_itemSelectionChanged);
+          this, &QMemorySelectionModel::on_currentChanged);
+//  connect(this, &QItemSelectionModel::selectionChanged,
+//          this, &QMemorySelectionModel::on_selectionChanged);
 }
 
 MemoryWrapper *QMemorySelectionModel::mem() const
@@ -70,7 +72,7 @@ void QMemorySelectionModel::memory_change(MEWrapper *me, EMemoryChange idMsg)
   }
 }
 
-void QMemorySelectionModel::on_itemSelectionChanged(const QModelIndex &current, const QModelIndex &/*previous*/)
+void QMemorySelectionModel::on_currentChanged(const QModelIndex &current, const QModelIndex &/*previous*/)
 {
   if(mem_)
   {
@@ -79,6 +81,13 @@ void QMemorySelectionModel::on_itemSelectionChanged(const QModelIndex &current, 
 //    connect(mem_, &MemoryWrapper::on_change,
 //            this, &QMemorySelectionModel::memory_change);
   }
+}
+
+void QMemorySelectionModel::on_selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+{
+  int cnt = selected.size();
+  auto index = selected.indexes()[cnt-1];
+  mem_->setSelected((MEWrapper*)index.internalPointer());
 }
 
 void QMemorySelectionModel::setSelected(MEWrapper *me)
