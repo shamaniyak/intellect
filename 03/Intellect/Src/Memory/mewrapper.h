@@ -65,6 +65,8 @@ private:
   MemoryWrapper *mem_;
 
   void clearR(Memory::TME *me);
+
+  friend class DelCommand;
 };
 
 //Q_DECLARE_METATYPE(MEWrapper)

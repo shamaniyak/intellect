@@ -55,14 +55,35 @@ public:
 
 class DelCommand : public BaseCommand
 {
-  // QUndoCommand interface
 public:
+  DelCommand(MemoryWrapper *m, MEWrapper *parent, const QString &name) :
+    BaseCommand(m, "Del"), parent_(parent), name_(name) {}
+
   virtual void undo() override
   {
   }
   virtual void redo() override
   {
+    ChangeEvent ev;
+    ev.type = EMemoryChange::mcDel;
+    ev.me = parent_->get(name_);
+    ev.parent = parent_;
+    ev.row = ev.me->getIndex();
+    ev.first = ev.me->getIndex();
+    ev.last = ev.first;
+    //ev.count = ev.me->count();
+
+    auto me1 = ev.me->getMe();
+    ev.me->clearR(me1);
+    parent_->getMe()->Del(me1);
+
+    m_->doChange(ev);
   }
+
+private:
+  MEWrapper *parent_ = nullptr;
+  QString name_;
+  Memory::TMemory buf_;
 };
 
 class EditNameCommand : public BaseCommand
@@ -183,8 +204,37 @@ void MemoryWrapper::del(const QString &path)
   if(!me || !me->parent())
     return;
 
-  me->parent()->del(me->name());
+  //me->parent()->del(me->name());
+  deleteMe(me);
 
+}
+
+void MemoryWrapper::deleteMe(MEWrapper *me)
+{
+  if(me)
+  {
+    auto parent = me->parent();
+
+    auto s = getStack();
+    if(s) {
+      DelCommand *cmd = new DelCommand(this, parent, me->name());
+      s->push(cmd);
+      return;
+    }
+
+    ChangeEvent ev;
+    ev.type = EMemoryChange::mcDel;
+    ev.me = me;
+    ev.parent = me->parent();
+    ev.row = me->getIndex();
+    //ev.count = me->count();
+
+    auto me1 = me->getMe();
+    me->clearR(me1);
+    parent->getMe()->Del(me1);
+
+    doChange(ev);
+  }
 }
 
 MEWrapper *MemoryWrapper::getME()
@@ -276,6 +326,12 @@ void MemoryWrapper::setSelected(MEWrapper *me)
 MEWrapper *MemoryWrapper::getSelected()
 {
   return CreateMEW(mem_->getSelected());
+}
+
+void MemoryWrapper::createUndoStack()
+{
+  if(!stack_)
+    stack_ = new QUndoStack(this);
 }
 
 void MemoryWrapper::doChange(MEWrapper *me, EMemoryChange idMsg)
@@ -405,22 +461,8 @@ void MemoryWrapper::clearMeWrappers()
   map_mew_.clear();
 }
 
-bool MemoryWrapper::getCanUndo() const
-{
-  return canUndo_;
-}
-
-void MemoryWrapper::setCanUndo(bool canUndo)
-{
-  canUndo_ = canUndo;
-  if(!canUndo_)
-    delete stack_;
-}
-
 QUndoStack *MemoryWrapper::getStack()
 {
-  if(!stack_ && canUndo_)
-    stack_ = new QUndoStack(this);
   return stack_;
 }
 

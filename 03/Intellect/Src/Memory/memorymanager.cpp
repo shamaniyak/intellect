@@ -1,21 +1,37 @@
 #include "memorymanager.h"
 #include "tmemory.h"
 
+//  TMemoryManager
+
+MemoryWrapper *MemoryManager::globalMemory_ = nullptr;
+int MemoryManager::countLinksToGlobalMemory_= 0;
+
 MemoryManager::MemoryManager(QObject *parent) : QObject(parent)
 {
+  if(!globalMemory_) {
+    globalMemory_ = new MemoryWrapper();
+    globalMemory_->setObjectName("globalMemory");
+  }
+  ++countLinksToGlobalMemory_;
+}
 
+MemoryManager::~MemoryManager()
+{
+  --countLinksToGlobalMemory_;
+  if(countLinksToGlobalMemory_ == 0) {
+    delete globalMemory_;
+    globalMemory_ = nullptr;
+  }
 }
 
 MemoryWrapper *MemoryManager::Add(const QString &name)
 {
-  if(!map_mw_.contains(name)) {
-    //TMemory *M = new TMemory(name, this);
-    //map_mems_[name] = M;
-    map_mw_[name] = new MemoryWrapper(this);
+  auto mem = this->findChild<MemoryWrapper*>(name);
+  if(!mem) {
+    mem = new MemoryWrapper(this);
   }
 
-  //return map_mems_[name];
-  return map_mw_[name];
+  return mem;
 }
 
 MemoryWrapper *MemoryManager::Get(const QString &name)
@@ -25,10 +41,13 @@ MemoryWrapper *MemoryManager::Get(const QString &name)
 
 void MemoryManager::Del(const QString &name)
 {
-  if(map_mw_.contains(name)) {
-    //delete map_mems_[name];
-    //map_mems_.remove(name);
-    delete map_mw_[name];
-    map_mw_.remove(name);
+  auto mem = this->findChild<MemoryWrapper*>(name);
+  if(mem) {
+    delete mem;
   }
+}
+
+MemoryWrapper *MemoryManager::globalMemory()
+{
+  return globalMemory_;
 }

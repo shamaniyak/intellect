@@ -34,8 +34,8 @@ MainWindowEx::MainWindowEx(Intellect *i, QWidget *parent) :
 
 MainWindowEx::~MainWindowEx()
 {
-  intellect_->OM()->Del("TreeMemory");
-  intellect_->OM()->Del("TreeMenu");
+  intellect_->getOM()->Del("TreeMemory");
+  intellect_->getOM()->Del("TreeMenu");
 
   saveSettings();
 

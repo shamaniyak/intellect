@@ -2,6 +2,7 @@
 #include "talgorithm.h"
 
 TAlgorithm::TAlgorithm(QObject *parent) : QObject(parent),
+  MM_(new MemoryManager(this)),
   OM_(new ObjectManager(this)),
   PM_(new PluginManager(this))
 {
@@ -29,12 +30,17 @@ QObject *TAlgorithm::GetObject(const QString &name)
   return OM_->Get(name);
 }
 
-PluginManager *TAlgorithm::PM() const
+MemoryManager *TAlgorithm::getMM() const
+{
+    return MM_;
+}
+
+PluginManager *TAlgorithm::getPM() const
 {
     return PM_;
 }
 
-ObjectManager *TAlgorithm::OM() const
+ObjectManager *TAlgorithm::getOM() const
 {
     return OM_;
 }

@@ -90,13 +90,10 @@ TME *TME::Add(const QString &name)
   TME *me = nullptr;//Get(name);
   TMemory *m = this->mem();
 
-  //if(!me)
-  {
-    if(m){
-      idx = m->getWordIdx(name);
-      me = childs_.add(idx, /*m,*/ this);
-    }
+  if(m){
+    idx = m->getWordIdx(name);
   }
+  me = childs_.add(idx, this);
 
   return me;
 }
@@ -201,8 +198,10 @@ TME::Elements &TME::getElements()
 
 TMemory *TME::mem() const
 {
-  if(!parent_)
-    return ((TopME*)this)->mem();
+  if(!parent_) {
+    auto topMe = reinterpret_cast<const TopME*>(this);
+    return (topMe ? topMe->mem() : nullptr);
+  }
   else
     return parent_->mem();
 }
@@ -229,17 +228,6 @@ void TME::setParent(TME *parent)
 
     parent_ = parent;
   }
-
-//  if(!parent || parent == parent_)
-//    return;
-
-//  if(parent_)
-//     parent_->remove(this);
-
-//  parent->childs_.add(this);
-
-//  parent_ = parent;
-  //mem_ = parent->mem_;
 }
 
 TME::Elements::Elements()
@@ -252,7 +240,7 @@ TME *TME::Elements::add(int id, TME *parent)
   TME *me = nullptr;
   //if(id >=0)
   {
-    me = new TME(/*mem,*/ parent, id);
+    me = new TME(parent, id);
     items_.push_back(me);
   }
   return me;
@@ -288,8 +276,6 @@ TME *TME::Elements::get_by_id_name(int id) const
       return me;
     }
   }
-//  if( items_.contains(id) )
-//    me = items_[id];
   return me;
 }
 

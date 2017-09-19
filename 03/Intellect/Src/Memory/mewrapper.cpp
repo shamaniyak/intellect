@@ -65,6 +65,10 @@ void MEWrapper::setMem(MemoryWrapper *mem)
 
 void MEWrapper::deleteMe(MEWrapper *me)
 {
+  if(mem_)
+    mem_->deleteMe(me);
+  return;
+
   if(me && mem_ && me_)
   {
     ChangeEvent ev;
@@ -79,13 +83,6 @@ void MEWrapper::deleteMe(MEWrapper *me)
     me_->Del(me1);
 
     mem_->doChange(ev);
-    //mem_->DeleteMEW(me->me_);
-    // из-за того что мы не можем обращатьс€ к самому элементу, т. к. он удален,
-    // то мы просто обновл€ем его владельца
-    //mem_->doChange(this, EMemoryChange::mcUpdate);
-    //mem_->mem_->setChanged(true);
-
-    //mem_->setSelected(this);
   }
 }
 

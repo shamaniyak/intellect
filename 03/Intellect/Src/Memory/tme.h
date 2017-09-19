@@ -26,7 +26,7 @@ public:
   struct Elements
   {
     Elements();
-    TME * add(int id, /*TAbstractMemory *mem,*/ TME *parent);
+    TME * add(int id, TME *parent);
     void add(TME *me);
     int count() const;
     TME *get(int i) const;
@@ -36,16 +36,15 @@ public:
     int get_index(const TME *me) const;
     bool move(int from, int to);
 
-    void load(QDataStream &ds, /*TAbstractMemory *mem,*/ TME *parent);
+    void load(QDataStream &ds, TME *parent);
     void save(QDataStream &ds) const;
 
   private:
     elements_vec items_;
-    //elements_map items_;
   };
 
   TME();
-  TME(/*Memory::TAbstractMemory *mem,*/ TME *parent, int id_name=-1, QVariant val=0);
+  TME(TME *parent, int id_name=-1, QVariant val=0);
   TME(const TME &me);
   ~TME();
 
@@ -89,9 +88,8 @@ protected:
   void remove(const TME *me);
 
 private:
-  int id_name_ = -1;
+  int id_name_ = -1;// Любой айди или айди имени в общем массиве слов
   TMEValue val_;
-  //TMemory *mem_ = nullptr;
   TME *parent_ = nullptr;
   Elements childs_;
 };
@@ -103,14 +101,13 @@ private:
 class TopME : public TME
 {
 public:
+  TopME() {}
   TopME(TMemory * mem) : mem_(mem)
   {
 
   }
-  TMemory *mem() const
-  {
-    return mem_;
-  }
+  TMemory *mem() const { return mem_; }
+  void setMem(TMemory *m) { mem_ = m; }
 private:
   TMemory *mem_ = nullptr;
 };

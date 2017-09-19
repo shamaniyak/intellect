@@ -678,7 +678,7 @@ void Backup::setPathAndName()
 
   name_ = fileInfo.fileName();
   path_ = fileInfo.absolutePath();
-  path_ += "/bkp/";
+  path_ += "/bkp/" + name_ + "/";
 }
 
 void Backup::loadFileList()
@@ -702,6 +702,5 @@ bool Backup::loadFile()
 
   return false;
 }
-
 
 }

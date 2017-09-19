@@ -25,5 +25,7 @@ int main(int argc, char *argv[])
 
     delete w;// просмоторщики должны удалиться раньше модели
 
+    delete pI;
+
     return result;
 }

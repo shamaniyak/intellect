@@ -36,6 +36,8 @@ struct ChangeEvent
   int count = 0;
   int first = 0;
   int last = 0;
+  QString prevName;
+  QVariant prevVal;
 };
 
 class MemoryWrapper : public QObject//QMemoryModel
@@ -71,16 +73,15 @@ public:
   void setSelected(MEWrapper *me);
   MEWrapper *getSelected();
 
+  void createUndoStack();
   QUndoStack *getStack();
-
-  bool getCanUndo() const;
-  void setCanUndo(bool canUndo);
 
 signals:
   // посылается перед удалением
   //before_change(MEWrapper *me, EMemoryChange idMsg);
   on_change(MEWrapper *me, EMemoryChange idMsg);
   change(const ChangeEvent &ev);
+  change1(const TME &ev);
 
 public slots:
 
@@ -89,6 +90,7 @@ public slots:
   bool addFrom(MEWrapper *parent, MEWrapper *mefrom, bool recurs);
   // Удалить элемент памяти
   void del(const QString &path);
+  void deleteMe(MEWrapper *me);
 
   MEWrapper *get(const QString &path);
   MEWrapper *getById(uint id);
@@ -118,13 +120,16 @@ protected:
 
 private:
   typedef QMap<Memory::TME*, MEWrapper*> t_mapMeWrappers;
+  typedef QMultiMap<QString, MEWrapper*> t_multiMapMeWrappers;
   typedef std::vector<MEWrapper*> t_vecMeWrappers;
 
   std::shared_ptr<Memory::TMemory> mem_;
   t_mapMeWrappers map_mew_;  // Обертки над TME
+  // Каждому имени сопоставлен список элементов
+  t_multiMapMeWrappers elements_;
   t_vecMeWrappers deleted_; // Список удаленных
   QUndoStack *stack_ = nullptr;
-  bool canUndo_ = false;
+  std::shared_ptr<Memory::TMemory> memUndo_;
 
   friend class MEWrapper;
 };

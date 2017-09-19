@@ -2,6 +2,8 @@
 #define TALGORITHM_H
 
 #include <QObject>
+//#include "tmemory.h"
+#include "memorymanager.h"
 #include "objectmanager.h"
 #include "pluginmanager.h"
 
@@ -9,8 +11,9 @@
 class TAlgorithm : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY(QObject* OM READ OM)
-  Q_PROPERTY(QObject* PM READ PM)
+  Q_PROPERTY(QObject* MM READ getMM)
+  Q_PROPERTY(QObject* OM READ getOM)
+  Q_PROPERTY(QObject* PM READ getPM)
 
 public:
   explicit TAlgorithm(QObject *parent = 0);
@@ -23,9 +26,11 @@ public:
   // Вернет false, если имя не задано или существует, иначе true.
   bool addObject(QObject *obj, const QString &name);
 
-  ObjectManager *OM() const;
+  ObjectManager *getOM() const;
 
-  PluginManager *PM() const;
+  PluginManager *getPM() const;
+
+  MemoryManager *getMM() const;
 
 signals:
   void addResult(const QString &str);
@@ -36,8 +41,9 @@ public slots:
 
 
 private:
+  MemoryManager *MM_ = 0;
   ObjectManager *OM_ = 0;// Мэнеджер объектов
-  PluginManager *PM_;  // Мэнеджер плагинов
+  PluginManager *PM_ = 0;  // Мэнеджер плагинов
 };
 
 #endif // TALGORITHM_H

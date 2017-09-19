@@ -30,7 +30,7 @@ DialogMemoryEditor::~DialogMemoryEditor()
   if(intellect_)
   {
     // удалим свои объекты скриптов
-    intellect_->OM()->Del("Editor");
+    intellect_->getOM()->Del("Editor");
 
     disconnect(intellect_, &TAlgorithm::addResult, this, &DialogMemoryEditor::on_addResult);
     disconnect(intellect_->obj()->mem(), &MemoryWrapper::on_change, this, &DialogMemoryEditor::memory_change);

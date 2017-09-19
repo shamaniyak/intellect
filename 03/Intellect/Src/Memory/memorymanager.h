@@ -10,6 +10,9 @@ class MemoryManager : public QObject
   Q_OBJECT
 public:
   explicit MemoryManager(QObject *parent = 0);
+  ~MemoryManager();
+
+  static MemoryWrapper *globalMemory();
 
 signals:
 
@@ -19,8 +22,9 @@ public slots:
   void Del(const QString &name);
 
 private:
-  //QMap<QString, TMemory*> map_mems_;
-  QMap<QString, MemoryWrapper*> map_mw_;
+  static MemoryWrapper *globalMemory_;
+  static int countLinksToGlobalMemory_;
+
 };
 
 #endif // MEMORYMANAGER_H

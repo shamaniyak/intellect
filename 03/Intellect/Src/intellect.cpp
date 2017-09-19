@@ -8,13 +8,16 @@ Intellect::Intellect(QObject *parent):
   TAlgorithm(parent),
   WM_(new WindowManager(this))
 {
+  QString fname = QApplication::applicationDirPath() + "/globalMemory.moi";
+  getMM()->globalMemory()->open(fname);
+
   obj_ = dynamic_cast<IObject*>(GetObject("Intellect"));
   //obj_->mem()->setAutosave(true);
 
   obj_->addObject(this, "II");
 
   // Открыть файл памяти
-  QString fname = QApplication::applicationDirPath() + "/memory.moi";
+  fname = QApplication::applicationDirPath() + "/memory.moi";
   obj_->mem()->open(fname);
 
   // Добавить элементы памяти
@@ -27,14 +30,19 @@ Intellect::Intellect(QObject *parent):
   if(val != newVal)
     obj_->mem()->getME()->setVal(newVal);
 
-  connect(OM(), &ObjectManager::signalAddObject, this, &Intellect::on_addObject);
+  connect(getOM(), &ObjectManager::signalAddObject, this, &Intellect::on_addObject);
   connect(this, &TAlgorithm::start, this, &Intellect::on_start);
 }
 
 Intellect::~Intellect()
 {
-  disconnect(OM(), &ObjectManager::signalAddObject, this, &Intellect::on_addObject);
+  disconnect(getOM(), &ObjectManager::signalAddObject, this, &Intellect::on_addObject);
   disconnect(this, &TAlgorithm::start, this, &Intellect::on_start);
+
+  //QString fname = QApplication::applicationDirPath() + "/globalMemory.moi";
+  getMM()->globalMemory()->clear();
+  //MM()->globalMemory()->setFilePath(fname);
+  getMM()->globalMemory()->save();
 }
 
 IObject* Intellect::obj() const
@@ -75,9 +83,9 @@ QString Intellect::compileText(const QString &str)
 
 int Intellect::loadPlugins()
 {
-  PM()->loadPlugins();
+  getPM()->loadPlugins();
 
-  return PM()->count();
+  return getPM()->count();
 }
 
 void Intellect::addPlugin(QObject *obj)
@@ -101,7 +109,7 @@ void Intellect::event(QObject *obj, QEvent *ev)
 
 void Intellect::stop()
 {
-  this->OM()->abort();
+  this->getOM()->abort();
 }
 
 void Intellect::on_start()
@@ -138,7 +146,7 @@ bool Intellect::keyEvent(QObject *obj, QEvent *ev)
     }
   }
 
-  IObject *o = qobject_cast<IObject*>( OM()->Get("KeyManager") );
+  IObject *o = qobject_cast<IObject*>( getOM()->Get("KeyManager") );
   if(o)
   {
     o->mem()->add(nullptr, "key")->setVal(kev->key());
