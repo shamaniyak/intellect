@@ -3,6 +3,6 @@ TEMPLATE = subdirs
 SUBDIRS += \
     ../Intellect \
     ../Plugins/Multimedia \
-    ../Plugins/SppzCartography \
+    ../Plugins/Cartography \
     ../Plugins/SppzClassifierToQt \
     ../Plugins/SppzSituationToQt
