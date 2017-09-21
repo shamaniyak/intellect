@@ -303,6 +303,10 @@ QScriptValue ChangeEventToScriptValue(QScriptEngine *engine, ChangeEvent const &
                   QScriptValue::ReadOnly|QScriptValue::Undeletable);
   obj.setProperty("row", in.row,
                   QScriptValue::ReadOnly|QScriptValue::Undeletable);
+  obj.setProperty("prevName", in.prevName,
+                  QScriptValue::ReadOnly|QScriptValue::Undeletable);
+  obj.setProperty("prevVal", engine->newVariant(in.prevVal),
+                  QScriptValue::ReadOnly|QScriptValue::Undeletable);
   return obj;
 }
 

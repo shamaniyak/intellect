@@ -1,16 +1,17 @@
 #include "memorywrapper.h"
 #include "tmemory.h"
+#include "memorymanager.h"
 
 #include <QUndoStack>
 
 class BaseCommand : public QUndoCommand
 {
 public:
-  explicit BaseCommand(MemoryWrapper *m, QUndoCommand *parent = Q_NULLPTR) :
-    QUndoCommand(parent), m_(m) {}
-  explicit BaseCommand(MemoryWrapper *m, const QString &text, QUndoCommand *parent = Q_NULLPTR) :
-    QUndoCommand(text, parent), m_(m) {}
-  virtual ~BaseCommand() {}
+  explicit BaseCommand(MemoryWrapper *m, QUndoCommand *parent = Q_NULLPTR) : QUndoCommand(parent),
+    m_(m) {  }
+  explicit BaseCommand(MemoryWrapper *m, const QString &text, QUndoCommand *parent = Q_NULLPTR) : QUndoCommand(text, parent),
+    m_(m) {  }
+  virtual ~BaseCommand() {  }
 
 protected:
   MemoryWrapper *m_ = nullptr;
@@ -20,118 +21,172 @@ class AddCommand : public BaseCommand
 {
   // QUndoCommand interface
 public:
-  AddCommand(MemoryWrapper *m, MEWrapper *parent, const QString &name) :
-    BaseCommand(m, "Add"), parent_(parent), name_(name) {}
+  AddCommand(MemoryWrapper *m, MEWrapper *parent, const QString &name, bool checkExist) :
+    BaseCommand(m, "Add"),
+    parent_(parent), name_(name), checkExist_(checkExist) {   }
+
   virtual void undo() override
   {
-    m_->doChange(m_->CreateMEW(newMe_), mcDel);
-    parent_->getMe()->Del(newMe_);
+    m_->deleteMe1(newMe_);
   }
   virtual void redo() override
   {
-    newMe_ = parent_->getMe()->Add(name_);
-    m_->doChange(m_->CreateMEW(newMe_), mcAdd);
+    newMe_ = m_->add1(parent_, name_, checkExist_);
   }
 
-  Memory::TME *newMe() const { return newMe_; }
+  MEWrapper *newMe() const { return newMe_; }
 
 private:
   MEWrapper *parent_ = nullptr;
   QString name_;
-  Memory::TME *newMe_ = nullptr;
+  bool checkExist_ = true;
+  MEWrapper *newMe_ = nullptr;
 };
 
 class AddFromCommand : public BaseCommand
 {
-  // QUndoCommand interface
 public:
+  AddFromCommand(MemoryWrapper *m, MEWrapper *parent, MEWrapper *from, bool recurs) : BaseCommand(m, "AddFrom"),
+    parent_(parent), from_(from), recurs_(recurs)
+  {
+    auto items = from_->getMe()->getElements();
+    int cnt = items.count();
+    for(int i = 0; i < cnt; ++i)
+      list_ << items.get(i)->name();
+  }
+
   virtual void undo() override
   {
+    foreach (auto name, list_) {
+      parent_->del(name);
+    }
   }
   virtual void redo() override
   {
+    m_->addFrom1(parent_->getMe(), from_->getMe(), recurs_);
   }
+
+private:
+  MEWrapper *parent_ = nullptr;
+  MEWrapper *from_ = nullptr;
+  bool recurs_ = true;
+  QStringList list_;
 };
 
 class DelCommand : public BaseCommand
 {
 public:
-  DelCommand(MemoryWrapper *m, MEWrapper *parent, const QString &name) :
-    BaseCommand(m, "Del"), parent_(parent), name_(name) {}
+  DelCommand(MemoryWrapper *m, MEWrapper *me) : BaseCommand(m, "Del"),
+    me_(me), parent_(me->parent()), name_(me->name()), index_(me->getIndex())
+  {
+    buf_.setMem(m->mem_.get());
+    buf_.addFrom(me_->getMe(), true);
+  }
 
   virtual void undo() override
   {
+    me_ = m_->add1(parent_, name_, false);
+    m_->move(me_, parent_, index_);
+    m_->addFrom1(me_->getMe(), &buf_, true);
   }
   virtual void redo() override
   {
-    ChangeEvent ev;
-    ev.type = EMemoryChange::mcDel;
-    ev.me = parent_->get(name_);
-    ev.parent = parent_;
-    ev.row = ev.me->getIndex();
-    ev.first = ev.me->getIndex();
-    ev.last = ev.first;
-    //ev.count = ev.me->count();
-
-    auto me1 = ev.me->getMe();
-    ev.me->clearR(me1);
-    parent_->getMe()->Del(me1);
-
-    m_->doChange(ev);
+    m_->deleteMe1(me_);
   }
 
 private:
+  MEWrapper *me_ = nullptr;
   MEWrapper *parent_ = nullptr;
   QString name_;
-  Memory::TMemory buf_;
+  int index_;
+  Memory::TopME buf_;
 };
 
 class EditNameCommand : public BaseCommand
 {
-  // QUndoCommand interface
 public:
+  EditNameCommand(MemoryWrapper *m, MEWrapper *me, const QString &name) :
+    BaseCommand(m, "EditName"), me_(me), newName_(name), oldName_(me->name())
+  {  }
+
   virtual void undo() override
   {
+    me_->setName(oldName_);
   }
   virtual void redo() override
   {
+    me_->setName(newName_);
   }
+
+private:
+  MEWrapper *me_ = nullptr;
+  QString newName_, oldName_;
 };
 
 class EditValCommand : public BaseCommand
 {
-  // QUndoCommand interface
 public:
+  EditValCommand(MemoryWrapper *m, MEWrapper *me, const QVariant &val) :
+    BaseCommand(m, "EditVal"), me_(me), newVal_(val), oldVal_(me->val())
+  {  }
+
   virtual void undo() override
   {
+    me_->setVal(oldVal_);
   }
   virtual void redo() override
   {
+    me_->setVal(newVal_);
   }
+
+private:
+  MEWrapper *me_ = nullptr;
+  QVariant newVal_, oldVal_;
 };
 
 class ClearCommand : public BaseCommand
 {
-  // QUndoCommand interface
 public:
+  ClearCommand(MemoryWrapper *m, MEWrapper *me) : BaseCommand(m, "Clear"),
+    me_(me)
+  {
+    buf_.setMem(m->mem_.get());
+    buf_.addFrom(me_->getMe(), true);
+  }
+
   virtual void undo() override
   {
+    m_->addFrom1(me_->getMe(), &buf_, true);
   }
   virtual void redo() override
   {
+    m_->clearMe1(me_);
   }
+
+private:
+  MEWrapper *me_ = nullptr;
+  Memory::TopME buf_;
 };
 
 class MoveCommand : public BaseCommand
 {
-  // QUndoCommand interface
 public:
+  MoveCommand(MemoryWrapper *m, MEWrapper *me, int index) : BaseCommand(m, "Move"),
+    me_(me), newIndex_(index), oldIndex_(me->getIndex())
+  {}
+
   virtual void undo() override
   {
+    m_->move1(me_, me_->parent(), oldIndex_);
   }
   virtual void redo() override
   {
+    m_->move1(me_, me_->parent(), newIndex_);
   }
+
+private:
+  MEWrapper *me_ = nullptr;
+  int newIndex_, oldIndex_;
 };
 
 //  MemoryWrapper
@@ -150,32 +205,16 @@ MemoryWrapper::~MemoryWrapper()
 
 MEWrapper *MemoryWrapper::add(MEWrapper *parent, const QString &name, bool checkExist)
 {
-  if(!parent)
-    parent = getME();
-
   MEWrapper *me = nullptr;
-
-  auto meParent = parent->getMe();
-  if(!meParent)
-    return me;
-
-  if(!name.isEmpty() && checkExist)
-    me = parent->get(name);
-
-  if(!me)
+  auto s = getStack();
+  if(s) {
+    AddCommand *cmd = new AddCommand(this, parent, name, checkExist);
+    s->push(cmd);
+    me = cmd->newMe();
+  }
+  else
   {
-    auto s = getStack();
-    if(s) {
-      AddCommand *cmd = new AddCommand(this, parent, name);
-      s->push(cmd);
-      me = CreateMEW(cmd->newMe());
-    }
-    else
-    {
-      me = CreateMEW(meParent->Add(name));
-      if(me)
-        doChange(me, EMemoryChange::mcAdd);
-    }
+    me = add1(parent, name, checkExist);
   }
 
   return me;
@@ -183,16 +222,27 @@ MEWrapper *MemoryWrapper::add(MEWrapper *parent, const QString &name, bool check
 
 bool MemoryWrapper::addFrom(MEWrapper *parent, MEWrapper *mefrom, bool recurs)
 {
-  if(!mefrom)
-    return false;
+  bool  res = false;
 
   if(!parent)
     parent = getME();
 
-  bool res = mem_->addFrom(parent->me_, mefrom->me_, recurs);
+  if(parent && mefrom)
+    res = addFrom1(parent->me_, mefrom->me_, recurs);
+
+  return res;
+}
+
+bool MemoryWrapper::addFrom1(Memory::TME *parent, Memory::TME *mefrom, bool recurs)
+{
+  if(!mefrom || ! parent)
+    return false;
+
+  bool res = parent->addFrom(mefrom, recurs);
 
   if(res)
-    doChange(parent, EMemoryChange::mcAddFrom);
+    doChange(CreateMEW(parent), EMemoryChange::mcAddFrom);
+    //doChange(getById((uint)parent), EMemoryChange::mcAddFrom);
 
   return res;
 }
@@ -213,14 +263,22 @@ void MemoryWrapper::deleteMe(MEWrapper *me)
 {
   if(me)
   {
-    auto parent = me->parent();
-
     auto s = getStack();
     if(s) {
-      DelCommand *cmd = new DelCommand(this, parent, me->name());
+      DelCommand *cmd = new DelCommand(this, me);
       s->push(cmd);
       return;
     }
+
+    deleteMe1(me);
+  }
+}
+
+void MemoryWrapper::deleteMe1(MEWrapper *me)
+{
+  if(me)
+  {
+    auto parent = me->parent();
 
     ChangeEvent ev;
     ev.type = EMemoryChange::mcDel;
@@ -345,7 +403,7 @@ void MemoryWrapper::doChange(MEWrapper *me, EMemoryChange idMsg)
       //mem_->save();//будем сохранять каждое изменение
   }
 
-  if(mem_->canChange()) {
+  if(canChange_) {
     emit on_change(me, idMsg);
 
     ChangeEvent ev;
@@ -369,7 +427,7 @@ void MemoryWrapper::doChange(const ChangeEvent &ev)
       //mem_->save();//будем сохранять каждое изменение
   }
 
-  if(mem_->canChange()) {
+  if(canChange_) {
     emit on_change(ev.me, ev.type);
 
     emit change(ev);
@@ -379,13 +437,53 @@ void MemoryWrapper::doChange(const ChangeEvent &ev)
 void MemoryWrapper::clear()
 {
   setSelected(getME());
-  getSelected()->clear();
+  clearMe(getSelected());
   //mem_->clear();
 
   //doChange(getME(), EMemoryChange::mcClear);
 }
 
+void MemoryWrapper::clearMe(MEWrapper *me)
+{
+  clearMe1(me);
+}
+
+void MemoryWrapper::clearR(Memory::TME *me)
+{
+  DeleteMEW(me);
+
+  Memory::TME::Elements &childs = me->getElements();
+  for(int i = 0, cnt = childs.count(); i <cnt; ++i)
+  {
+    auto me1 = childs.get(i);
+    clearR(me1);
+  }
+
+  me->clear();
+}
+void MemoryWrapper::clearMe1(MEWrapper *me)
+{
+  if(me && me->getMe()) {
+    doChange(me, EMemoryChange::mcClear);
+
+    Memory::TME::Elements &childs = me->getMe()->getElements();
+    int cnt = childs.count();
+    for(int i = 0; i <cnt; ++i)
+    {
+      clearR(childs.get(i));
+    }
+    me->getMe()->clear();
+  }
+}
+
 bool MemoryWrapper::move(MEWrapper *me, MEWrapper *parent, int pos)
+{
+
+
+  return move1(me, parent, pos);
+}
+
+bool MemoryWrapper::move1(MEWrapper *me, MEWrapper *parent, int pos)
 {
   if(!me || !parent)
     return false;
@@ -402,12 +500,12 @@ bool MemoryWrapper::move(MEWrapper *me, MEWrapper *parent, int pos)
 
 bool MemoryWrapper::getCanChange() const
 {
-  return mem_->canChange();
+  return canChange_;
 }
 
 void MemoryWrapper::setCanChange(bool val)
 {
-  mem_->setCanChange(val);
+  canChange_ = val;
 }
 
 bool MemoryWrapper::changed() const
@@ -459,6 +557,38 @@ void MemoryWrapper::clearMeWrappers()
   }
 
   map_mew_.clear();
+}
+
+MEWrapper *MemoryWrapper::add1(MEWrapper *parent, const QString &name, bool checkExist)
+{
+  if(!parent)
+    parent = getME();
+
+  MEWrapper *me = nullptr;
+
+  auto meParent = parent->getMe();
+  if(!meParent)
+    return me;
+
+  if(!name.isEmpty() && checkExist)
+    me = parent->get(name);
+
+  if(!me)
+  {
+    me = CreateMEW(meParent->Add(name));
+    if(me) {
+      doChange(me, EMemoryChange::mcAdd);
+
+//      Memory::TopME meEvent;
+//      meEvent.setMem(this->mem_.get());
+//      meEvent.Add("type")->setVal("Add");
+//      meEvent.Add("me")->setVal(me->getPath());
+
+//      emit change1(meEvent);
+    }
+  }
+
+  return me;
 }
 
 QUndoStack *MemoryWrapper::getStack()

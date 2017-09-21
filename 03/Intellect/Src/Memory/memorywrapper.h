@@ -81,7 +81,7 @@ signals:
   //before_change(MEWrapper *me, EMemoryChange idMsg);
   on_change(MEWrapper *me, EMemoryChange idMsg);
   change(const ChangeEvent &ev);
-  change1(const TME &ev);
+  change1(const Memory::TME &ev);
 
 public slots:
 
@@ -103,6 +103,7 @@ public slots:
   void doChange(MEWrapper *me, EMemoryChange idMsg);
 
   void clear();
+  void clearMe(MEWrapper *me);
 
   bool move(MEWrapper *me, MEWrapper *parent, int pos);
 
@@ -118,6 +119,13 @@ protected:
   void clearDeleted();
   void clearMeWrappers();
 
+  MEWrapper* add1(MEWrapper *parent, const QString &name, bool checkExist = true);
+  bool addFrom1(Memory::TME *parent, Memory::TME *mefrom, bool recurs);
+  void deleteMe1(MEWrapper *me);
+  void clearR(Memory::TME *me);
+  void clearMe1(MEWrapper *me);
+  bool move1(MEWrapper *me, MEWrapper *parent, int pos);
+
 private:
   typedef QMap<Memory::TME*, MEWrapper*> t_mapMeWrappers;
   typedef QMultiMap<QString, MEWrapper*> t_multiMapMeWrappers;
@@ -130,8 +138,14 @@ private:
   t_vecMeWrappers deleted_; // Список удаленных
   QUndoStack *stack_ = nullptr;
   std::shared_ptr<Memory::TMemory> memUndo_;
+  bool canChange_ = true;
 
   friend class MEWrapper;
+  friend class AddCommand;
+  friend class DelCommand;
+  friend class AddFromCommand;
+  friend class ClearCommand;
+  friend class MoveCommand;
 };
 //
 Q_DECLARE_METATYPE(MemoryWrapper*)

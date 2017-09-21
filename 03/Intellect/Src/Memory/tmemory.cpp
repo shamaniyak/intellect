@@ -41,15 +41,9 @@ void TAbstractMemory::clear()
 //  return *this;
 //}
 
-bool TAbstractMemory::canChange() const
-{
-  return can_change_;
-}
 
-void TAbstractMemory::setCanChange(bool canChange)
-{
-  can_change_ = canChange;
-}
+
+
 
 TME *TAbstractMemory::createNew(TME *parent, int count)
 {
@@ -290,28 +284,26 @@ bool TMemory::addFrom(TME *parent, TME *mefrom, bool recurs)
   if(!parent)
     parent = getTopME();
 
-  setCanChange(false);
+  return parent->addFrom(mefrom, recurs);
 
-  auto elements = mefrom->getElements();
-  for(int i =0; i <elements.count(); ++i)
-  {
-    auto me1 = elements.get(i);
-    //auto me2 = parent->Get(me1->name());
-    auto me2 = add(parent, me1->name());// parent->Add(me1->name());
-    if(me2)
-    {
-      me2->setVal(me1->val());
+//  auto elements = mefrom->getElements();
+//  for(int i =0; i <elements.count(); ++i)
+//  {
+//    auto me1 = elements.get(i);
+//    //auto me2 = parent->Get(me1->name());
+//    auto me2 = add(parent, me1->name());// parent->Add(me1->name());
+//    if(me2)
+//    {
+//      me2->setVal(me1->val());
 
-      if(recurs)
-        addFromRecurse(me2, me1);
-    }
-  }
+//      if(recurs)
+//        addFromRecurse(me2, me1);
+//    }
+//  }
 
-  setCanChange(true);
+//  res = true;
 
-  res = true;
-
-  return res;
+//  return res;
 }
 
 bool TMemory::del(const QString &path)

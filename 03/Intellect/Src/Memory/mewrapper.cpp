@@ -34,6 +34,8 @@ void MEWrapper::clearR(Memory::TME *me)
 
 void MEWrapper::clear()
 {
+//  if(mem_)
+//    mem_->clearMe(this);
   if(mem_ && me_) {
     mem_->doChange(this, EMemoryChange::mcClear);
 
@@ -42,7 +44,6 @@ void MEWrapper::clear()
     for(int i = 0; i <cnt; ++i)
     {
       clearR(childs.get(i));
-      //mem_->DeleteMEW(childs.get(i));
     }
     me_->clear();
   }
@@ -97,13 +98,19 @@ void MEWrapper::setName(const QString &name)
 {
   if(!me_)
     return;
-  if(name == this->name())
+
+  ChangeEvent ev;
+  ev.me = this;
+  ev.prevName = this->name();
+
+  if(name == ev.prevName)
     return;
 
   me_->setName(name);
 
   if(mem_) {
     mem_->doChange(this, EMemoryChange::mcEditName);
+    mem_->doChange(ev);
   }
 }
 
@@ -118,13 +125,18 @@ void MEWrapper::setVal(const QVariant &val)
 {
   if(!me_)
     return;
-  if(val == this->val())
+  ChangeEvent ev;
+  ev.me = this;
+  ev.prevVal = this->val();
+
+  if(val == ev.prevVal)
     return;
 
   me_->setVal(val);
 
   if(mem_) {
     mem_->doChange(this, EMemoryChange::mcEditVal);
+    mem_->doChange(ev);
   }
 }
 
@@ -156,7 +168,14 @@ MEWrapper *MEWrapper::add(const QString &name, bool checkExist)
 //    }
 //  }
 
-//  return me;
+  //  return me;
+}
+
+bool MEWrapper::addFrom(MEWrapper *from, bool recurs)
+{
+  if(mem_)
+    return mem_->addFrom(this, from, recurs);
+  return false;
 }
 
 MEWrapper *MEWrapper::get(const QString &name)

@@ -98,6 +98,32 @@ TME *TME::Add(const QString &name)
   return me;
 }
 
+bool TME::addFrom(TME *mefrom, bool recurs)
+{
+  bool res = false;
+  if(!mefrom)
+    return res;
+
+  auto elements = mefrom->getElements();
+  for(int i =0; i <elements.count(); ++i)
+  {
+    auto me1 = elements.get(i);
+    //auto me2 = parent->Get(me1->name());
+    auto me2 = Add(me1->name());
+    if(me2)
+    {
+      me2->setVal(me1->val());
+
+      if(recurs)
+        res = me2->addFrom(me1, recurs);
+    }
+  }
+
+  res = true;
+
+  return res;
+}
+
 TME *TME::Get(const QString &name)
 {
   int idx =-1;

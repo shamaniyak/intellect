@@ -40,9 +40,6 @@ public:
   bool getChanged() const;
   void setChanged(bool getChanged);
 
-  bool canChange() const;
-  void setCanChange(bool canChange);
-
   TME * createNew(TME *parent=nullptr, int count = 1);
 
 protected:
@@ -58,7 +55,6 @@ protected:
 private:
   TME *selected_ = nullptr;
   bool changed_ = false;
-  bool can_change_ = true;
   QMutex mtx_;
   ElementsManager em_;
 };

@@ -63,6 +63,7 @@ public:
   QString getPath() const;
 
   TME *Add(const QString &name);
+  bool addFrom(TME *mefrom, bool recurs);
   TME *Get(const QString &name);
   bool Del(const QString &name);
   bool Del(TME *me);

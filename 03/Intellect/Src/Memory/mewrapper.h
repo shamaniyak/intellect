@@ -40,6 +40,7 @@ public:
   QString getPath() const;
 
   MEWrapper *add(const QString &name, bool checkExist = true);
+  bool addFrom(MEWrapper *from, bool recurs = true);
 
   MEWrapper *get(const QString &name);
   MEWrapper *getByI(int i);
@@ -65,8 +66,6 @@ private:
   MemoryWrapper *mem_;
 
   void clearR(Memory::TME *me);
-
-  friend class DelCommand;
 };
 
 //Q_DECLARE_METATYPE(MEWrapper)
