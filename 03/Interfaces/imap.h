@@ -8,18 +8,13 @@
 
 // Интерфейс работы с картой
 // Используется для поключения к myDMapView различных реализаций функций работы с картой
-class Q_DECL_EXPORT IMap
+class IMap
 {
     //Q_DECLARE_TR_FUNCTIONS(IMap)
 public:
-    
-    virtual ~IMap()
-    {
-    }
-
 
     // ПЕРЕВОД КООРДИНАТ
-    
+
     // Перевод геодезических координат  в координаты прямоугольной плоской системы
     virtual void BL_XmYm(double B, double L, double& Xm, double& Ym) = 0;
     // Перевод координат из плоской прямоугольной системы в геодезические
@@ -28,9 +23,9 @@ public:
     virtual void XY_XmYm(double X, double Y, double& Xm, double& Ym) = 0;
     // Перевод координат из плоской прямоугольной системы в пиксели картинки
     virtual void XmYm_XY(double Xm, double Ym, double& X, double& Y) = 0;
-    
+
     // ПОЛУЧЕНИЕ ДАННЫХ С КАРТЫ
-    
+
     // Получение высоты в точке по прямоугольным координатам
     virtual double getHeight_XmYm(double Xm, double Ym) = 0;
 
@@ -39,9 +34,9 @@ public:
 
     // Содержит ли карта матрицу высот
     virtual bool isMtrExist() = 0;
-    
+
     // ЗАГРУЗКА ИСХОДНЫХ ДАННЫХ
-    
+
     // Открыть карту по имени файла
     virtual bool setMap(QString mapName) = 0;
     // Получить имя открытой карты
@@ -50,9 +45,9 @@ public:
     virtual void setMapMtr(QString mtrName) = 0;
     // Открыть карту мира
     virtual void openWorld() = 0;
-    
+
     // НАСТРОЙКА ПАРАМЕТРОВ ОТОБРАЖЕНИЯ КАРТЫ
-    
+
     // Установить уровень яркости карты (-16  16)
     virtual void setMapBright(long int value) = 0;
     // Получить уровень яркости
@@ -90,21 +85,21 @@ public:
     // Получить признак видимости объекта по внутреннему коду
     virtual bool isObjectSelected(long inCode) = 0;
     // Получить имя слоя по индексу
-    virtual QString getMapLayerName(int index) = 0; 
+    virtual QString getMapLayerName(int index) = 0;
     // Получить имя объекта по индексу
     virtual QString getMapObjectName(int index) = 0;
-    // Получить имя видимого слоя по индексу видимых слоев    
-    virtual QString getMapVisibleLayerName(int index) = 0; 
+    // Получить имя видимого слоя по индексу видимых слоев
+    virtual QString getMapVisibleLayerName(int index) = 0;
     // Получить имя видимого объекта по индексу видимых слоев
     virtual QString getMapVisibleObjectName(int index) = 0;
-    // Получить количество всех слоев    
-    virtual int getLayersCount() = 0; 
-    // Получить количество видимых слоев    
-    virtual int getVisibleLayersCount() = 0; 
+    // Получить количество всех слоев
+    virtual int getLayersCount() = 0;
+    // Получить количество видимых слоев
+    virtual int getVisibleLayersCount() = 0;
     // Получить количество видимых объектов
     virtual int getVisibleObjectsCount() = 0;
-    // Применить изменения связанные со слоями к открытой карте    
-    virtual void setViewSelect() = 0;    
+    // Применить изменения связанные со слоями к открытой карте
+    virtual void setViewSelect() = 0;
     // Получить количество объектов карты
     virtual int getObjectsCount() = 0;
     // Получить количество объектов карты в слое
@@ -117,12 +112,12 @@ public:
     virtual int getLayerIndex(long inCode) = 0;
     //Получить внутренние номера всех объектов слоя
     virtual QList<long> getLayerObjectsCodes(int layerIndex) = 0;
-    
+
     // ОТРИСОВКА
-    
+
     // Получить размеры изображения карты
     virtual void getMapImageSize(long int& width, long int& height) = 0;
-    
+
     // Получить изображение карты
     virtual long int getImageMap(int left, int top, int width, int height, QImage &_image) = 0;
 
