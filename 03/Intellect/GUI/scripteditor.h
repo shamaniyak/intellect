@@ -3,17 +3,22 @@
 
 #include <QObject>
 #include <QPlainTextEdit>
+#include <QCompleter>
+
 #include <memorywrapper.h>
 
 class Highlighter;
 class Intellect;
+class Completer;
+class QMemoryModel;
 
 class ScriptEditor : public QPlainTextEdit
 {
   Q_OBJECT
 
 public:
-  ScriptEditor(QWidget *parent = 0);
+  explicit ScriptEditor(QWidget *parent = 0);
+  ~ScriptEditor();
 
   MemoryWrapper *mem() const;
   void setMem(MemoryWrapper *mem);
@@ -31,6 +36,7 @@ protected:
   void timerEvent(QTimerEvent *);
   void keyPressEvent(QKeyEvent * kev);
   void resizeEvent(QResizeEvent *event);
+  void mousePressEvent(QMouseEvent *event);
 
   void checkForSave();
   void save();
@@ -44,6 +50,8 @@ private slots:
   void updateLineNumberAreaWidth(int newBlockCount);
   void highlightCurrentLine();
   void updateLineNumberArea(const QRect &rect, int dy);
+  void insertCompletion(const QString&);
+  void performCompletion();
 
 private:
   Highlighter *h_ = 0;
@@ -51,7 +59,8 @@ private:
   MemoryWrapper *mem_ = 0;
   MEWrapper *sel_ = 0;
   int timerId_ = 0;
-  QWidget *lineNumberArea_;
+  QWidget *lineNumberArea_ = 0;
+  Completer *completer = 0;
 
   void showVal();
   void disconnectMem();
@@ -76,6 +85,31 @@ protected:
 
 private:
   ScriptEditor *codeEditor;
+};
+
+
+class QStringListModel;
+
+class Completer : public QCompleter
+{
+public:
+  Completer(QPlainTextEdit *parent = nullptr);
+
+public:
+  void performCompletion();
+  void keyPressEvent(QKeyEvent *event);
+  void mousePressEvent(QMouseEvent *event);
+
+protected:
+  void performCompletion(const QString &completionPrefix);
+  void populateModel(const QString &completionPrefix);
+  void insertCompletion(const QString &completion, bool singleWord);
+  bool handledCompletedAndSelected(QKeyEvent *event);
+
+private:
+  bool completedAndSelected = false;
+  QStringListModel *model = nullptr;
+  QPlainTextEdit *editor = nullptr;
 };
 
 #endif // SCRIPTEDITOR_H

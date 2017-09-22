@@ -4,8 +4,8 @@
 #include "logview.h"
 #include "scripteditor.h"
 #include "memorytreeview.h"
-#include <intellect.h>
-//#include "windowmanager.h"
+#include "intellect.h"
+#include "menu.h"
 
 MainWindowEx::MainWindowEx(Intellect *i, QWidget *parent) :
   QMainWindow(parent),
@@ -28,7 +28,7 @@ MainWindowEx::MainWindowEx(Intellect *i, QWidget *parent) :
   //
   loadSettings();
   //
-  //createActions();
+  createActions();
   //createToolBar();
 }
 
@@ -51,7 +51,7 @@ void MainWindowEx::initIntellect()
   // Добавить скриптовые объекты
   intellect_->addObject(treeView_, "TreeMemory");
   intellect_->addObject(treeView_->pmenu(), "TreeMenu");
-  intellect_->addObject(scriptEditor_, "Editor");
+  //intellect_->addObject(scriptEditor_, "Editor");
 }
 
 void MainWindowEx::loadPlugins()
@@ -84,16 +84,6 @@ bool MainWindowEx::canClose()
   return true;
 }
 
-void MainWindowEx::createMemoryView()
-{
-  // Дерево памяти
-  treeView_ = new MemoryTreeView();
-  treeView_->setMem(intellect_->obj()->mem());
-  // новая вкладка для дерева
-  auto wgt = createNewDockWidget(treeView_);
-  wgt->setWindowTitle(tr("Память"));
-}
-
 void MainWindowEx::createBaseEditor()
 {
   if(!intellect_)
@@ -107,27 +97,43 @@ void MainWindowEx::createBaseEditor()
   //wgt->setWindowTitle(tr("База знаний"));
 }
 
+void MainWindowEx::createMemoryView()
+{
+  // Дерево памяти
+  treeView_ = new MemoryTreeView();
+  treeView_->setMem(intellect_->obj()->mem());
+  // новая вкладка для дерева
+  treeDockWidget_ = createNewDockWidget(treeView_, false);
+  treeDockWidget_->setWindowTitle(tr("Память"));
+}
+
 void MainWindowEx::createLogView()
 {
   auto log = new LogView();
   log->setAlg(intellect_);
-  auto wgt = static_cast<QDockWidget*>( createNewDockWidget(log) );
+  logDockWidget_ = createNewDockWidget(log, false);
+  auto wgt = static_cast<QDockWidget*>(logDockWidget_);
   wgt->setWindowTitle(tr("Лог"));
   addDockWidget(Qt::BottomDockWidgetArea, wgt);
 }
 
 void MainWindowEx::createScriptEditor()
 {
-  scriptEditor_ = new ScriptEditor();
+  scriptEditor_ = new ScriptEditor(this);
   scriptEditor_->setIntellect(intellect_);
   scriptEditor_->setMem(intellect_->obj()->mem());
-  auto wgt = createNewDoc(scriptEditor_);
-  wgt->setWindowTitle(tr("Редактор"));
+
+  editorDocWidget_ = createNewDoc(scriptEditor_, false);
+  editorDocWidget_->setWindowTitle(tr("Редактор"));
 }
 
 void MainWindowEx::createActions()
 {
-
+//  Menu* menu = new Menu();
+//  menu->setTitle("NewMenu");
+//  addMenu(menu);
+//  if(menu)
+//    menu->createAction("newAction");
 }
 
 void MainWindowEx::createToolBar()
@@ -146,16 +152,17 @@ void MainWindowEx::createToolBar()
 }
 
 
-QWidget *MainWindowEx::createNewDoc(QWidget *wgt)
+QWidget *MainWindowEx::createNewDoc(QWidget *wgt, bool deleteOnClose)
 {
   //QWidget *wgt = new QWidget;
   if(!wgt)
     return nullptr;
 
   QMdiSubWindow *sw = ui->mdiArea->addSubWindow(wgt);
-  wgt->setAttribute(Qt::WA_DeleteOnClose);
-  wgt->setWindowTitle("New");
-  wgt->showMaximized();
+  wgt->setAttribute(Qt::WA_DeleteOnClose, deleteOnClose);
+  sw->setAttribute(Qt::WA_DeleteOnClose);
+  sw->setWindowTitle("New");
+  sw->showMaximized();
 
   auto list = ui->mdiArea->findChildren<QTabBar*>();
   for(auto &x: list)
@@ -164,13 +171,13 @@ QWidget *MainWindowEx::createNewDoc(QWidget *wgt)
   return sw;
 }
 
-QWidget *MainWindowEx::createNewDockWidget(QWidget *wgt)
+QWidget *MainWindowEx::createNewDockWidget(QWidget *wgt, bool deleteOnClose)
 {
   if(!wgt)
     return nullptr;
   QDockWidget *pdoc = new QDockWidget("New", this);
-  pdoc->setAttribute(Qt::WA_DeleteOnClose);
   pdoc->setWidget(wgt);
+  pdoc->setAttribute(Qt::WA_DeleteOnClose, deleteOnClose);
   addDockWidget(Qt::LeftDockWidgetArea, pdoc);
 
   return pdoc;
@@ -187,6 +194,51 @@ QObject *MainWindowEx::getToolBar(const QString &name)
 {
   auto tb = this->findChild<QToolBar*>(name);
   return tb;
+}
+
+QWidget *MainWindowEx::getMenuBar()
+{
+  return menuBar();
+}
+
+QObject *MainWindowEx::addMenu(const QString &name)
+{
+  auto menu = new Menu();
+  menu->setTitle(name);
+  addMenu(menu);
+  return menu;
+}
+
+void MainWindowEx::addMenu(QObject *menu)
+{
+  auto pmenu = qobject_cast<QMenu*>(menu);
+  if(pmenu) {
+    ui->menubar->addMenu(pmenu);
+  }
+}
+
+QObject *MainWindowEx::getMenu(const QString &name)
+{
+  auto menu = menuBar()->findChild<QMenu*>(name);
+  return menu;
+}
+
+void MainWindowEx::showMemoryView(bool show)
+{
+  treeDockWidget_->setVisible(show);
+}
+
+void MainWindowEx::showEditor(bool show)
+{
+  if(!show)
+    editorDocWidget_->close();
+  else
+    createScriptEditor();
+}
+
+void MainWindowEx::showLogView(bool show)
+{
+  logDockWidget_->setVisible(show);
 }
 
 void MainWindowEx::on_action_triggered()

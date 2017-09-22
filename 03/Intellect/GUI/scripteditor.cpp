@@ -2,9 +2,16 @@
 #include "scripteditor.h"
 
 #include <intellect.h>
+#include "qmemorymodel.h"
 
+#include <QtDebug>
 #include <QMessageBox>
 #include <QPainter>
+#include <QShortcut>
+#include <QtAlgorithms>
+#include <QStringListModel>
+#include <QAbstractItemView>
+#include <QScrollBar>
 
 ScriptEditor::ScriptEditor(QWidget *parent) : QPlainTextEdit(parent),
   h_(new Highlighter(this->document()))
@@ -26,12 +33,26 @@ ScriptEditor::ScriptEditor(QWidget *parent) : QPlainTextEdit(parent),
 
   lineNumberArea_ = new LineNumberArea(this);
 
-  connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
-  connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
-  connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
+  completer = new Completer(this);
+
+  connect(this, SIGNAL(blockCountChanged(int)),
+          this, SLOT(updateLineNumberAreaWidth(int)));
+  connect(this, SIGNAL(updateRequest(QRect,int)),
+          this, SLOT(updateLineNumberArea(QRect,int)));
+  connect(this, SIGNAL(cursorPositionChanged()),
+          this, SLOT(highlightCurrentLine()));
+  connect(completer, SIGNAL(activated(const QString&)),
+          this, SLOT(insertCompletion(const QString&)));
+  new QShortcut(QKeySequence(tr("Ctrl+Space", "Complete")),
+                this, SLOT(performCompletion()));
 
   updateLineNumberAreaWidth(0);
   highlightCurrentLine();
+}
+
+ScriptEditor::~ScriptEditor()
+{
+  qDebug() << "ScriptEditor::~ScriptEditor()";
 }
 
 MemoryWrapper *ScriptEditor::mem() const
@@ -105,6 +126,8 @@ void ScriptEditor::keyPressEvent(QKeyEvent *kev)
     }
   }
 
+  completer->keyPressEvent(kev);
+
   QPlainTextEdit::keyPressEvent(kev);
 }
 
@@ -114,6 +137,13 @@ void ScriptEditor::resizeEvent(QResizeEvent *e)
 
   QRect cr = contentsRect();
   lineNumberArea_->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+}
+
+void ScriptEditor::mousePressEvent(QMouseEvent *event)
+{
+  completer->mousePressEvent(event);
+
+  QPlainTextEdit::mousePressEvent(event);
 }
 
 void ScriptEditor::checkForSave()
@@ -245,6 +275,16 @@ void ScriptEditor::updateLineNumberArea(const QRect &rect, int dy)
     updateLineNumberAreaWidth(0);
 }
 
+void ScriptEditor::insertCompletion(const QString &)
+{
+
+}
+
+void ScriptEditor::performCompletion()
+{
+  completer->performCompletion();
+}
+
 Intellect *ScriptEditor::intellect() const
 {
   return intellect_;
@@ -317,4 +357,120 @@ void ScriptEditor::showVal()
   //updateLineNumberArea(contentsRect(), 0);
 
   this->blockSignals(false);
+}
+
+//  Completer
+
+Completer::Completer(QPlainTextEdit *parent) : QCompleter(parent),
+  editor(parent)
+{
+  model = new QStringListModel(this);
+
+  setWidget(parent);
+  setCompletionMode(QCompleter::PopupCompletion);
+  setModel(model);
+  setModelSorting(QCompleter::CaseInsensitivelySortedModel);
+  setCaseSensitivity(Qt::CaseInsensitive);
+  setWrapAround(true);
+}
+
+void Completer::performCompletion()
+{
+  QTextCursor cursor = editor->textCursor();
+  cursor.select(QTextCursor::WordUnderCursor);
+  const QString completionPrefix = cursor.selectedText();
+  bool notEmpty = !completionPrefix.isEmpty();
+  bool canPerform = notEmpty && completionPrefix.at(completionPrefix.length() - 1).isLetter();
+  if (canPerform)
+    performCompletion(completionPrefix);
+}
+
+void Completer::performCompletion(const QString &completionPrefix)
+{
+  populateModel(completionPrefix);
+
+  if (completionPrefix != this->completionPrefix()) {
+    this->setCompletionPrefix(completionPrefix);
+    this->popup()->setCurrentIndex(this->completionModel()->index(0, 0));
+  }
+
+  if (completionCount() == 1)
+    insertCompletion(currentCompletion(), true);
+  else {
+    QRect rect = editor->cursorRect();
+    int newWidth = popup()->sizeHintForColumn(0) + popup()->verticalScrollBar()->sizeHint().width();
+    rect.setWidth(newWidth);
+    complete(rect);
+  }
+}
+
+bool caseInsensitiveLessThan(const QString &a, const QString &b)
+{
+  return a.compare(b, Qt::CaseInsensitive) < 0;
+}
+
+void Completer::populateModel(const QString &completionPrefix)
+{
+  QStringList strings = editor->toPlainText().split(QRegExp("\\W+"));
+  strings.removeAll(completionPrefix);
+  strings.removeDuplicates();
+  qSort(strings.begin(), strings.end(), caseInsensitiveLessThan);
+  model->setStringList(strings);
+}
+
+void Completer::insertCompletion(const QString &completion, bool singleWord)
+{
+  QTextCursor cursor = editor->textCursor();
+  int numberOfCharsToComplete = completion.length() -
+      this->completionPrefix().length();
+  int insertionPosition = cursor.position();
+  cursor.insertText(completion.right(numberOfCharsToComplete));
+  if (singleWord) {
+    cursor.setPosition(insertionPosition);
+    cursor.movePosition(QTextCursor::EndOfWord, QTextCursor::KeepAnchor);
+    completedAndSelected = true;
+  }
+  editor->setTextCursor(cursor);
+}
+
+void Completer::keyPressEvent(QKeyEvent *event)
+{
+  if (completedAndSelected && handledCompletedAndSelected(event))
+    return;
+  completedAndSelected = false;
+  if (popup()->isVisible()) {
+    switch (event->key()) {
+      case Qt::Key_Up: // Проваливаемся
+      case Qt::Key_Down: // Проваливаемся
+      case Qt::Key_Enter: // Проваливаемся
+      case Qt::Key_Return: // Проваливаемся
+      case Qt::Key_Escape: event->ignore(); return;
+      default: popup()->hide(); break;
+    }
+  }
+}
+
+bool Completer::handledCompletedAndSelected(QKeyEvent *event)
+{
+  completedAndSelected = false;
+  QTextCursor cursor = editor->textCursor();
+  switch (event->key()) {
+    case Qt::Key_Enter: // Проваливаемся
+    case Qt::Key_Return: cursor.clearSelection(); break;
+    case Qt::Key_Escape: cursor.removeSelectedText(); break;
+    default: return false;
+  }
+  editor->setTextCursor(cursor);
+  event->accept();
+  return true;
+}
+
+void Completer::mousePressEvent(QMouseEvent */*event*/)
+{
+  if (completedAndSelected) {
+    completedAndSelected = false;
+    QTextCursor cursor = editor->textCursor();
+    cursor.removeSelectedText();
+    editor->setTextCursor(cursor);
+  }
 }

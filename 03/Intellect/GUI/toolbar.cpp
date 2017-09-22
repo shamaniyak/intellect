@@ -16,7 +16,7 @@ QObject *ToolBar::createAction(const QString &name)
 
 QObject *ToolBar::getAction(const QString &name)
 {
-  return findChild<QToolBar*>(name);
+  return findChild<QAction*>(name);
 }
 
 void ToolBar::clear()

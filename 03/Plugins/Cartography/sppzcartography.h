@@ -15,6 +15,8 @@ public:
   explicit SppzCartography(QObject *parent=0);
   virtual ~SppzCartography();
 
+  virtual void release() { delete this; }
+
   void initLibrary();
 
   // IMap interface

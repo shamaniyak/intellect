@@ -27,7 +27,10 @@ public:
   }
 
 protected:
-  QObject *createMapIntegration();
+
+private:
+  QObject *map_ = nullptr;
+  QWidget *w_ = nullptr;
 };
 
 #endif // CARTOGRAPHY_H

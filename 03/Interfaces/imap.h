@@ -10,8 +10,9 @@
 // Используется для поключения к myDMapView различных реализаций функций работы с картой
 class IMap
 {
-    //Q_DECLARE_TR_FUNCTIONS(IMap)
+
 public:
+  virtual void release() = 0;
 
     // ПЕРЕВОД КООРДИНАТ
 

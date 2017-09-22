@@ -67,7 +67,8 @@ SOURCES += Src/main.cpp \
     GUI/filedialog.cpp \
     GUI/MemoryView/memoryeditordelegate.cpp \
     Test/TestSppzCartography/testsppzcartography.cpp \
-    Src/Memory/memorymanager.cpp
+    Src/Memory/memorymanager.cpp \
+    GUI/menu.cpp
 
 HEADERS  += \
     Src/scriptwrapper.h \
@@ -113,7 +114,8 @@ HEADERS  += \
     GUI/filedialog.h \
     GUI/MemoryView/memoryeditordelegate.h \
     Test/TestSppzCartography/testsppzcartography.h \
-    Src/Memory/memorymanager.h
+    Src/Memory/memorymanager.h \
+    GUI/menu.h
 
 FORMS    += \
     GUI/dialogmemoryeditor.ui \

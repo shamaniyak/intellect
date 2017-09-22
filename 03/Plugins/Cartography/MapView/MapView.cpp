@@ -13,6 +13,7 @@
 #include <QFile>
 #include <QGraphicsPixmapItem>
 #include <QtDebug>
+#include <cartographymap.h>
 
 #include "imap.h"
 #include "version.h"
@@ -41,7 +42,7 @@ int GetMaxDistanceToDraw(int scale)
   return maxDistance/scaleDivider;
 }
 
-myDMapView :: myDMapView(QWidget *parent) : QGraphicsView(parent), mapLogic(NULL)
+myDMapView :: myDMapView(QWidget *parent) : QGraphicsView(parent), map_(NULL)
 {
   this->setObjectName("MapView");
   //viewport()->setMouseTracking(true);
@@ -79,7 +80,16 @@ myDMapView :: ~myDMapView()
 
 void myDMapView :: setMapLogic(IMap* map)
 {
-  mapLogic = map;
+  map_ = map;
+}
+
+void myDMapView::setMap(CartographyMap *map)
+{
+  if(map)
+  {
+    setMapLogic(map->map());
+    connect(map, &CartographyMap::changed, this, &myDMapView::on_change);
+  }
 }
 
 // ПЕРЕВОД КООРДИНАТ
@@ -117,7 +127,7 @@ void myDMapView :: BL_XY(double B, double L, int* X, int* Y)
   *Y = (int) tempY;
 }
 
-// перевод координат из пикселей картинки карты в геодезические	
+// перевод координат из пикселей картинки карты в геодезические
 void myDMapView :: XY_BL(int X, int Y, double* B, double* L)
 {
   XY_BL((double) X, (double) Y, *B, *L);
@@ -126,9 +136,9 @@ void myDMapView :: XY_BL(int X, int Y, double* B, double* L)
 //перевод геодезических координат  в координаты прямоугольной плоской системы
 void myDMapView :: BL_XmYm(double B, double L, double& Xm, double& Ym)
 {
-  assert(mapLogic != NULL && "BL_XmYm");
+  assert(map_ != NULL && "BL_XmYm");
 
-  mapLogic->BL_XmYm(B, L, Xm, Ym);
+  map_->BL_XmYm(B, L, Xm, Ym);
 }
 
 
@@ -138,9 +148,9 @@ void myDMapView :: BL_XmYm(double B, double L, double& Xm, double& Ym)
 // перевод координат из плоской прямоугольной системы в геодезические
 void myDMapView :: XmYm_BL(double Xm, double Ym, double& B, double& L)
 {
-  assert(mapLogic != NULL && "XmYm_BL");
+  assert(map_ != NULL && "XmYm_BL");
 
-  mapLogic->XmYm_BL(Xm, Ym, B, L);
+  map_->XmYm_BL(Xm, Ym, B, L);
 
   if( L > (M_PI-VERY_SMALL_VALUE) )
     L = L - 2*M_PI;
@@ -150,18 +160,18 @@ void myDMapView :: XmYm_BL(double Xm, double Ym, double& B, double& L)
 // перевод координат из пикселей картинки в координаты плоской прямоугольной системы
 void myDMapView :: XY_XmYm(double X, double Y, double& Xm, double& Ym)
 {
-  assert(mapLogic != NULL && "XY_XmYm");
+  assert(map_ != NULL && "XY_XmYm");
 
-  mapLogic->XY_XmYm(X, Y, Xm, Ym);
+  map_->XY_XmYm(X, Y, Xm, Ym);
 }
 //--------------------------------------------------------------------------------------------
 
 // перевод координат из плоской прямоугольной ситсемы в пиксели картинки
 void myDMapView :: XmYm_XY(double Xm, double Ym, double& X, double& Y)
 {
-  assert(mapLogic != NULL && "XmYm_XY");
+  assert(map_ != NULL && "XmYm_XY");
 
-  mapLogic->XmYm_XY(Xm, Ym, X, Y);
+  map_->XmYm_XY(Xm, Ym, X, Y);
 }
 //--------------------------------------------------------------------------------------------
 
@@ -222,9 +232,9 @@ void myDMapView :: getHeight_BL(double B, double L, double* H)
 // Получение высоты в точке по прямоугольным координатам
 double myDMapView :: getHeight_XmYm(double Xm, double Ym)
 {
-  assert(mapLogic!=NULL && "getHeight_XmYm");
+  assert(map_!=NULL && "getHeight_XmYm");
 
-  return mapLogic->getHeight_XmYm(Xm, Ym);
+  return map_->getHeight_XmYm(Xm, Ym);
 }
 //--------------------------------------------------------------------------------------------
 
@@ -243,17 +253,17 @@ int myDMapView :: getMagneticAngle_BL(double B, double L, double &Ma)
 // Получение магнитного склонения
 bool myDMapView :: getMagneticAngle_BL(double B, double L, double* Ma)
 {
-  assert(mapLogic != NULL && "getMagneticAngle_BL");
+  assert(map_ != NULL && "getMagneticAngle_BL");
 
-  return mapLogic->getMagneticAngle_BL(B, L, Ma);
+  return map_->getMagneticAngle_BL(B, L, Ma);
 }
 //--------------------------------------------------------------------------------------------
 
 bool myDMapView :: isMtrExist()
 {
-  assert(mapLogic != NULL && "isMtrExist");
+  assert(map_ != NULL && "isMtrExist");
 
-  return mapLogic->isMtrExist();
+  return map_->isMtrExist();
 }
 
 //--------------------------------------------------------------------------------------------
@@ -263,28 +273,28 @@ bool myDMapView :: isMtrExist()
 // Открыть карту по имени файла
 void myDMapView :: SetMapFileName(QString mapName)
 {
-  assert(mapLogic != NULL && "SetMapFileName");
-  if (mapLogic->setMap(mapName))
+  assert(map_ != NULL && "SetMapFileName");
+  if (map_->setMap(mapName))
   {
     refreshSize();
     showMap();
   }
 }
-//--------------------------------------------------------------------------------------------     
+//--------------------------------------------------------------------------------------------
 
 // Получить имя открытой карты
 QString myDMapView::GetMapFileName()
 {
-  assert(mapLogic != NULL && "GetMapFileName");
+  assert(map_ != NULL && "GetMapFileName");
 
-  return mapLogic->getMapFileName();
+  return map_->getMapFileName();
 }
 //--------------------------------------------------------------------------------------------
 
 // Установить матрицу высот для открытой карты
 void myDMapView :: setMapMtr(QString mtrName)
 {
-  assert(mapLogic != NULL && "setMapMtr");
+  assert(map_ != NULL && "setMapMtr");
 
   //    if (TSystemSettings::getHeightMatrixType() == ReliefType_AltitudeElevation)
   //    {
@@ -297,12 +307,12 @@ void myDMapView :: setMapMtr(QString mtrName)
 }
 //--------------------------------------------------------------------------------------------
 
-// Открыть карту мира    
+// Открыть карту мира
 void myDMapView :: openWorld()
 {
-  assert(mapLogic != NULL && "openWorld");
+  assert(map_ != NULL && "openWorld");
 
-  mapLogic->openWorld();
+  map_->openWorld();
 
   //изменение размеров содержимого
   refreshSize();
@@ -329,61 +339,61 @@ bool myDMapView :: isWorldMapOpened()
 // Установить уровень яркости карты (-16  16)
 void myDMapView :: SetMapBright(long int value)
 {
-  assert(mapLogic != NULL && "SetMapBright");
+  assert(map_ != NULL && "SetMapBright");
 
-  mapLogic->setMapBright(value);
+  map_->setMapBright(value);
 }
 //--------------------------------------------------------------------------------------------
 
 // Получить уровень яркости
 long int myDMapView :: GetMapBright()
 {
-  assert(mapLogic !=NULL && "GetMapBright");
+  assert(map_ !=NULL && "GetMapBright");
 
-  return mapLogic->getMapBright();
+  return map_->getMapBright();
 }
 //--------------------------------------------------------------------------------------------
 
 // Установить уровень контраста изображения
 void myDMapView :: SetMapContrast(long int value)
 {
-  assert(mapLogic != NULL && "SetMapContrast");
+  assert(map_ != NULL && "SetMapContrast");
 
-  mapLogic->setMapContrast(value);
+  map_->setMapContrast(value);
 }
 //--------------------------------------------------------------------------------------------
 
-// Получить текущий уровень контраста 
+// Получить текущий уровень контраста
 long int myDMapView :: GetMapContrast()
 {
-  assert(mapLogic != NULL && "GetMapContrast");
+  assert(map_ != NULL && "GetMapContrast");
 
-  return mapLogic->getMapContrast();
+  return map_->getMapContrast();
 }
 //--------------------------------------------------------------------------------------------
 
-// Установить контурность изображения (true - значит контурная карта)    
+// Установить контурность изображения (true - значит контурная карта)
 void myDMapView :: SetMapContour(bool value)
 {
-  assert(mapLogic != NULL && "SetMapContour");
+  assert(map_ != NULL && "SetMapContour");
 
-  mapLogic->setMapContour(value);
+  map_->setMapContour(value);
 }
 //--------------------------------------------------------------------------------------------
 
-// Получить признак контурной карты (true - значит контурная)   
+// Получить признак контурной карты (true - значит контурная)
 bool myDMapView :: GetMapContour()
 {
-  assert(mapLogic != NULL && "GetMapContour");
+  assert(map_ != NULL && "GetMapContour");
 
-  return mapLogic->getMapContour();
+  return map_->getMapContour();
 }
 //--------------------------------------------------------------------------------------------
 
-// Установить масштаб отображения    
+// Установить масштаб отображения
 void myDMapView :: SetViewScale(float value)
 {
-  assert(mapLogic != NULL && "SetViewScale");
+  assert(map_ != NULL && "SetViewScale");
 
   long int X,Y;
 
@@ -393,7 +403,7 @@ void myDMapView :: SetViewScale(float value)
   X = _cw /2;
   Y = _ch /2;
 
-  mapLogic->setViewScale(X,Y,value);
+  map_->setViewScale(X,Y,value);
 
   //long int width, height;
   //mapLogic->getMapImageSize(width, height);
@@ -416,12 +426,12 @@ void myDMapView :: SetViewScale(float value)
 }
 //--------------------------------------------------------------------------------------------
 
-// Получить масштаб отображения  
+// Получить масштаб отображения
 int myDMapView :: GetViewScale()
 {
-  assert(mapLogic != NULL && "GetViewScale");
+  assert(map_ != NULL && "GetViewScale");
 
-  return mapLogic->getViewScale();
+  return map_->getViewScale();
 }
 
 
@@ -429,14 +439,21 @@ void myDMapView :: GetViewScaleForObjectShaper(int* scale)
 {
   *scale = GetViewScale();
 }
+
+void myDMapView::on_change()
+{
+  //изменение размеров содержимого
+  refreshSize();
+  showMap();
+}
 //--------------------------------------------------------------------------------------------
 
-// Получить масштаб карты 
+// Получить масштаб карты
 int myDMapView :: GetMapScale()
 {
-  assert(mapLogic != NULL && "GetMapScale");
+  assert(map_ != NULL && "GetMapScale");
 
-  return mapLogic->getMapScale();
+  return map_->getMapScale();
 }
 //--------------------------------------------------------------------------------------------
 //Увеличивает изображение на текущей карте в два раза
@@ -481,8 +498,8 @@ void myDMapView :: ZoomMapOut(double B, double L)
 //Получить текущий коэффициент увеличения
 double myDMapView :: GetMapZoom()
 {
-  double ms = mapLogic->getMapScale();
-  double vs = mapLogic->getViewScale();
+  double ms = map_->getMapScale();
+  double vs = map_->getViewScale();
   return(ms / vs);
 }
 
@@ -490,8 +507,8 @@ double myDMapView :: GetMapZoom()
 // Установить геодезические координаты центра отображаемой карты
 void myDMapView :: setMapCenter(double centerB, double centerL)
 {
-  assert(mapLogic != NULL && "GetMapScale");
-  mapLogic->setMapCenter(centerB, centerL);
+  assert(map_ != NULL && "GetMapScale");
+  map_->setMapCenter(centerB, centerL);
 
   double centreX, centreY;
   BL_XY(centerB, centerL, centreX, centreY);
@@ -513,7 +530,7 @@ void myDMapView :: getMapCenter(double& centerB, double& centerL)
 }
 //--------------------------------------------------------------------------------------------
 
-// Установить центр карты в центр экрана    
+// Установить центр карты в центр экрана
 void myDMapView :: setMapCenterToScreenCenter()
 {
   double dCenterB, dCenterL, dCenterX, dCenterY;
@@ -526,12 +543,12 @@ void myDMapView :: setMapCenterToScreenCenter()
 }
 //--------------------------------------------------------------------------------------------
 
-// Рассчитать геодезические координаты центра карты  
+// Рассчитать геодезические координаты центра карты
 void myDMapView :: calcCurrentCentreRegion(double &B, double &L)
 {
-  assert(mapLogic != NULL && "calcCurrentCentreRegion");
+  assert(map_ != NULL && "calcCurrentCentreRegion");
 
-  mapLogic->calcCurrentCentreRegion(B, L);
+  map_->calcCurrentCentreRegion(B, L);
 }
 //--------------------------------------------------------------------------------------------
 
@@ -542,13 +559,13 @@ void myDMapView :: SetMapLeftTop(int left, int top)
 }
 //--------------------------------------------------------------------------------------------
 
-// Получить текущие экранные координаты левого верхнего угла     
+// Получить текущие экранные координаты левого верхнего угла
 void myDMapView :: GetMapLeftTop(int * left, int * top)
 {
   //*left = contentsX();
   //*top = contentsY();
 }
-//--------------------------------------------------------------------------------------------   
+//--------------------------------------------------------------------------------------------
 void myDMapView :: GetMapRightBottom(int * right, int * bottom)
 {
   GetMapLeftTop(right, bottom);
@@ -578,177 +595,177 @@ void myDMapView :: setMapLeftTopBL(double B, double L)
   SetMapLeftTop(left, top);
 }
 
-//--------------------------------------------------------------------------------------------   
+//--------------------------------------------------------------------------------------------
 
-// Прочитать и применить настройки карты из файла (яркость, контраст, контур и слои) 
+// Прочитать и применить настройки карты из файла (яркость, контраст, контур и слои)
 void myDMapView :: readSettings(bool restoreSettings)
 {
-  assert(mapLogic != NULL && "readSettings");
-  mapLogic->readSettings(restoreSettings);
+  assert(map_ != NULL && "readSettings");
+  map_->readSettings(restoreSettings);
   // InvalidateTask("cartfunc"); //??? в рамках исправления ошибок 2012, 2027
 }
 //--------------------------------------------------------------------------------------------
 
-// Записать настройки карты в файл (яркость, контраст, контур и слои)   
+// Записать настройки карты в файл (яркость, контраст, контур и слои)
 void myDMapView :: writeSettings()
 {
-  assert(mapLogic != NULL && "writeSettings");
+  assert(map_ != NULL && "writeSettings");
 
-  mapLogic->writeSettings();
+  map_->writeSettings();
 }
 //--------------------------------------------------------------------------------------------
 
 // Записать настройки предыдущей карты в файл (яркость, контраст, контур и слои)
 void myDMapView :: writePreviousSettings()
 {
-  assert(mapLogic != NULL && "writePreviousSettings");
+  assert(map_ != NULL && "writePreviousSettings");
 
-  mapLogic->writePreviousSettings();
+  map_->writePreviousSettings();
 }
 //--------------------------------------------------------------------------------------------
 
-// Установить видимость слоя по индексу (после установок необходимо применить изменения setViewSelect() ) 
+// Установить видимость слоя по индексу (после установок необходимо применить изменения setViewSelect() )
 void myDMapView :: selectLayer(int index, bool selected)
 {
-  assert(mapLogic != NULL && "selectLayer");
+  assert(map_ != NULL && "selectLayer");
 
-  mapLogic->selectLayer(index, selected);
+  map_->selectLayer(index, selected);
 }
 //--------------------------------------------------------------------------------------------
 void myDMapView :: selectObject(long inCode, bool selected)
 {
-  assert(mapLogic != NULL && "selectObject");
+  assert(map_ != NULL && "selectObject");
 
-  mapLogic->selectObject(inCode, selected);
+  map_->selectObject(inCode, selected);
 }
 //--------------------------------------------------------------------------------------------
 
 // Получить признак видимости слоя по индексу
 bool myDMapView :: isLayerSelected(int index)
 {
-  assert(mapLogic != NULL && "isLayerSelected");
+  assert(map_ != NULL && "isLayerSelected");
 
-  return mapLogic->isLayerSelected(index);
+  return map_->isLayerSelected(index);
 }
 //--------------------------------------------------------------------------------------------
 bool myDMapView :: isObjectSelected(long inCode)
 {
-  assert(mapLogic != NULL && "isObjectSelected");
+  assert(map_ != NULL && "isObjectSelected");
 
-  return mapLogic->isObjectSelected(inCode);
+  return map_->isObjectSelected(inCode);
 }
 //--------------------------------------------------------------------------------------------
 
-// Получить количество всех слоев  
+// Получить количество всех слоев
 int myDMapView :: getLayersCount()
 {
-  assert(mapLogic != NULL && "getLayersCount");
+  assert(map_ != NULL && "getLayersCount");
 
-  return mapLogic->getLayersCount();
+  return map_->getLayersCount();
 }
 //--------------------------------------------------------------------------------------------
 
 // Получить количество объектов карты
 int myDMapView :: getObjectsCount()
 {
-  assert(mapLogic != NULL && "getObjectsCount");
+  assert(map_ != NULL && "getObjectsCount");
 
-  return mapLogic->getObjectsCount();
+  return map_->getObjectsCount();
 }
 
 int myDMapView :: getObjectsCountInLayer(int layerIndex)
 {
-  assert(mapLogic != NULL && "getObjectsCountInLayer");
+  assert(map_ != NULL && "getObjectsCountInLayer");
 
-  return mapLogic->getObjectsCountInLayer(layerIndex);
+  return map_->getObjectsCountInLayer(layerIndex);
 }
 
 //Получить имя объекта слоя по порядковому номеру
 QString myDMapView :: getLayerObjectName(int layerIndex, int objectIndex)
 {
-  assert(mapLogic != NULL && "getLayerObjectName");
+  assert(map_ != NULL && "getLayerObjectName");
 
-  return mapLogic->getLayerObjectName(layerIndex, objectIndex);
+  return map_->getLayerObjectName(layerIndex, objectIndex);
 }
 
 //Получить код объекта слоя по порядковому номеру
 long myDMapView :: getLayerObjectCode(int layerIndex, int objectIndex)
 {
-  assert(mapLogic != NULL && "getLayerObjectCode");
+  assert(map_ != NULL && "getLayerObjectCode");
 
-  return mapLogic->getLayerObjectCode(layerIndex, objectIndex);
+  return map_->getLayerObjectCode(layerIndex, objectIndex);
 }
 
 //Получить индекс слоя по номеру объекта
 int myDMapView :: getLayerIndex(long inCode)
 {
-  assert(mapLogic != NULL && "getLayerIndex");
+  assert(map_ != NULL && "getLayerIndex");
 
-  return mapLogic->getLayerIndex(inCode);
+  return map_->getLayerIndex(inCode);
 }
 
 //Получить внутренние номера всех объектов слоя
 QList<long> myDMapView :: getLayerObjectsCodes(int layerIndex)
 {
-  assert(mapLogic != NULL && "getLayerObjectsCodes");
+  assert(map_ != NULL && "getLayerObjectsCodes");
 
-  return mapLogic->getLayerObjectsCodes(layerIndex);
+  return map_->getLayerObjectsCodes(layerIndex);
 }
 
 // Получить имя слоя по индексу
 QString myDMapView :: getMapLayerName(int index)
 {
-  assert(mapLogic != NULL && "getMapLayerName");
+  assert(map_ != NULL && "getMapLayerName");
 
-  return mapLogic->getMapLayerName(index);
+  return map_->getMapLayerName(index);
 }
 //--------------------------------------------------------------------------------------------
 QString myDMapView :: getMapObjectName(int index)
 {
-  assert(mapLogic != NULL && "getMapObjectName");
+  assert(map_ != NULL && "getMapObjectName");
 
-  return mapLogic->getMapObjectName(index);
+  return map_->getMapObjectName(index);
 }
 //--------------------------------------------------------------------------------------------
 
-// Получить имя видимого слоя по индексу видимых слоев   
+// Получить имя видимого слоя по индексу видимых слоев
 QString myDMapView :: getMapVisibleLayerName(int index)
 {
-  assert(mapLogic != NULL && "getMapVisibleLayerName");
+  assert(map_ != NULL && "getMapVisibleLayerName");
 
-  return mapLogic->getMapVisibleLayerName(index);
+  return map_->getMapVisibleLayerName(index);
 }
 //--------------------------------------------------------------------------------------------
 QString myDMapView :: getMapVisibleObjectName(int index)
 {
-  assert(mapLogic != NULL && "getMapVisibleObjectName");
+  assert(map_ != NULL && "getMapVisibleObjectName");
 
-  return mapLogic->getMapVisibleObjectName(index);
+  return map_->getMapVisibleObjectName(index);
 }
 //--------------------------------------------------------------------------------------------
 
-// Получить количество видимых слоев    
+// Получить количество видимых слоев
 int myDMapView :: getVisibleLayersCount()
 {
-  assert(mapLogic != NULL && "getVisibleLayersCount");
+  assert(map_ != NULL && "getVisibleLayersCount");
 
-  return mapLogic->getVisibleLayersCount();
+  return map_->getVisibleLayersCount();
 }
 //--------------------------------------------------------------------------------------------
 int myDMapView :: getVisibleObjectsCount()
 {
-  assert(mapLogic != NULL && "getVisibleObjectsCount");
+  assert(map_ != NULL && "getVisibleObjectsCount");
 
-  return mapLogic->getVisibleObjectsCount();
+  return map_->getVisibleObjectsCount();
 }
 //--------------------------------------------------------------------------------------------
 
-// Применить изменения связанные со слоями к открытой карте    
+// Применить изменения связанные со слоями к открытой карте
 void myDMapView :: setViewSelect()
 {
-  assert(mapLogic != NULL && "setViewSelect");
+  assert(map_ != NULL && "setViewSelect");
 
-  mapLogic->setViewSelect();
+  map_->setViewSelect();
   Repaint();
 }
 //--------------------------------------------------------------------------------------------
@@ -759,8 +776,8 @@ void myDMapView :: setViewSelect()
 // Получить изображение карты
 long int myDMapView :: getImageMap(int left, int top, int width, int height, QImage& image)
 {
-  assert(mapLogic != NULL && "getImageMap");
-  return mapLogic->getImageMap(left, top, width, height, image);
+  assert(map_ != NULL && "getImageMap");
+  return map_->getImageMap(left, top, width, height, image);
 }
 //--------------------------------------------------------------------------------------------
 
@@ -928,7 +945,7 @@ void myDMapView :: DeleteTaskDraw(QString nameTask)
 }
 //--------------------------------------------------------------------------------------------
 
-// РАБОТА С МЫШКОЙ   
+// РАБОТА С МЫШКОЙ
 
 // Добавить или сделать текущей задачу работы с мышкой
 void myDMapView :: SetActiveMouseTask(QString value)
@@ -979,7 +996,7 @@ void myDMapView::drawContents(QPainter* p, int cx, int cy, int cw, int ch)
   long int w, h;
   int l = 0, t = 0;
 
-  mapLogic->getMapImageSize(w, h);
+  map_->getMapImageSize(w, h);
 
   if(w > _cw)
     l = (w - _cw) / 2;
@@ -1185,7 +1202,7 @@ void myDMapView :: keyPressEvent(QKeyEvent * keyEvent)
 
 void myDMapView::refreshSize()
 {
-  mapLogic->getMapImageSize(_cw, _ch);
+  map_->getMapImageSize(_cw, _ch);
 
   viewport()->resize(_cw, _ch);
 }

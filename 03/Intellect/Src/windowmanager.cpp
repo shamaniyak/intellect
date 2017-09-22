@@ -1,5 +1,6 @@
 #include "windowmanager.h"
 #include <QtWidgets>
+#include <menu.h>
 #include <toolbar.h>
 #include "filedialog.h"
 #include "memorytableview.h"
@@ -101,8 +102,15 @@ QObject *WindowManager::createToolBar(QWidget *parent)
 QObject *WindowManager::createFileDialog(QWidget *parent)
 {
   makeParent(parent);
-  auto *dlg = new FileDialog(parent);
+  auto dlg = new FileDialog(parent);
   return dlg;
+}
+
+QObject *WindowManager::createMenu(QWidget *parent)
+{
+  makeParent(parent);
+  Menu *menu = new Menu(parent);
+  return menu;
 }
 
 QObject *WindowManager::createMemoryView(QWidget *parent)

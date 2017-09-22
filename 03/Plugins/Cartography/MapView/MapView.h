@@ -13,6 +13,7 @@
 using namespace std;
 
 class IMap;
+class CartographyMap;
 
 const int MAXSCALE_40M = 40000000;
 const int MAX_ZOOM = 32;
@@ -88,11 +89,13 @@ class myDMapView : public QGraphicsView
   Q_OBJECT
 
 public:
-    
+
     explicit myDMapView(QWidget *parent = 0);
     ~myDMapView();
-    
+
+
     void setMapLogic(IMap* map);
+    void setMap(CartographyMap* map);
 
     // ПЕРЕВОД КООРДИНАТ
 
@@ -129,9 +132,9 @@ public:
 
     // Содержит ли карта матрицу высот
     bool isMtrExist();
-    
+
     // ЗАГРУЗКА ИСХОДНЫХ ДАННЫХ
-    
+
     // Открыть карту по имени файла
     void SetMapFileName(QString mapName);
     // Получить имя открытой карты
@@ -142,36 +145,10 @@ public:
     void openWorld();
     // Открыта ли текущей картой карта мира
     bool isWorldMapOpened();
-    
-    
+
+
     // НАСТРОЙКА ПАРАМЕТРОВ ОТОБРАЖЕНИЯ КАРТЫ
-    
-    // Установить уровень яркости карты (-16  16)
-    void SetMapBright(long int value);
-    // Получить уровень яркости
-    long int GetMapBright();
-    // Установить уровень контраста изображения
-    void SetMapContrast(long int value);
-    // Получить текущий уровень контраста
-    long int GetMapContrast();
-    // Установить контурность изображения (true - значит контурная карта)
-    void SetMapContour(bool value);
-    // Получить признак контурной карты (true - значит контурная)
-    bool GetMapContour();
-    // Установить масштаб отображения
-    void SetViewScale(float value);
-    // Получить масштаб отображения
-    int GetViewScale();
-    // Получить масштаб карты
-    int GetMapScale();
-    //Получить текущий коэффициент увеличения
-    double GetMapZoom();
-    //Увеличивает изображение на текущей карте в два раза
-    void ZoomMapIn(double B = 0, double L = 0);
-    //Уменьшает изображение на текущей карте в два раза
-    void ZoomMapOut(double B = 0, double L = 0);
-    // Установить геодезические координаты центра отображаемой карты
-    void setMapCenter(double centerB, double centerL);
+
     // Получить центр отображаемой карты в геодезических координатах
     void getMapCenter(double& centerB, double& centerL);
     // Установить центр карты в центр экрана
@@ -230,15 +207,15 @@ public:
     int getLayerIndex(long inCode);
     //Получить внутренние номера всех объектов слоя
     QList<long> getLayerObjectsCodes(int layerIndex);
-    
+
     // ОТРИСОВКА
-    
+
     // Получить изображение карты
     long int getImageMap(int left, int top, int width, int height, QImage& image);
-    
+
     // Получить текущее изображение
     QPixmap getCurrentPixmap();
-    
+
     // Перерисовать контент
     void Repaint();
 
@@ -253,7 +230,7 @@ public:
     // 2 - класс содержащий указатель на функцию отрисовки
     // 3 - вектор задач которые необходимо перерисовать при изменении отрисовки указанной задачи
     void SetDrawTask(QString ,TDrawData , vector<QString>);
-    
+
     // Выполнить задачу отрисовки (и связанные с ней)
     void DrawTask(QString);
     void InvalidateTask(QString);
@@ -270,7 +247,7 @@ public:
     void DeleteMouseTask(QString);
     // Существует ли задача мыши
     bool isMouseTaskExist(QString);
-    
+
     // РАБОТА С КЛАВИАТУРОЙ
     void grabMapViewKeyboard();
     void releaseMapViewKeyboard();
@@ -285,15 +262,47 @@ public slots:
     // Получение масштаба
     void GetViewScaleForObjectShaper(int*);
 
+    // НАСТРОЙКА ПАРАМЕТРОВ ОТОБРАЖЕНИЯ КАРТЫ
+
+    // Установить уровень яркости карты (-16  16)
+    void SetMapBright(long int value);
+    // Получить уровень яркости
+    long int GetMapBright();
+    // Установить уровень контраста изображения
+    void SetMapContrast(long int value);
+    // Получить текущий уровень контраста
+    long int GetMapContrast();
+    // Установить контурность изображения (true - значит контурная карта)
+    void SetMapContour(bool value);
+    // Получить признак контурной карты (true - значит контурная)
+    bool GetMapContour();
+    // Установить масштаб отображения
+    void SetViewScale(float value);
+    // Получить масштаб отображения
+    int GetViewScale();
+    // Получить масштаб карты
+    int GetMapScale();
+    //Получить текущий коэффициент увеличения
+    double GetMapZoom();
+    //Увеличивает изображение на текущей карте в два раза
+    void ZoomMapIn(double B = 0, double L = 0);
+    //Уменьшает изображение на текущей карте в два раза
+    void ZoomMapOut(double B = 0, double L = 0);
+    // Установить геодезические координаты центра отображаемой карты
+    void setMapCenter(double centerB, double centerL);
+
 signals:
-    
+
     void MouseDown(QString mouseTask, int x, int y, int X, int Y, double B, double L, double H, Qt::MouseButton btn, Qt::MouseButton btnState);
     void MouseMove(QString mouseTask, int x, int y, int X, int Y, double B, double L, double H, Qt::MouseButton btn, Qt::MouseButton btnState);
     void MouseUp(QString mouseTask, int x, int y, int X, int Y, double B, double L, double H, Qt::MouseButton btn, Qt::MouseButton btnState);
     void escPressedSignal();
-    
+
+protected slots:
+    void on_change();
+
 protected:
-    
+
     virtual void paintEvent(QPaintEvent *pe);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void mouseMoveEvent(QMouseEvent* e);
@@ -307,20 +316,20 @@ protected:
     void refreshSize();
 
     virtual void drawContents(QPainter* p, int cx, int cy, int cw, int ch);
-    
+
 private:
-    
+
     // Установить текущие экранные координаты левого верхнего угла
     void SetMapLeftTop(int left, int top);
 
     // Получить текущие экранные координаты правого нижнего угла
     void GetMapRightBottom(int * right, int * bottom);
-    
+
     // Выполнить задачу отрисовки (и связанные с ней
     void DrawTask(QString ,  set<QString >&, QPainter* );
-    
+
     // Логика работы с картой
-    IMap* mapLogic;
+    IMap* map_;
     // Сцена для отрисовки
     QGraphicsScene scene_;
     // Изображение карты

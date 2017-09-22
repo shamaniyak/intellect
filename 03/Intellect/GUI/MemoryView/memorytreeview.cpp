@@ -4,6 +4,7 @@
 #include "qmemorymodel.h"
 #include "qmemoryselectionmodel.h"
 
+#include <QtDebug>
 #include <QMenu>
 #include <QMouseEvent>
 #include <QHeaderView>
@@ -24,6 +25,7 @@ MemoryTreeView::MemoryTreeView(QWidget *parent):
 
 MemoryTreeView::~MemoryTreeView()
 {
+  qDebug() << "MemoryTreeView::~MemoryTreeView()";
   disconnectSlots();
 }
 

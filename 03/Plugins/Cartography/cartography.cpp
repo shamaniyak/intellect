@@ -1,7 +1,8 @@
 #include "cartography.h"
-#include "sppzcartography.h"
 #include "MapView/MapView.h"
+#include "cartographymap.h"
 
+#include <QLibrary>
 #include <QtDebug>
 
 Cartography::Cartography(QObject *parent) : QObject(parent)
@@ -11,21 +12,26 @@ Cartography::Cartography(QObject *parent) : QObject(parent)
 
 QObject *Cartography::createMap()
 {
-  //auto map = new SppzCartography(this);
-  auto map = createMapIntegration();
-  return map;
+  if(!map_) {
+    CartographyMap *cmap = new CartographyMap(this);
+    cmap->setObjectName("Map");
+    map_ = cmap;
+  }
+  return map_;
 }
 
 QWidget *Cartography::createMapView(QObject *map, QWidget *parent)
 {
-  auto w = new myDMapView(parent);
-  w->setMapLogic(qobject_cast<IMap*>(map));
-  w->openWorld();
+  if(!w_)
+  {
+    auto cmap = qobject_cast<CartographyMap*>(map);
 
-  return w;
-}
+    if(cmap) {
+      myDMapView *mv = new myDMapView(parent);
+      mv->setMap(cmap);
+      w_ = mv;
+    }
+  }
 
-QObject *Cartography::createMapIntegration()
-{
-
+  return w_;
 }

@@ -1,9 +1,16 @@
 #include "logview.h"
 #include "talgorithm.h"
 
+#include <QtDebug>
+
 LogView::LogView(QWidget *parent) : QPlainTextEdit(parent)
 {
 
+}
+
+LogView::~LogView()
+{
+  qDebug() << "LogView::~LogView()";
 }
 
 TAlgorithm *LogView::getAlg() const

@@ -1,17 +1,23 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include <QObject>
+#include <QMenu>
 
-class Menu : public QObject
+class Menu : public QMenu
 {
   Q_OBJECT
 public:
-  explicit Menu(QObject *parent = 0);
+  explicit Menu(QWidget *parent = 0);
 
 signals:
 
 public slots:
+  QObject *createAction(const QString &name);
+  QObject *getAction(const QString &name);
+  void clear();
+
+protected:
+
 };
 
 #endif // MENU_H

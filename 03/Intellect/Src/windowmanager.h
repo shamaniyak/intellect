@@ -36,6 +36,7 @@ public slots:
   QObject *createGraphicsView(QWidget *parent = 0);
   QObject *createToolBar(QWidget *parent = 0);
   QObject *createFileDialog(QWidget *parent = 0);
+  QObject *createMenu(QWidget *parent = 0);
 
   QObject * createMemoryView(QWidget *parent = 0);
   QObject * createMemoryEditor(QWidget *parent = 0);

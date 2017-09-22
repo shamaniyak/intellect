@@ -377,8 +377,9 @@ void MemoryWrapper::setSelected(MEWrapper *me)
 
   if(mem_->getSelected() != me->me_) {
     mem_->setSelected(me->me_);
-    doChange(me, EMemoryChange::mcSelect);
+
   }
+  doChange(me, EMemoryChange::mcSelect);
 }
 
 MEWrapper *MemoryWrapper::getSelected()
