@@ -1,31 +1,45 @@
 #include "intellect.h"
-#include "GUI/mainwindowex.h"
+#include "GUI/intellectmainwindowex.h"
 #include <QApplication>
 #include <Test/TestSppzCartography/testsppzcartography.h>
 
-int main(int argc, char *argv[])
+class Main
 {
-    QApplication a(argc, argv);
-
-    //TestSppzCartography test;
-
+public:
+  Main(QObject *parent)
+  {
     // создать модель
     // парент нам нужен для того, чтобы при уничтожении скрипта, не уничтожалась модель
-    Intellect *pI = new Intellect(&a);
+    pI = new Intellect(parent);
 
     // создать главное окно редактора
-    MainWindowEx *w = new MainWindowEx(pI);
+    w = new IntellectMainWindowEx(pI);
     w->showMaximized();
 
     emit pI->start();// запустить модель
+  }
 
-    int result = a.exec();
-
+  ~Main()
+  {
     pI->stop();
 
     delete w;// просмоторщики должны удалиться раньше модели
 
     delete pI;
+  }
+
+private:
+  Intellect *pI = nullptr;
+  IntellectMainWindowEx *w = nullptr;
+};
+
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+
+    Main main_(&a);
+
+    int result = a.exec();
 
     return result;
 }

@@ -33,8 +33,6 @@ IntellectMainWindowEx::~IntellectMainWindowEx()
   intellect_->getOM()->Del("TreeMenu");
 
   saveSettings();
-
-  delete ui;
 }
 
 void IntellectMainWindowEx::initIntellect()
@@ -146,78 +144,6 @@ void IntellectMainWindowEx::createToolBar()
   addToolBar(ptb);
 }
 
-
-QWidget *IntellectMainWindowEx::createNewDoc(QWidget *wgt, bool deleteOnClose)
-{
-  //QWidget *wgt = new QWidget;
-  if(!wgt)
-    return nullptr;
-
-  QMdiSubWindow *sw = ui->mdiArea->addSubWindow(wgt);
-  wgt->setAttribute(Qt::WA_DeleteOnClose, deleteOnClose);
-  sw->setAttribute(Qt::WA_DeleteOnClose);
-  sw->setWindowTitle("New");
-  sw->showMaximized();
-
-  auto list = ui->mdiArea->findChildren<QTabBar*>();
-  for(auto &x: list)
-    x->setExpanding(false);
-
-  return sw;
-}
-
-QWidget *IntellectMainWindowEx::createNewDockWidget(QWidget *wgt, bool deleteOnClose)
-{
-  if(!wgt)
-    return nullptr;
-  QDockWidget *pdoc = new QDockWidget("New", this);
-  pdoc->setWidget(wgt);
-  pdoc->setAttribute(Qt::WA_DeleteOnClose, deleteOnClose);
-  addDockWidget(Qt::LeftDockWidgetArea, pdoc);
-
-  return pdoc;
-}
-
-void IntellectMainWindowEx::addToolBar(QObject *tb)
-{
-  auto ptb = qobject_cast<QToolBar *>(tb);
-  if(ptb)
-    QMainWindow::addToolBar(Qt::TopToolBarArea, ptb);
-}
-
-QObject *IntellectMainWindowEx::getToolBar(const QString &name)
-{
-  auto tb = this->findChild<QToolBar*>(name);
-  return tb;
-}
-
-QWidget *IntellectMainWindowEx::getMenuBar()
-{
-  return menuBar();
-}
-
-QObject *IntellectMainWindowEx::addMenu(const QString &name)
-{
-  auto menu = new Menu();
-  menu->setTitle(name);
-  addMenu(menu);
-  return menu;
-}
-
-void IntellectMainWindowEx::addMenu(QObject *menu)
-{
-  auto pmenu = qobject_cast<QMenu*>(menu);
-  if(pmenu) {
-    ui->menubar->addMenu(pmenu);
-  }
-}
-
-QObject *IntellectMainWindowEx::getMenu(const QString &name)
-{
-  auto menu = menuBar()->findChild<QMenu*>(name);
-  return menu;
-}
-
 void IntellectMainWindowEx::showMemoryView(bool show)
 {
   treeDockWidget_->setVisible(show);
@@ -253,7 +179,7 @@ void IntellectMainWindowEx::closeEvent(QCloseEvent *event)
   }
   else
     event->ignore();
-  //QMainWindow::closeEvent(event);
+  //MainWindowEx::closeEvent(event);
 }
 
 void IntellectMainWindowEx::loadSettings()

@@ -19,18 +19,6 @@ public:
   ~IntellectMainWindowEx();
 
 public slots:
-  QWidget *createNewDoc(QWidget *wgt, bool deleteOnClose = true);
-  QWidget *createNewDockWidget(QWidget *wgt, bool deleteOnClose = true);
-
-  void addToolBar(QObject *tb);
-  QObject *getToolBar(const QString &name);
-
-  QWidget *getMenuBar();
-
-  QObject *addMenu(const QString &name);
-  void addMenu(QObject *menu);
-  QObject *getMenu(const QString &name);
-
   void showMemoryView(bool show = true);
   void showEditor(bool show = true);
   void showLogView(bool show = true);
@@ -60,7 +48,6 @@ protected:
   void saveSettings();
 
 private:
-  Ui::MainWindowEx *ui;
   Intellect *intellect_ = 0;
   MemoryTreeView *treeView_ = 0;
   DialogMemoryEditor *memEditor_ = 0;
