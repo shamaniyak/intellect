@@ -12,7 +12,6 @@ class Intellect : public TAlgorithm
 {
   Q_OBJECT
   Q_PROPERTY(QObject* parent READ parent)
-  Q_PROPERTY(WindowManager* WM READ WM)
   Q_PROPERTY(IObject* obj READ obj)
 
 public:
@@ -21,7 +20,6 @@ public:
 
   IObject* obj() const;
 
-  /*Q_INVOKABLE*/ WindowManager* WM() const;
   void setMainWindow(QMainWindow *mw);
 
   QString compileText(const QString &str);
@@ -42,7 +40,6 @@ protected:
   bool keyEvent(QObject *obj, QEvent *ev);
 
 private:
-  WindowManager* WM_ = 0;
   IObject *obj_ =0;
 };
 

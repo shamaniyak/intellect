@@ -4,7 +4,8 @@
 TAlgorithm::TAlgorithm(QObject *parent) : QObject(parent),
   MM_(new MemoryManager(this)),
   OM_(new ObjectManager(this)),
-  PM_(new PluginManager(this))
+  PM_(new PluginManager(this)),
+  WM_(new WindowManager(this))
 {
 }
 

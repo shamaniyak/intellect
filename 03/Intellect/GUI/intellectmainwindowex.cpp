@@ -45,6 +45,9 @@ void IntellectMainWindowEx::initIntellect()
   intellect_->addObject(treeView_, "TreeMemory");
   intellect_->addObject(treeView_->pmenu(), "TreeMenu");
   //intellect_->addObject(scriptEditor_, "Editor");
+  auto oTreeMenu = qobject_cast<IObject*>(intellect_->getOM()->Get("TreeMenu"));
+  if(oTreeMenu)
+    oTreeMenu->addObject(treeView_, "TreeMemory");
 }
 
 void IntellectMainWindowEx::loadPlugins()

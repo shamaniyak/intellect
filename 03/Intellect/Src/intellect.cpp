@@ -5,8 +5,7 @@
 #include "windowmanager.h"
 
 Intellect::Intellect(QObject *parent):
-  TAlgorithm(parent),
-  WM_(new WindowManager(this))
+  TAlgorithm(parent)
 {
   QString fname = QApplication::applicationDirPath() + "/globalMemory.moi";
   getMM()->globalMemory()->open(fname);
@@ -50,14 +49,9 @@ IObject* Intellect::obj() const
   return obj_;
 }
 
-WindowManager* Intellect::WM() const
-{
-  return WM_;
-}
-
 void Intellect::setMainWindow(QMainWindow *mw)
 {
-  WM_->setMain_window(mw);
+  getWM()->setMain_window(mw);
 }
 
 QString Intellect::compileText(const QString &str)

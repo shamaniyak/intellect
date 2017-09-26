@@ -3,8 +3,9 @@
 
 #include <QObject>
 #include <QMenu>
+#include "menu.h"
 
-class ContextMenu : public QMenu
+class ContextMenu : public Menu
 {
   Q_OBJECT
 public:

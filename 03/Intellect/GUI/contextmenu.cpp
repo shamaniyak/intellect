@@ -1,6 +1,6 @@
 #include "contextmenu.h"
 
-ContextMenu::ContextMenu(QWidget *parent) : QMenu(parent)
+ContextMenu::ContextMenu(QWidget *parent) : Menu(parent)
 {
 
 }
@@ -17,7 +17,7 @@ void ContextMenu::clear()
 
 QObject *ContextMenu::addAction(const QString &text)
 {
-  return QMenu::addAction(text);
+  return Menu::createAction(text);
 }
 
 QObject *ContextMenu::addSeparator()
