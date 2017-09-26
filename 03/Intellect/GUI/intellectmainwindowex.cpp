@@ -116,7 +116,8 @@ void IntellectMainWindowEx::createLogView()
 void IntellectMainWindowEx::createScriptEditor()
 {
   scriptEditor_ = new ScriptEditor(this);
-  scriptEditor_->setIntellect(intellect_);
+  auto iobj = intellect_->getObject("Editor");
+  scriptEditor_->setIobj(iobj);
   scriptEditor_->setMem(intellect_->obj()->mem());
 
   editorDocWidget_ = createNewDoc(scriptEditor_, false);
@@ -170,6 +171,13 @@ void IntellectMainWindowEx::on_action_triggered()
   //todo: нужно оставновить все скрипты
 
   close();
+}
+
+void IntellectMainWindowEx::on_action_Editor_triggered()
+{
+  showMemoryView(true);
+  showEditor(true);
+  showLogView(true);
 }
 
 void IntellectMainWindowEx::closeEvent(QCloseEvent *event)

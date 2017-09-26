@@ -25,6 +25,7 @@ public slots:
 
 private slots:
   void on_action_triggered();
+  void on_action_Editor_triggered();
 
 protected:
 

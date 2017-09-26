@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QMainWindow>
 #include <QKeyEvent>
 
 #include "intellect.h"
@@ -10,7 +11,7 @@ Intellect::Intellect(QObject *parent):
   QString fname = QApplication::applicationDirPath() + "/globalMemory.moi";
   getMM()->globalMemory()->open(fname);
 
-  obj_ = dynamic_cast<IObject*>(GetObject("Intellect"));
+  obj_ = getObject("Intellect");
   //obj_->mem()->setAutosave(true);
 
   obj_->addObject(this, "II");
@@ -49,14 +50,20 @@ IObject* Intellect::obj() const
   return obj_;
 }
 
+QMainWindow *Intellect::getMainWindow() const
+{
+  return mainWindow_;
+}
+
 void Intellect::setMainWindow(QMainWindow *mw)
 {
+  mainWindow_ = mw;
   getWM()->setMain_window(mw);
 }
 
 QString Intellect::compileText(const QString &str)
 {
-  IObject *iobj = dynamic_cast<IObject*>(GetObject("Compiler"));
+  IObject *iobj = getObject("Compiler");
 
   if(iobj) {
     iobj->addObject(this, "II");
@@ -80,11 +87,6 @@ int Intellect::loadPlugins()
   getPM()->loadPlugins();
 
   return getPM()->count();
-}
-
-void Intellect::addPlugin(QObject *obj)
-{
-  addObject(obj, "");
 }
 
 void Intellect::event(QObject *obj, QEvent *ev)
@@ -147,6 +149,11 @@ bool Intellect::keyEvent(QObject *obj, QEvent *ev)
   }
 
   return false;
+}
+
+QObject *Intellect::getMainWindowQObject() const
+{
+  return mainWindow_;
 }
 
 void Intellect::on_addObject(QObject *obj)

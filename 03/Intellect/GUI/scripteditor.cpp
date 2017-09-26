@@ -1,7 +1,7 @@
 #include "highlighter.h"
 #include "scripteditor.h"
 
-#include <intellect.h>
+#include <iobject.h>
 #include "qmemorymodel.h"
 
 #include <QtDebug>
@@ -94,24 +94,20 @@ void ScriptEditor::keyPressEvent(QKeyEvent *kev)
   bool shift_pressed = kev->modifiers() & Qt::ShiftModifier;
   bool alt_pressed = kev->modifiers() & Qt::AltModifier;
 
-  if(intellect_)
+  if(iobj_)
   {
-    IObject *editor = qobject_cast<IObject*>( intellect_->GetObject("Editor") );
-    if(editor)
-    {
-      auto me = editor->mem()->add(0, "KeyEvent");
-      me->clear();
+    auto me = iobj_->mem()->add(0, "KeyEvent");
+    me->clear();
 
-      if(ctrl_pressed)
-        me->add("Ctrl");
-      if(shift_pressed)
-        me->add("Shift");
-      if(alt_pressed)
-        me->add("Alt");
+    if(ctrl_pressed)
+      me->add("Ctrl");
+    if(shift_pressed)
+      me->add("Shift");
+    if(alt_pressed)
+      me->add("Alt");
 
-      me->add("Key")->setVal(kev->key());
-      me->add("Text")->setVal(kev->text());
-    }
+    me->add("Key")->setVal(kev->key());
+    me->add("Text")->setVal(kev->text());
   }
 
   emit signalKeyPress(this, kev->key());
@@ -285,14 +281,14 @@ void ScriptEditor::performCompletion()
   completer->performCompletion();
 }
 
-Intellect *ScriptEditor::intellect() const
+IObject *ScriptEditor::iobj() const
 {
-  return intellect_;
+  return iobj_;
 }
 
-void ScriptEditor::setIntellect(Intellect *intellect)
+void ScriptEditor::setIobj(IObject *iobj)
 {
-  intellect_ = intellect;
+  iobj_ = iobj;
 }
 
 void ScriptEditor::lineNumberAreaPaintEvent(QPaintEvent *event)

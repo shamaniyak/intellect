@@ -13,6 +13,7 @@ class Intellect : public TAlgorithm
   Q_OBJECT
   Q_PROPERTY(QObject* parent READ parent)
   Q_PROPERTY(IObject* obj READ obj)
+  Q_PROPERTY(QObject* mainWindow READ getMainWindowQObject)
 
 public:
   explicit Intellect(QObject *parent = 0);
@@ -20,12 +21,12 @@ public:
 
   IObject* obj() const;
 
+  QMainWindow *getMainWindow() const;
   void setMainWindow(QMainWindow *mw);
 
   QString compileText(const QString &str);
 
   int loadPlugins();
-  void addPlugin(QObject *obj);
 
   void event(QObject *obj, QEvent *ev);
 
@@ -39,8 +40,11 @@ protected slots:
 protected:
   bool keyEvent(QObject *obj, QEvent *ev);
 
+  QObject *getMainWindowQObject() const;
+
 private:
-  IObject *obj_ =0;
+  IObject *obj_ = 0;
+  QMainWindow *mainWindow_ = 0;
 };
 
 #endif // INTELLECT_H

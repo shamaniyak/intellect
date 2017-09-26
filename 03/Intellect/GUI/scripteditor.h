@@ -8,7 +8,7 @@
 #include <memorywrapper.h>
 
 class Highlighter;
-class Intellect;
+class IObject;
 class Completer;
 class QMemoryModel;
 
@@ -23,11 +23,11 @@ public:
   MemoryWrapper *mem() const;
   void setMem(MemoryWrapper *mem);
 
-  Intellect *intellect() const;
-  void setIntellect(Intellect *intellect);
-
   void lineNumberAreaPaintEvent(QPaintEvent *event);
   int lineNumberAreaWidth();
+
+  IObject *iobj() const;
+  void setIobj(IObject *iobj);
 
 signals:
   signalKeyPress(QObject *obj, int key);
@@ -55,7 +55,7 @@ private slots:
 
 private:
   Highlighter *h_ = 0;
-  Intellect *intellect_ = 0;
+  IObject *iobj_ = 0;
   MemoryWrapper *mem_ = 0;
   MEWrapper *sel_ = 0;
   int timerId_ = 0;

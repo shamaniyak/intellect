@@ -260,7 +260,7 @@ bool DialogMemoryEditor::keyEvent(QObject *obj, QEvent *ev)
       }break;
     }
 
-    IObject *editor = qobject_cast<IObject*>( intellect()->GetObject("Editor") );
+    IObject *editor = intellect()->getObject("Editor");
     if(editor)
     {
       auto me = editor->mem()->add(0, "KeyEvent");

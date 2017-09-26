@@ -16,19 +16,18 @@ TAlgorithm::~TAlgorithm()
 
 bool TAlgorithm::addObject(QObject *obj, const QString &name)
 {
-  QObject *newObj = GetObject(name);
-  IObject *newIObj = qobject_cast<IObject*>(newObj);
+  IObject *iobj = getObject(name);
 
-  if(newIObj) {
-    return( newIObj->addObject(obj, name) );
+  if(iobj) {
+    return( iobj->addObject(obj, name) );
   }
 
   return false;
 }
 
-QObject *TAlgorithm::GetObject(const QString &name)
+IObject *TAlgorithm::getObject(const QString &name)
 {
-  return OM_->Get(name);
+  return qobject_cast<IObject*>(OM_->Get(name));
 }
 
 MemoryManager *TAlgorithm::getMM() const

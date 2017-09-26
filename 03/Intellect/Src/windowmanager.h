@@ -11,7 +11,7 @@ class MemoryWrapper;
 class WindowManager : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY(QMainWindow* mainWindow READ main_window)
+  //Q_PROPERTY(QMainWindow* mainWindow READ main_window)
 
 public:
 

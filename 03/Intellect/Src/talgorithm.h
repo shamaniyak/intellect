@@ -36,13 +36,13 @@ public:
 
   WindowManager* getWM() const;
 
+  IObject *getObject(const QString &name);
+
 signals:
   void addResult(const QString &str);
   void start();
 
 public slots:
-  QObject *GetObject(const QString &name);
-
 
 private:
   MemoryManager *MM_ = 0;
