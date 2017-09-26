@@ -69,7 +69,8 @@ SOURCES += Src/main.cpp \
     Test/TestSppzCartography/testsppzcartography.cpp \
     Src/Memory/memorymanager.cpp \
     GUI/menu.cpp \
-    GUI/intellectmainwindowex.cpp
+    GUI/intellectmainwindowex.cpp \
+    Src/worker.cpp
 
 HEADERS  += \
     Src/scriptwrapper.h \
@@ -117,7 +118,8 @@ HEADERS  += \
     Test/TestSppzCartography/testsppzcartography.h \
     Src/Memory/memorymanager.h \
     GUI/menu.h \
-    GUI/intellectmainwindowex.h
+    GUI/intellectmainwindowex.h \
+    Src/worker.h
 
 FORMS    += \
     GUI/dialogmemoryeditor.ui \

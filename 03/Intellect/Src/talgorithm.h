@@ -34,10 +34,7 @@ public:
 
   MemoryManager *getMM() const;
 
-  WindowManager* getWM() const
-  {
-    return WM_;
-  }
+  WindowManager* getWM() const;
 
 signals:
   void addResult(const QString &str);

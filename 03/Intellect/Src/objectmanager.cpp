@@ -15,7 +15,7 @@ void ObjectManager::abort()
   }
 }
 
-void ObjectManager::CreateNewObject(const QString &name)
+void ObjectManager::CreateObject(const QString &name)
 {
   IObject *iobj = new IObject(this);
   objects_[name] = iobj;
@@ -31,7 +31,7 @@ QObject *ObjectManager::Add(const QString &name)
   QString upperName = name.toUpper();
 
   if(!objects_.contains(upperName)) {
-    CreateNewObject(upperName);
+    CreateObject(upperName);
   }
 
   auto obj = qobject_cast<IObject*>( objects_[upperName] );

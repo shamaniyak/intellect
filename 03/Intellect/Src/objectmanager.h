@@ -23,8 +23,8 @@ public slots:
   bool Del(const QString &name);
 
 protected:
-  void CreateNewObject(const QString &name);
-  
+  void CreateObject(const QString &name);
+
 private:
   typedef QMap<QString, IObject*> t_objects;
   t_objects objects_;

@@ -36,9 +36,14 @@ MemoryManager *TAlgorithm::getMM() const
     return MM_;
 }
 
+WindowManager *TAlgorithm::getWM() const
+{
+  return WM_;
+}
+
 PluginManager *TAlgorithm::getPM() const
 {
-    return PM_;
+  return PM_;
 }
 
 ObjectManager *TAlgorithm::getOM() const

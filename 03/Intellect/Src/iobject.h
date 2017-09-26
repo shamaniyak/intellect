@@ -94,8 +94,8 @@ private:
   t_qmlwrapper qml_;
   QString msg_;// Сообщение об выполненных операциях
   WindowManager *WM_ = 0;// Оконный мэнеджер
-  Commander *CM_ = 0;// Мэнеджер команд
   ObjectManager *OM_ = 0;
+  Commander *CM_ = 0;// Мэнеджер команд
 };
 
 Q_DECLARE_METATYPE(IObject*)
