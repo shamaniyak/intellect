@@ -7,8 +7,9 @@
 #include "memorylistview.h"
 #include "memorytreeview.h"
 #include "memoryeditor.h"
-#include "qmemorymodel.h"
+#include "Src/Memory/qmemorymodel.h"
 #include "graphicsview.h"
+#include "mainwindowex.h"
 
 WindowManager::WindowManager(QObject *parent) : QObject(parent),
   top_widget_(new QWidget())
@@ -133,4 +134,10 @@ QMainWindow *WindowManager::main_window() const
 void WindowManager::setMain_window(QMainWindow *main_window)
 {
   main_window_ = main_window;
+}
+
+QWidget *WindowManager::createMainWindow(QWidget *parent)
+{
+  MainWindowEx *wgt = new MainWindowEx(parent);
+  return wgt;
 }

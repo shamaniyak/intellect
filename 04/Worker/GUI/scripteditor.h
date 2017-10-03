@@ -5,7 +5,7 @@
 #include <QPlainTextEdit>
 #include <QCompleter>
 
-#include <memorywrapper.h>
+#include <Src/Memory/memorywrapper.h>
 
 class Highlighter;
 class IObject;

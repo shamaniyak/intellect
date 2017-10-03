@@ -6,9 +6,9 @@
 #include <QMessageBox>
 #include <QSettings>
 
-#include "intellect.h"
-#include "Memory/memorywrapper.h"
-#include "scriptwrapper.h"
+#include "Src/intellect.h"
+#include "Src/Memory/memorywrapper.h"
+#include "Src/scriptwrapper.h"
 
 #include "memorytreeview.h"
 

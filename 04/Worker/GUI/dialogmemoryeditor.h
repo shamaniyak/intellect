@@ -3,10 +3,10 @@
 
 #include <memory>
 #include <QWidget>
-#include "memorywrapper.h"
+#include "Src/Memory/memorywrapper.h"
 #include "highlighter.h"
 
-class Intellect;
+class Worker;
 
 namespace Ui {
 class Editor;
@@ -22,8 +22,8 @@ public:
 
   void Init();
 
-  Intellect *intellect() const;
-  void setIntellect(Intellect *intellect);
+  Worker *intellect() const;
+  void setIntellect(Worker *intellect);
 
   void LoadSettings(MEWrapper *meSettings);
   void SaveSettings(MEWrapper *meSettings);
@@ -97,7 +97,7 @@ private slots:
 
 private:
   Ui::Editor *ui;
-  Intellect *intellect_ = 0;
+  Worker *intellect_ = 0;
   MEWrapper *selected_ = 0;
   QSize baseSize_;
   bool selected_changed_ = false;

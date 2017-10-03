@@ -4,7 +4,7 @@
 #include "logview.h"
 #include "scripteditor.h"
 #include "memorytreeview.h"
-#include "intellect.h"
+#include "Src/intellect.h"
 #include "menu.h"
 
 MainWindowEx::MainWindowEx(QWidget *parent) :
@@ -50,6 +50,16 @@ QWidget *MainWindowEx::createNewDockWidget(QWidget *wgt, bool deleteOnClose)
   return pdoc;
 }
 
+QWidget *MainWindowEx::createDocument(QWidget *wgt)
+{
+  return createNewDoc(wgt);
+}
+
+QWidget *MainWindowEx::createDockWidget(QWidget *wgt)
+{
+  return createNewDockWidget(wgt);
+}
+
 void MainWindowEx::addToolBar(QObject *tb)
 {
   auto ptb = qobject_cast<QToolBar *>(tb);
@@ -66,6 +76,11 @@ QObject *MainWindowEx::getToolBar(const QString &name)
 QWidget *MainWindowEx::getMenuBar()
 {
   return menuBar();
+}
+
+QWidget *MainWindowEx::getStatusBar()
+{
+  return statusBar();
 }
 
 QObject *MainWindowEx::addMenu(const QString &name)

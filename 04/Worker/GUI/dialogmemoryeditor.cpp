@@ -6,9 +6,9 @@
 #include <QMessageBox>
 #include <QSettings>
 
-#include "intellect.h"
-#include "Memory/memorywrapper.h"
-#include "scriptwrapper.h"
+#include "Src/worker.h"
+#include "Src/Memory/memorywrapper.h"
+#include "Src/scriptwrapper.h"
 
 #include "memorytreeview.h"
 
@@ -78,12 +78,12 @@ void DialogMemoryEditor::SetChanged(bool val)
   ui->btnEdit->setEnabled(val);
 }
 
-Intellect *DialogMemoryEditor::intellect() const
+Worker *DialogMemoryEditor::intellect() const
 {
   return intellect_;
 }
 
-void DialogMemoryEditor::setIntellect(Intellect *intellect)
+void DialogMemoryEditor::setIntellect(Worker *intellect)
 {
   intellect_ = intellect;
 

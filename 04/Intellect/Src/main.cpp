@@ -1,6 +1,7 @@
-#include "Src/worker.h"
-#include "GUI/workermainwindowex.h"
+#include "Src/intellect.h"
+#include "GUI/intellectmainwindowex.h"
 #include <QApplication>
+#include <Test/TestSppzCartography/testsppzcartography.h>
 
 class Application : public QApplication
 {
@@ -9,27 +10,27 @@ public:
   {
     // создать модель
     // парент нам нужен для того, чтобы при уничтожении скрипта, не уничтожалась модель
-    worker_ = new Worker(this);
+    pI = new Intellect(this);
 
     // создать главное окно редактора
-    w = new WorkerMainWindowEx(worker_);
+    w = new IntellectMainWindowEx(pI);
     w->showMaximized();
 
-    emit worker_->start();// запустить модель
+    emit pI->start();// запустить модель
   }
 
   ~Application()
   {
-    worker_->stop();
+    pI->stop();
 
     delete w;// просмоторщики должны удалиться раньше модели
 
-    delete worker_;
+    delete pI;
   }
 
 private:
-  Worker *worker_ = nullptr;
-  WorkerMainWindowEx *w = nullptr;
+  Intellect *pI = nullptr;
+  IntellectMainWindowEx *w = nullptr;
 };
 
 int main(int argc, char *argv[])

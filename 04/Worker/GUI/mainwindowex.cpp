@@ -4,7 +4,7 @@
 #include "logview.h"
 #include "scripteditor.h"
 #include "memorytreeview.h"
-#include "intellect.h"
+#include "Src/worker.h"
 #include "menu.h"
 
 MainWindowEx::MainWindowEx(QWidget *parent) :
@@ -48,6 +48,16 @@ QWidget *MainWindowEx::createNewDockWidget(QWidget *wgt, bool deleteOnClose)
   addDockWidget(Qt::LeftDockWidgetArea, pdoc);
 
   return pdoc;
+}
+
+QWidget *MainWindowEx::createDocument(QWidget *wgt)
+{
+  return createNewDoc(wgt);
+}
+
+QWidget *MainWindowEx::createDockWidget(QWidget *wgt)
+{
+  return createNewDockWidget(wgt);
 }
 
 void MainWindowEx::addToolBar(QObject *tb)

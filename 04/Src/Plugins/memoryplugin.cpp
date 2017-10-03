@@ -1,7 +1,7 @@
 #include "memoryplugin.h"
-#include "Memory/memorywrapper.h"
-#include "Memory/mewrapper.h"
-#include "Memory/tme.h"
+#include "Src/Memory/memorywrapper.h"
+#include "Src/Memory/mewrapper.h"
+#include "Src/Memory/tme.h"
 #include <QtScript>
 #include <QJSEngine>
 

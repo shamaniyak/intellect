@@ -3,7 +3,7 @@
 
 #include <QObject>
 //#include "tmemory.h"
-#include "memorymanager.h"
+#include "Memory/memorymanager.h"
 #include "objectmanager.h"
 #include "pluginmanager.h"
 #include "windowmanager.h"

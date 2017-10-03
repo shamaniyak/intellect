@@ -23,6 +23,7 @@ public:
 signals:
 
 public slots:
+  QWidget * createMainWindow(QWidget *parent = 0);
   QObject * createWidget(QWidget *parent = 0);
   QObject * createLabel(QWidget *parent = 0);
   QObject * createLineEdit(QWidget *parent = 0);

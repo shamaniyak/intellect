@@ -1,4 +1,4 @@
-#include "contextmenu.h"
+#include "Src/GUI/menu.h"
 #include "memorytreeview.h"
 #include "mytreewidgetitem.h"
 #include "Src/Memory/qmemorymodel.h"
@@ -43,7 +43,7 @@ void MemoryTreeView::initModels()
 
 void MemoryTreeView::createContextMenu()
 {
-  m_pmenu = new ContextMenu(this);
+  m_pmenu = new Menu(this);
   m_pmenu->setObjectName("menu");
 }
 

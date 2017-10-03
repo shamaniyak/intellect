@@ -1,7 +1,7 @@
 #include "intellectplugin.h"
-#include "iobject.h"
-#include "objectmanager.h"
-#include "windowmanager.h"
+#include "Src/iobject.h"
+#include "Src/objectmanager.h"
+#include "Src/windowmanager.h"
 
 #include <QtScript>
 #include <QJSEngine>

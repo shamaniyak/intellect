@@ -11,7 +11,7 @@ QT += qml quick
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Intellect
+TARGET = Worker
 TEMPLATE = app
 
 win32 {
@@ -26,20 +26,21 @@ INCLUDEPATH += ../ \
     GUI/MemoryView
 
 SOURCES += \
-    GUI/dialogmemoryeditor.cpp \
+    GUI/contextmenu.cpp \
     GUI/mainwindowex.cpp \
     GUI/highlighter.cpp \
     GUI/memoryeditor.cpp \
-    ../Src/MemoryView/memorytreeview.cpp \
-    ../Src/MemoryView/mytreewidgetitem.cpp \
-    ../Src/MemoryView/memorytableview.cpp \
-    ../Src/MemoryView/memorylistview.cpp \
+    GUI/MemoryView/memorytreeview.cpp \
+    GUI/MemoryView/mytreewidgetitem.cpp \
+    GUI/MemoryView/memorytableview.cpp \
+    GUI/MemoryView/memorylistview.cpp \
     GUI/logview.cpp \
     GUI/scripteditor.cpp \
     GUI/graphicsview.cpp \
+    GUI/toolbar.cpp \
     GUI/filedialog.cpp \
-    ../Src/MemoryView/memoryeditordelegate.cpp \
-    GUI/intellectmainwindowex.cpp \
+    GUI/MemoryView/memoryeditordelegate.cpp \
+    GUI/menu.cpp \
     ../Src/Memory/elementsmanager.cpp \
     ../Src/Memory/memorymanager.cpp \
     ../Src/Memory/memorywrapper.cpp \
@@ -65,26 +66,26 @@ SOURCES += \
     ../Src/talgorithm.cpp \
     ../Src/windowmanager.cpp \
     Src/main.cpp \
-    Src/intellect.cpp \
-    ../Src/GUI/statusbar.cpp \
-    ../Src/GUI/menu.cpp \
-    ../Src/GUI/toolbar.cpp
+    GUI/dialogmemoryeditor.cpp \
+    GUI/workermainwindowex.cpp \
+    Src/worker.cpp
 
 HEADERS  += \
-    GUI/dialogmemoryeditor.h \
+    GUI/contextmenu.h \
     GUI/mainwindowex.h \
     GUI/highlighter.h \
     GUI/memoryeditor.h \
-    ../Src/MemoryView/memorytreeview.h \
-    ../Src/MemoryView/mytreewidgetitem.h \
-    ../Src/MemoryView/memorytableview.h \
-    ../Src/MemoryView/memorylistview.h \
+    GUI/MemoryView/memorytreeview.h \
+    GUI/MemoryView/mytreewidgetitem.h \
+    GUI/MemoryView/memorytableview.h \
+    GUI/MemoryView/memorylistview.h \
     GUI/logview.h \
     GUI/scripteditor.h \
     GUI/graphicsview.h \
+    GUI/toolbar.h \
     GUI/filedialog.h \
-    ../Src/MemoryView/memoryeditordelegate.h \
-    GUI/intellectmainwindowex.h \
+    GUI/MemoryView/memoryeditordelegate.h \
+    GUI/menu.h \
     ../Src/Memory/elementsmanager.h \
     ../Src/Memory/memorymanager.h \
     ../Src/Memory/memorywrapper.h \
@@ -110,14 +111,13 @@ HEADERS  += \
     ../Src/swmrg.h \
     ../Src/talgorithm.h \
     ../Src/windowmanager.h \
-    Src/intellect.h \
-    ../Src/GUI/statusbar.h \
-    ../Src/GUI/menu.h \
-    ../Src/GUI/toolbar.h
+    GUI/dialogmemoryeditor.h \
+    GUI/workermainwindowex.h \
+    Src/worker.h
 
 FORMS    += \
-    GUI/dialogmemoryeditor.ui \
-    GUI/mainwindowex.ui
+    GUI/mainwindowex.ui \
+    GUI/dialogmemoryeditor.ui
 
 DISTFILES +=
 

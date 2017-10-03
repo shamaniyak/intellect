@@ -1,56 +1,54 @@
-﻿#include "intellectmainwindowex.h"
+﻿#include "workermainwindowex.h"
 #include "ui_mainwindowex.h"
 #include "gui/dialogmemoryeditor.h"
 #include "logview.h"
 #include "scripteditor.h"
 #include "memorytreeview.h"
-#include "Src/intellect.h"
+#include "Src/worker.h"
 #include "menu.h"
 
-IntellectMainWindowEx::IntellectMainWindowEx(Intellect *i, QWidget *parent) :
+WorkerMainWindowEx::WorkerMainWindowEx(Worker *i, QWidget *parent) :
   MainWindowEx(parent),
   intellect_(i)
 {
   //setAttribute(Qt::WA_AlwaysShowToolTips);
-  // создать редактор базы знаний
-  //createBaseEditor();
 
-  createMemoryView();
+  //createMemoryView();
   createLogView();
-  createScriptEditor();
+  //createScriptEditor();
   //
   initIntellect();
   //
-  loadSettings();
+  //loadSettings();
   //
-  createActions();
+  //createActions();
   //createToolBar();
 }
 
-IntellectMainWindowEx::~IntellectMainWindowEx()
+WorkerMainWindowEx::~WorkerMainWindowEx()
 {
-  intellect_->getOM()->Del("TreeMemory");
-  intellect_->getOM()->Del("TreeMenu");
+  //intellect_->getOM()->Del("TreeMemory");
+  //intellect_->getOM()->Del("TreeMenu");
 
-  saveSettings();
+  //saveSettings();
 }
 
-void IntellectMainWindowEx::initIntellect()
+void WorkerMainWindowEx::initIntellect()
 {
   if(!intellect_)
     return;
 
   intellect_->setMainWindow(this);
   // Добавить скриптовые объекты
-  intellect_->addObject(treeView_, "TreeMemory");
-  intellect_->addObject(treeView_->pmenu(), "TreeMenu");
+  //intellect_->addObject(treeView_, "TreeMemory");
+  //intellect_->addObject(treeView_->pmenu(), "TreeMenu");
   //intellect_->addObject(scriptEditor_, "Editor");
-  auto oTreeMenu = qobject_cast<IObject*>(intellect_->getOM()->Get("TreeMenu"));
-  if(oTreeMenu)
-    oTreeMenu->addObject(treeView_, "TreeMemory");
+  //auto oTreeMenu = qobject_cast<IObject*>(intellect_->getOM()->Get("TreeMenu"));
+  //if(oTreeMenu)
+  //  oTreeMenu->addObject(treeView_, "TreeMemory");
 }
 
-void IntellectMainWindowEx::loadPlugins()
+void WorkerMainWindowEx::loadPlugins()
 {
   if (intellect_->loadPlugins() == 0) {
     QMessageBox::critical(0, "", "No plugins.");
@@ -58,7 +56,7 @@ void IntellectMainWindowEx::loadPlugins()
   }
 }
 
-bool IntellectMainWindowEx::canClose()
+bool WorkerMainWindowEx::canClose()
 {
   if(intellect_->obj()->mem()->changed())
   {
@@ -80,7 +78,7 @@ bool IntellectMainWindowEx::canClose()
   return true;
 }
 
-void IntellectMainWindowEx::createBaseEditor()
+void WorkerMainWindowEx::createBaseEditor()
 {
   if(!intellect_)
     return;
@@ -93,7 +91,7 @@ void IntellectMainWindowEx::createBaseEditor()
   //wgt->setWindowTitle(tr("База знаний"));
 }
 
-void IntellectMainWindowEx::createMemoryView()
+void WorkerMainWindowEx::createMemoryView()
 {
   // Дерево памяти
   treeView_ = new MemoryTreeView();
@@ -103,7 +101,7 @@ void IntellectMainWindowEx::createMemoryView()
   treeDockWidget_->setWindowTitle(tr("Память"));
 }
 
-void IntellectMainWindowEx::createLogView()
+void WorkerMainWindowEx::createLogView()
 {
   auto log = new LogView();
   log->setAlg(intellect_);
@@ -113,7 +111,7 @@ void IntellectMainWindowEx::createLogView()
   addDockWidget(Qt::BottomDockWidgetArea, wgt);
 }
 
-void IntellectMainWindowEx::createScriptEditor()
+void WorkerMainWindowEx::createScriptEditor()
 {
   scriptEditor_ = new ScriptEditor(this);
   auto iobj = intellect_->getObject("Editor");
@@ -124,7 +122,7 @@ void IntellectMainWindowEx::createScriptEditor()
   editorDocWidget_->setWindowTitle(tr("Редактор"));
 }
 
-void IntellectMainWindowEx::createActions()
+void WorkerMainWindowEx::createActions()
 {
 //  Menu* menu = new Menu();
 //  menu->setTitle("NewMenu");
@@ -133,7 +131,7 @@ void IntellectMainWindowEx::createActions()
 //    menu->createAction("newAction");
 }
 
-void IntellectMainWindowEx::createToolBar()
+void WorkerMainWindowEx::createToolBar()
 {
   QToolBar *ptb = new QToolBar("Main");
   ptb->setObjectName("MainToolBar");
@@ -148,12 +146,12 @@ void IntellectMainWindowEx::createToolBar()
   addToolBar(ptb);
 }
 
-void IntellectMainWindowEx::showMemoryView(bool show)
+void WorkerMainWindowEx::showMemoryView(bool show)
 {
   treeDockWidget_->setVisible(show);
 }
 
-void IntellectMainWindowEx::showEditor(bool show)
+void WorkerMainWindowEx::showEditor(bool show)
 {
   if(!show)
     editorDocWidget_->close();
@@ -161,26 +159,26 @@ void IntellectMainWindowEx::showEditor(bool show)
     createScriptEditor();
 }
 
-void IntellectMainWindowEx::showLogView(bool show)
+void WorkerMainWindowEx::showLogView(bool show)
 {
   logDockWidget_->setVisible(show);
 }
 
-void IntellectMainWindowEx::on_action_triggered()
+void WorkerMainWindowEx::on_action_triggered()
 {
   //todo: нужно оставновить все скрипты
 
   close();
 }
 
-void IntellectMainWindowEx::on_action_Editor_triggered()
+void WorkerMainWindowEx::on_action_Editor_triggered()
 {
   showMemoryView(true);
   showEditor(true);
   showLogView(true);
 }
 
-void IntellectMainWindowEx::closeEvent(QCloseEvent *event)
+void WorkerMainWindowEx::closeEvent(QCloseEvent *event)
 {
   if(canClose())
   {
@@ -193,7 +191,7 @@ void IntellectMainWindowEx::closeEvent(QCloseEvent *event)
   //MainWindowEx::closeEvent(event);
 }
 
-void IntellectMainWindowEx::loadSettings()
+void WorkerMainWindowEx::loadSettings()
 {
   QString filePath = QApplication::applicationDirPath() + "/settings.moi";
   MemoryWrapper mSettings;
@@ -225,7 +223,7 @@ void IntellectMainWindowEx::loadSettings()
 
 }
 
-void IntellectMainWindowEx::saveSettings()
+void WorkerMainWindowEx::saveSettings()
 {
   if(!intellect_)
     return;

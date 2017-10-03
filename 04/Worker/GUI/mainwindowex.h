@@ -19,6 +19,8 @@ public:
 public slots:
   QWidget *createNewDoc(QWidget *wgt, bool deleteOnClose = true);
   QWidget *createNewDockWidget(QWidget *wgt, bool deleteOnClose = true);
+  QWidget *createDocument(QWidget *wgt);
+  QWidget *createDockWidget(QWidget *wgt);
 
   void addToolBar(QObject *tb);
   QObject *getToolBar(const QString &name);

@@ -3,8 +3,8 @@
 #include <QScriptEngineDebugger>
 #include <QMainWindow>
 
-#include <Plugins/memoryplugin.h>
-#include <Plugins/intellectplugin.h>
+#include "Plugins/memoryplugin.h"
+#include "Plugins/intellectplugin.h"
 
 ScriptWrapper::ScriptWrapper(ScriptWrapper *parent):
   m_parent(parent),

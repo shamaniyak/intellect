@@ -8,7 +8,7 @@ class MyTreeWidgetItem;
 class MEWrapper;
 class QMemoryModel;
 
-class MemoryTreeView : public QTreeView// QTreeWidget
+class MemoryTreeView : public QTreeView
 {
   Q_OBJECT
   Q_PROPERTY(MemoryWrapper* mem READ getMem WRITE setMem NOTIFY memChanged)

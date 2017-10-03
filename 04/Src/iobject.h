@@ -4,7 +4,7 @@
 #include <QObject>
 #include <memory>
 
-#include "memorywrapper.h"
+#include "Memory/memorywrapper.h"
 #include "scriptwrapper.h"
 #include "qqmlwrapper.h"
 #include "commander.h"

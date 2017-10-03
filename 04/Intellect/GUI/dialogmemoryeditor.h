@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <QWidget>
-#include "memorywrapper.h"
+#include "Src/Memory/memorywrapper.h"
 #include "highlighter.h"
 
 class Intellect;
@@ -53,20 +53,20 @@ protected:
   void UpdateUI();
 
   void CreateMainMenu();
-  
+
   void ShowTxtVal(const QString &val);
 
   QSize sizeHint() const;
 
   void SaveChanges(QObject *obj);
-  
+
   void SetChanged(bool val = true);
 
   bool focusEvent(QObject *obj, QEvent *ev);
   bool keyEvent(QObject *obj, QEvent *ev);
 
   void SetupEditor();
-  
+
   void checkItemChanged(QObject *obj);
 
 private slots:

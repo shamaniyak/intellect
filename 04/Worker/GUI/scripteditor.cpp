@@ -1,8 +1,8 @@
 #include "highlighter.h"
 #include "scripteditor.h"
 
-#include <iobject.h>
-#include "qmemorymodel.h"
+#include <Src/iobject.h>
+#include "Src/Memory/qmemorymodel.h"
 
 #include <QtDebug>
 #include <QMessageBox>
