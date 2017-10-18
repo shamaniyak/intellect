@@ -2,10 +2,10 @@
 #include "ui_mainwindowex.h"
 #include "gui/dialogmemoryeditor.h"
 #include "logview.h"
-#include "scripteditor.h"
-#include "memorytreeview.h"
+#include "Src/GUI/ScriptEditor/scripteditor.h"
+#include "Src/GUI/MemoryView/memorytreeview.h"
 #include "Src/intellect.h"
-#include "menu.h"
+#include "Src/GUI/menu.h"
 
 IntellectMainWindowEx::IntellectMainWindowEx(Intellect *i, QWidget *parent) :
   MainWindowEx(parent),
