@@ -12,6 +12,8 @@ public:
 signals:
 
 public slots:
+  void addWidget(QWidget *widget, int stretch = 0);
+  void removeWidget(QWidget *widget);
 };
 
 #endif // STATUSBAR_H
