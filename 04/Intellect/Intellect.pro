@@ -7,7 +7,7 @@
 CONFIG += c++14
 QT       += core gui
 QT += script scripttools
-QT += qml quick
+QT += qml quick quickcontrols2 quickwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -23,22 +23,16 @@ win32 {
 
 INCLUDEPATH += ../ \
     GUI \
-    GUI/MemoryView
 
 SOURCES += \
+    Src/main.cpp \
+    Src/intellect.cpp \
     GUI/dialogmemoryeditor.cpp \
     GUI/mainwindowex.cpp \
-    GUI/highlighter.cpp \
     GUI/memoryeditor.cpp \
-    ../Src/MemoryView/memorytreeview.cpp \
-    ../Src/MemoryView/mytreewidgetitem.cpp \
-    ../Src/MemoryView/memorytableview.cpp \
-    ../Src/MemoryView/memorylistview.cpp \
     GUI/logview.cpp \
-    GUI/scripteditor.cpp \
     GUI/graphicsview.cpp \
     GUI/filedialog.cpp \
-    ../Src/MemoryView/memoryeditordelegate.cpp \
     GUI/intellectmainwindowex.cpp \
     ../Src/Memory/elementsmanager.cpp \
     ../Src/Memory/memorymanager.cpp \
@@ -64,26 +58,27 @@ SOURCES += \
     ../Src/swmrg.cpp \
     ../Src/talgorithm.cpp \
     ../Src/windowmanager.cpp \
-    Src/main.cpp \
-    Src/intellect.cpp \
+    ../Src/GUI/MemoryView/memorytreeview.cpp \
+    ../Src/GUI/MemoryView/mytreewidgetitem.cpp \
+    ../Src/GUI/MemoryView/memorytableview.cpp \
+    ../Src/GUI/MemoryView/memoryeditordelegate.cpp \
+    ../Src/GUI/MemoryView/memorylistview.cpp \
     ../Src/GUI/statusbar.cpp \
     ../Src/GUI/menu.cpp \
-    ../Src/GUI/toolbar.cpp
+    ../Src/GUI/toolbar.cpp \
+    ../Src/GUI/ScriptEditor/highlighter.cpp \
+    ../Src/GUI/ScriptEditor/scripteditor.cpp \
+    ../Third/qmlcreator/cpp/QMLHighlighter.cpp \
+    ../Third/qmlcreator/cpp/SyntaxHighlighter.cpp
 
 HEADERS  += \
+    Src/intellect.h \
     GUI/dialogmemoryeditor.h \
     GUI/mainwindowex.h \
-    GUI/highlighter.h \
     GUI/memoryeditor.h \
-    ../Src/MemoryView/memorytreeview.h \
-    ../Src/MemoryView/mytreewidgetitem.h \
-    ../Src/MemoryView/memorytableview.h \
-    ../Src/MemoryView/memorylistview.h \
     GUI/logview.h \
-    GUI/scripteditor.h \
     GUI/graphicsview.h \
     GUI/filedialog.h \
-    ../Src/MemoryView/memoryeditordelegate.h \
     GUI/intellectmainwindowex.h \
     ../Src/Memory/elementsmanager.h \
     ../Src/Memory/memorymanager.h \
@@ -110,16 +105,31 @@ HEADERS  += \
     ../Src/swmrg.h \
     ../Src/talgorithm.h \
     ../Src/windowmanager.h \
-    Src/intellect.h \
+    ../Src/GUI/MemoryView/memorytreeview.h \
+    ../Src/GUI/MemoryView/mytreewidgetitem.h \
+    ../Src/GUI/MemoryView/memorytableview.h \
+    ../Src/GUI/MemoryView/memorylistview.h \
+    ../Src/GUI/MemoryView/memoryeditordelegate.h \
     ../Src/GUI/statusbar.h \
     ../Src/GUI/menu.h \
-    ../Src/GUI/toolbar.h
+    ../Src/GUI/toolbar.h \
+    ../Src/GUI/ScriptEditor/highlighter.h \
+    ../Src/GUI/ScriptEditor/scripteditor.h \
+    ../Third/qmlcreator/cpp/QMLHighlighter.h \
+    ../Third/qmlcreator/cpp/SyntaxHighlighter.h
 
 FORMS    += \
     GUI/dialogmemoryeditor.ui \
     GUI/mainwindowex.ui
 
-DISTFILES +=
+DISTFILES += \
 
 RESOURCES += \
-    images.qrc
+    images.qrc \
+    ../resources/dictionaries.qrc
+
+# Additional import path used to resolve QML modules in Qt Creator's code model
+QML_IMPORT_PATH =
+
+# Additional import path used to resolve QML modules just for Qt Quick Designer
+QML_DESIGNER_IMPORT_PATH =
