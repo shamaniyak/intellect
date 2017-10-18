@@ -1,15 +1,16 @@
 #include "windowmanager.h"
 #include <QtWidgets>
-#include <menu.h>
-#include <toolbar.h>
+#include <Src/GUI/menu.h>
+#include <Src/GUI/toolbar.h>
 #include "filedialog.h"
-#include "memorytableview.h"
-#include "memorylistview.h"
-#include "memorytreeview.h"
+#include "Src/GUI/MemoryView/memorytableview.h"
+#include "Src/GUI/MemoryView/memorylistview.h"
+#include "Src/GUI/MemoryView/memorytreeview.h"
 #include "memoryeditor.h"
 #include "Src/Memory/qmemorymodel.h"
 #include "graphicsview.h"
 #include "mainwindowex.h"
+#include <QProgressBar>
 
 WindowManager::WindowManager(QObject *parent) : QObject(parent),
   top_widget_(new QWidget())
@@ -114,6 +115,12 @@ QObject *WindowManager::createMenu(QWidget *parent)
   return menu;
 }
 
+QWidget *WindowManager::createProgressBar(QWidget *parent)
+{
+  makeParent(parent);
+  return new QProgressBar(parent);
+}
+
 QObject *WindowManager::createMemoryView(QWidget *parent)
 {
   makeParent(parent);
@@ -140,4 +147,9 @@ QWidget *WindowManager::createMainWindow(QWidget *parent)
 {
   MainWindowEx *wgt = new MainWindowEx(parent);
   return wgt;
+}
+
+QObject *WindowManager::createLayout()
+{
+  return new QHBoxLayout();
 }

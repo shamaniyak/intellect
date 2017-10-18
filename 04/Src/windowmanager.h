@@ -24,6 +24,7 @@ signals:
 
 public slots:
   QWidget * createMainWindow(QWidget *parent = 0);
+  QObject * createLayout();
   QObject * createWidget(QWidget *parent = 0);
   QObject * createLabel(QWidget *parent = 0);
   QObject * createLineEdit(QWidget *parent = 0);
@@ -38,6 +39,7 @@ public slots:
   QObject *createToolBar(QWidget *parent = 0);
   QObject *createFileDialog(QWidget *parent = 0);
   QObject *createMenu(QWidget *parent = 0);
+  QWidget *createProgressBar(QWidget *parent = 0);
 
   QObject * createMemoryView(QWidget *parent = 0);
   QObject * createMemoryEditor(QWidget *parent = 0);
