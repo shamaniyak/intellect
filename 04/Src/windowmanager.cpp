@@ -2,14 +2,14 @@
 #include <QtWidgets>
 #include <Src/GUI/menu.h>
 #include <Src/GUI/toolbar.h>
-#include "filedialog.h"
+#include "Src/GUI/filedialog.h"
 #include "Src/GUI/MemoryView/memorytableview.h"
 #include "Src/GUI/MemoryView/memorylistview.h"
 #include "Src/GUI/MemoryView/memorytreeview.h"
-#include "memoryeditor.h"
+#include "Src/GUI/memoryeditor.h"
 #include "Src/Memory/qmemorymodel.h"
-#include "graphicsview.h"
-#include "mainwindowex.h"
+#include "Src/GUI/graphicsview.h"
+#include "Src/GUI/MainWindowEx/mainwindowex.h"
 #include <QProgressBar>
 
 WindowManager::WindowManager(QObject *parent) : QObject(parent),

@@ -1,7 +1,7 @@
 ﻿#include "intellectmainwindowex.h"
 #include "ui_mainwindowex.h"
 #include "gui/dialogmemoryeditor.h"
-#include "logview.h"
+#include "Src/GUI/logview.h"
 #include "Src/GUI/ScriptEditor/scripteditor.h"
 #include "Src/GUI/MemoryView/memorytreeview.h"
 #include "Src/intellect.h"
@@ -106,7 +106,8 @@ void IntellectMainWindowEx::createMemoryView()
 void IntellectMainWindowEx::createLogView()
 {
   auto log = new LogView();
-  log->setAlg(intellect_);
+  connect(intellect_, &TAlgorithm::addResult, log, &LogView::addResult);
+
   logDockWidget_ = createNewDockWidget(log, false);
   auto wgt = static_cast<QDockWidget*>(logDockWidget_);
   wgt->setWindowTitle(tr("Лог"));

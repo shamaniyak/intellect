@@ -1,7 +1,7 @@
 #ifndef INTELLECTMAINWINDOWEX_H
 #define INTELLECTMAINWINDOWEX_H
 
-#include "mainwindowex.h"
+#include "Src/GUI/MainWindowEx/mainwindowex.h"
 
 #include <QtWidgets>
 
