@@ -337,7 +337,7 @@ bool TMemory::edit(TME *me, const QString &new_name, QVariant new_val)
 TME *TMemory::get(const QString &path)
 {
   if(path.isEmpty())
-    return nullptr;
+    return top_me_;
 
   //path.remove()
   auto path_ = path.split(QRegExp("[\\\\/]"), QString::SkipEmptyParts);
