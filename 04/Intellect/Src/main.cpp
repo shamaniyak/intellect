@@ -1,7 +1,9 @@
 #include "Src/intellect.h"
 #include "GUI/intellectmainwindowex.h"
-#include <QApplication>
 #include <Test/TestSppzCartography/testsppzcartography.h>
+
+#include <QApplication>
+#include <QQmlApplicationEngine>
 
 class Application : public QApplication
 {
@@ -36,6 +38,11 @@ private:
 int main(int argc, char *argv[])
 {
     Application a(argc, argv);
+
+//    QQmlApplicationEngine engine;
+//    engine.load(QUrl(QLatin1String("qrc:/Src/Quick/main.qml")));
+//    if (engine.rootObjects().isEmpty())
+//      return -1;
 
     int result = a.exec();
 

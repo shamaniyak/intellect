@@ -3,7 +3,7 @@
 #include "Src/Memory/mewrapper.h"
 #include "Src/Memory/tme.h"
 #include <QtScript>
-#include <QJSEngine>
+#include <QQmlEngine>
 
 //  MemoryWrapper
 
@@ -353,6 +353,7 @@ QJSEngineMemoryPlugin::QJSEngineMemoryPlugin(QJSEngine &engine)
   //qScriptRegisterMetaType(engine, MEWrapperToScriptValue, MEWrapperFromScriptValue);
   //qScriptRegisterMetaType(engine, EMemoryChangeToJSValue, EMemoryChangeFromJSValue);
   //qScriptRegisterMetaType(engine, tmeToScriptValue, tmeFromScriptValue);
+  qmlRegisterType<MemoryWrapper>("Intellect.MemoryWrapper", 1, 0, "Memory");
 
   QJSValue obj = engine.globalObject();
 
