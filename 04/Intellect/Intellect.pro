@@ -28,11 +28,6 @@ SOURCES += \
     Src/main.cpp \
     Src/intellect.cpp \
     GUI/dialogmemoryeditor.cpp \
-    GUI/mainwindowex.cpp \
-    GUI/memoryeditor.cpp \
-    GUI/logview.cpp \
-    GUI/graphicsview.cpp \
-    GUI/filedialog.cpp \
     GUI/intellectmainwindowex.cpp \
     ../Src/Memory/elementsmanager.cpp \
     ../Src/Memory/memorymanager.cpp \
@@ -58,6 +53,7 @@ SOURCES += \
     ../Src/swmrg.cpp \
     ../Src/talgorithm.cpp \
     ../Src/windowmanager.cpp \
+    ../Src/GUI/MainWindowEx/mainwindowex.cpp \
     ../Src/GUI/MemoryView/memorytreeview.cpp \
     ../Src/GUI/MemoryView/mytreewidgetitem.cpp \
     ../Src/GUI/MemoryView/memorytableview.cpp \
@@ -66,6 +62,10 @@ SOURCES += \
     ../Src/GUI/statusbar.cpp \
     ../Src/GUI/menu.cpp \
     ../Src/GUI/toolbar.cpp \
+    ../Src/GUI/logview.cpp \
+    ../Src/GUI/graphicsview.cpp \
+    ../Src/GUI/filedialog.cpp \
+    ../Src/GUI/memoryeditor.cpp \
     ../Src/GUI/ScriptEditor/highlighter.cpp \
     ../Src/GUI/ScriptEditor/scripteditor.cpp \
     ../Third/qmlcreator/cpp/QMLHighlighter.cpp \
@@ -74,11 +74,6 @@ SOURCES += \
 HEADERS  += \
     Src/intellect.h \
     GUI/dialogmemoryeditor.h \
-    GUI/mainwindowex.h \
-    GUI/memoryeditor.h \
-    GUI/logview.h \
-    GUI/graphicsview.h \
-    GUI/filedialog.h \
     GUI/intellectmainwindowex.h \
     ../Src/Memory/elementsmanager.h \
     ../Src/Memory/memorymanager.h \
@@ -105,6 +100,7 @@ HEADERS  += \
     ../Src/swmrg.h \
     ../Src/talgorithm.h \
     ../Src/windowmanager.h \
+    ../Src/GUI/MainWindowEx/mainwindowex.h \
     ../Src/GUI/MemoryView/memorytreeview.h \
     ../Src/GUI/MemoryView/mytreewidgetitem.h \
     ../Src/GUI/MemoryView/memorytableview.h \
@@ -113,6 +109,10 @@ HEADERS  += \
     ../Src/GUI/statusbar.h \
     ../Src/GUI/menu.h \
     ../Src/GUI/toolbar.h \
+    ../Src/GUI/logview.h \
+    ../Src/GUI/graphicsview.h \
+    ../Src/GUI/filedialog.h \
+    ../Src/GUI/memoryeditor.h \
     ../Src/GUI/ScriptEditor/highlighter.h \
     ../Src/GUI/ScriptEditor/scripteditor.h \
     ../Third/qmlcreator/cpp/QMLHighlighter.h \
@@ -120,7 +120,7 @@ HEADERS  += \
 
 FORMS    += \
     GUI/dialogmemoryeditor.ui \
-    GUI/mainwindowex.ui
+    ../Src/GUI/MainWindowEx/mainwindowex.ui
 
 DISTFILES += \
 
