@@ -139,6 +139,10 @@ bool ScriptWrapper::execute()
 
 bool ScriptWrapper::evaluate(const QString &txt)
 {
+  auto parentContext = script()->currentContext()->parentContext();
+  if(parentContext)
+    m_script->currentContext()->setActivationObject(parentContext->activationObject());
+
   QScriptValue _val = script()->evaluate(txt);
 
   if(m_script->hasUncaughtException()){
