@@ -1,8 +1,9 @@
-#include "highlighter.h"
 #include "scripteditor.h"
+#include "highlighter.h"
 
 #include <Src/iobject.h>
-#include "Src/Memory/qmemorymodel.h"
+#include <Src/Memory/qmemorymodel.h>
+#include <Third/qmlcreator/cpp/SyntaxHighlighter.h>
 
 #include <QtDebug>
 #include <QMessageBox>
@@ -13,8 +14,23 @@
 #include <QAbstractItemView>
 #include <QScrollBar>
 
-ScriptEditor::ScriptEditor(QWidget *parent) : QPlainTextEdit(parent),
-  h_(new Highlighter(this->document()))
+ScriptEditor::ScriptEditor(QWidget *parent) : QPlainTextEdit(parent)
+{
+  init();
+
+  createHighliter();
+
+  createLineNumberArea();
+
+  connect(this, &ScriptEditor::textChanged, this, &ScriptEditor::on_textChanged);
+}
+
+ScriptEditor::~ScriptEditor()
+{
+  //qDebug() << "ScriptEditor::~ScriptEditor()";
+}
+
+void ScriptEditor::init()
 {
   this->setObjectName("ScriptEditor");
 
@@ -23,14 +39,20 @@ ScriptEditor::ScriptEditor(QWidget *parent) : QPlainTextEdit(parent),
   font.setFixedPitch(true);
   font.setPointSize(10);
 
-  this->setFont(font);
-
-  this->setLineWrapMode(QPlainTextEdit::NoWrap);
-
+  setFont(font);
+  setLineWrapMode(QPlainTextEdit::NoWrap);
   setTabStopWidth(fontMetrics().width("  "));
+}
 
-  connect(this, &ScriptEditor::textChanged, this, &ScriptEditor::on_textChanged);
+void ScriptEditor::createHighliter()
+{
+  auto syntaxHighlighter = new SyntaxHighlighter(this);
+  syntaxHighlighter->setObjectName("syntaxHighlighter");
+  syntaxHighlighter->setDocument(document());
+}
 
+void ScriptEditor::createLineNumberArea()
+{
   lineNumberArea_ = new LineNumberArea(this);
 
   completer = new Completer(this);
@@ -48,11 +70,6 @@ ScriptEditor::ScriptEditor(QWidget *parent) : QPlainTextEdit(parent),
 
   updateLineNumberAreaWidth(0);
   highlightCurrentLine();
-}
-
-ScriptEditor::~ScriptEditor()
-{
-  qDebug() << "ScriptEditor::~ScriptEditor()";
 }
 
 MemoryWrapper *ScriptEditor::mem() const

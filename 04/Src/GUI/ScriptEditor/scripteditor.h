@@ -7,7 +7,7 @@
 
 #include <Src/Memory/memorywrapper.h>
 
-class Highlighter;
+class QSyntaxHighlighter;
 class IObject;
 class Completer;
 class QMemoryModel;
@@ -54,7 +54,7 @@ private slots:
   void performCompletion();
 
 private:
-  Highlighter *h_ = 0;
+  QSyntaxHighlighter *h_ = 0;
   IObject *iobj_ = 0;
   MemoryWrapper *mem_ = 0;
   MEWrapper *sel_ = 0;
@@ -65,6 +65,9 @@ private:
   void showVal();
   void disconnectMem();
   void connectMem();
+  void createHighliter();
+  void createLineNumberArea();
+  void init();
 };
 
 class LineNumberArea : public QWidget
