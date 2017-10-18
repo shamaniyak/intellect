@@ -11,6 +11,8 @@ class MainWindowEx;
 class MainWindowEx : public QMainWindow
 {
   Q_OBJECT
+  Q_PROPERTY(QWidget* statusBar READ getStatusBar)
+  Q_PROPERTY(QWidget* menuBar READ getMenuBar)
 
 public:
   explicit MainWindowEx(QWidget *parent = 0);
@@ -18,20 +20,23 @@ public:
 
 public slots:
   QWidget *createNewDoc(QWidget *wgt, bool deleteOnClose = true);
-  QWidget *createNewDockWidget(QWidget *wgt, bool deleteOnClose = true);
   QWidget *createDocument(QWidget *wgt);
-  QWidget *createDockWidget(QWidget *wgt);
+
+  QWidget *createNewDockWidget(QWidget *wgt, bool deleteOnClose = true);
+  QWidget *createDockWidget(QWidget *wgt, int area = 0x1, int orientation = 0x1);
+  void tabifyDockWidget(QDockWidget *first, QDockWidget *second);
 
   void addToolBar(QObject *tb);
-  QObject *getToolBar(const QString &name);
+  QWidget *getToolBar(const QString &name);
 
   QWidget *getMenuBar();
 
   QWidget *getStatusBar();
 
-  QObject *addMenu(const QString &name);
+  QObject *createMenu(const QString &title);
   void addMenu(QObject *menu);
   QObject *getMenu(const QString &name);
+  void deleteMenu(QObject *menu);
 
 protected:
 

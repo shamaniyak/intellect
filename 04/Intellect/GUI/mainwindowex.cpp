@@ -1,17 +1,15 @@
 ﻿#include "mainwindowex.h"
 #include "ui_mainwindowex.h"
-#include "gui/dialogmemoryeditor.h"
-#include "logview.h"
-#include "scripteditor.h"
-#include "memorytreeview.h"
-#include "Src/intellect.h"
-#include "menu.h"
+#include "Src/GUI/menu.h"
+#include <Src/GUI/statusbar.h>
 
 MainWindowEx::MainWindowEx(QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::MainWindowEx)
 {
   ui->setupUi(this);
+
+  setStatusBar(new StatusBar());
 }
 
 MainWindowEx::~MainWindowEx()
@@ -38,6 +36,13 @@ QWidget *MainWindowEx::createNewDoc(QWidget *wgt, bool deleteOnClose)
   return sw;
 }
 
+QWidget *MainWindowEx::createDocument(QWidget *wgt)
+{
+  if(!wgt)
+    return nullptr;
+  return createNewDoc(wgt);
+}
+
 QWidget *MainWindowEx::createNewDockWidget(QWidget *wgt, bool deleteOnClose)
 {
   if(!wgt)
@@ -50,14 +55,25 @@ QWidget *MainWindowEx::createNewDockWidget(QWidget *wgt, bool deleteOnClose)
   return pdoc;
 }
 
-QWidget *MainWindowEx::createDocument(QWidget *wgt)
+QWidget *MainWindowEx::createDockWidget(QWidget *wgt, int area, int orientation)
 {
-  return createNewDoc(wgt);
+  if(!wgt)
+    return nullptr;
+  QDockWidget *pdoc = new QDockWidget("New", this);
+  pdoc->setWidget(wgt);
+  //pdoc->setAttribute(Qt::WA_DeleteOnClose, true);
+  auto a = (Qt::DockWidgetArea)area;
+  auto o = (Qt::Orientation)orientation;
+  addDockWidget(a, pdoc, o);
+
+  return pdoc;
 }
 
-QWidget *MainWindowEx::createDockWidget(QWidget *wgt)
+void MainWindowEx::tabifyDockWidget(QDockWidget *first, QDockWidget *second)
 {
-  return createNewDockWidget(wgt);
+  if(!first || !second) return;
+
+  QMainWindow::tabifyDockWidget(first, second);
 }
 
 void MainWindowEx::addToolBar(QObject *tb)
@@ -67,7 +83,7 @@ void MainWindowEx::addToolBar(QObject *tb)
     QMainWindow::addToolBar(Qt::TopToolBarArea, ptb);
 }
 
-QObject *MainWindowEx::getToolBar(const QString &name)
+QWidget *MainWindowEx::getToolBar(const QString &name)
 {
   auto tb = this->findChild<QToolBar*>(name);
   return tb;
@@ -80,13 +96,13 @@ QWidget *MainWindowEx::getMenuBar()
 
 QWidget *MainWindowEx::getStatusBar()
 {
-  return statusBar();
+  return QMainWindow::statusBar();
 }
 
-QObject *MainWindowEx::addMenu(const QString &name)
+QObject *MainWindowEx::createMenu(const QString &title)
 {
   auto menu = new Menu();
-  menu->setTitle(name);
+  menu->setTitle(title);
   addMenu(menu);
   return menu;
 }
@@ -101,8 +117,19 @@ void MainWindowEx::addMenu(QObject *menu)
 
 QObject *MainWindowEx::getMenu(const QString &name)
 {
+  //qDebug() << name;
   auto menu = menuBar()->findChild<QMenu*>(name);
+  for(auto act: menuBar()->actions())
+  {
+    if(act->menu() && act->menu()->objectName() == name)
+      menu = act->menu();
+  }
   return menu;
+}
+
+void MainWindowEx::deleteMenu(QObject *menu)
+{
+  delete menu;
 }
 
 void MainWindowEx::closeEvent(QCloseEvent *event)
