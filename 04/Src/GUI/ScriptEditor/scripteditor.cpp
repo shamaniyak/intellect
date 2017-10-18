@@ -146,13 +146,6 @@ void ScriptEditor::checkForSave()
 {
   if(timerId_)
   {
-//    int n = QMessageBox::warning(0,
-//                                 "Редактор",
-//                                 "Значение изменено. Сохранить?",
-//                                 QMessageBox::Yes | QMessageBox::No,
-//                                 QMessageBox::Yes);
-
-//    if(n == QMessageBox::Yes)
       save();
   }
 }

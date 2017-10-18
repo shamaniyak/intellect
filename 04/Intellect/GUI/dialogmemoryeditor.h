@@ -4,7 +4,7 @@
 #include <memory>
 #include <QWidget>
 #include "Src/Memory/memorywrapper.h"
-#include "highlighter.h"
+#include "Src/GUI/ScriptEditor/highlighter.h"
 
 class Intellect;
 

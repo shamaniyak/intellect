@@ -10,7 +10,7 @@
 #include "Src/Memory/memorywrapper.h"
 #include "Src/scriptwrapper.h"
 
-#include "memorytreeview.h"
+#include "Src/GUI/MemoryView/memorytreeview.h"
 
 DialogMemoryEditor::DialogMemoryEditor(QWidget *parent) :
   QWidget(parent),
