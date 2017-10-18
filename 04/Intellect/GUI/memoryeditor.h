@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QWidget>
 
-class QGridLayout;
+class QFormLayout;
 
 class MemoryEditor : public QWidget
 {
@@ -15,12 +15,19 @@ public:
 signals:
 
 public slots:
-  void addWidget(QWidget *wgt);
+  QObject * addLayout(int type, QObject *parent = nullptr);
+  void addWidget(QWidget *wgt, QObject *layout=0);
   void addWidget(QWidget *wgt, int row, int column, int align = 0);
   void addWidget(QWidget *wgt, int row, int column, int rowSpan, int columnSpan, Qt::Alignment align = 0);
 
+  void addSpacer(QObject *parent);
+
+  void setLayout(QObject *layout);
+
+  void addRow(const QString &name, QWidget *w);
+
 private:
-  QGridLayout *gridLayout;
+  QFormLayout *formLayout;
 };
 
 #endif // MEMORYEDITOR_H
