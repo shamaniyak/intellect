@@ -12,6 +12,7 @@
 MemoryTreeView::MemoryTreeView(QWidget *parent):
   QTreeView(parent)
 {
+//  qDebug() << "MemoryTreeView::MemoryTreeView()";
   initModels();
 
   createContextMenu();
@@ -25,7 +26,7 @@ MemoryTreeView::MemoryTreeView(QWidget *parent):
 
 MemoryTreeView::~MemoryTreeView()
 {
-  qDebug() << "MemoryTreeView::~MemoryTreeView()";
+//  qDebug() << "MemoryTreeView::~MemoryTreeView()";
   disconnectSlots();
 }
 
