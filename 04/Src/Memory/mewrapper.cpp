@@ -34,19 +34,8 @@ void MEWrapper::clearR(Memory::TME *me)
 
 void MEWrapper::clear()
 {
-//  if(mem_)
-//    mem_->clearMe(this);
-  if(mem_ && me_) {
-    mem_->doChange(this, EMemoryChange::mcClear);
-
-    Memory::TME::Elements &childs = me_->getElements();
-    int cnt = childs.count();
-    for(int i = 0; i <cnt; ++i)
-    {
-      clearR(childs.get(i));
-    }
-    me_->clear();
-  }
+  if(mem_)
+    mem_->clearMe(this);
 }
 
 Memory::TME *MEWrapper::getMe() const
@@ -68,23 +57,6 @@ void MEWrapper::deleteMe(MEWrapper *me)
 {
   if(mem_)
     mem_->deleteMe(me);
-  return;
-
-  if(me && mem_ && me_)
-  {
-    ChangeEvent ev;
-    ev.type = EMemoryChange::mcDel;
-    ev.me = me;
-    ev.parent = me->parent();
-    ev.row = me->getIndex();
-    ev.count = me->count();
-
-    auto me1 = me->me_;
-    clearR(me1);
-    me_->Del(me1);
-
-    mem_->doChange(ev);
-  }
 }
 
 QString MEWrapper::name() const
@@ -96,22 +68,8 @@ QString MEWrapper::name() const
 
 void MEWrapper::setName(const QString &name)
 {
-  if(!me_)
-    return;
-
-  ChangeEvent ev;
-  ev.me = this;
-  ev.prevName = this->name();
-
-  if(name == ev.prevName)
-    return;
-
-  me_->setName(name);
-
-  if(mem_) {
-    mem_->doChange(this, EMemoryChange::mcEditName);
-    mem_->doChange(ev);
-  }
+  if(mem_)
+    mem_->setName(this, name);
 }
 
 QVariant MEWrapper::val() const
@@ -123,21 +81,8 @@ QVariant MEWrapper::val() const
 
 void MEWrapper::setVal(const QVariant &val)
 {
-  if(!me_)
-    return;
-  ChangeEvent ev;
-  ev.me = this;
-  ev.prevVal = this->val();
-
-  if(val == ev.prevVal)
-    return;
-
-  me_->setVal(val);
-
-  if(mem_) {
-    mem_->doChange(this, EMemoryChange::mcEditVal);
-    mem_->doChange(ev);
-  }
+  if(mem_)
+    mem_->setVal(this, val);
 }
 
 QString MEWrapper::getPath() const
@@ -152,23 +97,6 @@ MEWrapper *MEWrapper::add(const QString &name, bool checkExist)
   if(mem_)
     return mem_->add(this, name, checkExist);
   return nullptr;
-
-//  if(!me_)
-//    return nullptr;
-//  MEWrapper *me = nullptr;
-
-//  if(!name.isEmpty() && checkExist)
-//    me = get(name);
-
-//  if(!me) {
-//    if(mem_) {
-//      me = mem_->CreateMEW(me_->Add(name));
-//      if(me)
-//        mem_->doChange(me, EMemoryChange::mcAdd);
-//    }
-//  }
-
-  //  return me;
 }
 
 bool MEWrapper::addFrom(MEWrapper *from, bool recurs)

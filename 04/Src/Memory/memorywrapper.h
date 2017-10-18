@@ -99,6 +99,9 @@ public slots:
   bool save();
 
   QVariant getVal(const QString &path);
+  void setVal(MEWrapper *me, const QVariant &val);
+
+  void setName(MEWrapper *me, const QString &name);
 
   void doChange(MEWrapper *me, EMemoryChange idMsg);
 
@@ -125,6 +128,8 @@ protected:
   void clearR(Memory::TME *me);
   void clearMe1(MEWrapper *me);
   bool move1(MEWrapper *me, MEWrapper *parent, int pos);
+  void setVal1(MEWrapper *me, const QVariant &val);
+  void setName1(MEWrapper *me, const QString &name);
 
 private:
   typedef QMap<Memory::TME*, MEWrapper*> t_mapMeWrappers;
@@ -137,7 +142,6 @@ private:
   t_multiMapMeWrappers elements_;
   t_vecMeWrappers deleted_; // Список удаленных
   QUndoStack *stack_ = nullptr;
-  std::shared_ptr<Memory::TMemory> memUndo_;
   bool canChange_ = true;
 
   friend class MEWrapper;
@@ -146,6 +150,8 @@ private:
   friend class AddFromCommand;
   friend class ClearCommand;
   friend class MoveCommand;
+  friend class EditNameCommand;
+  friend class EditValCommand;
 };
 //
 Q_DECLARE_METATYPE(MemoryWrapper*)

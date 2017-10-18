@@ -111,11 +111,11 @@ public:
 
   virtual void undo() override
   {
-    me_->setName(oldName_);
+    m_->setName1(me_, oldName_);
   }
   virtual void redo() override
   {
-    me_->setName(newName_);
+    m_->setName1(me_, newName_);
   }
 
 private:
@@ -132,11 +132,11 @@ public:
 
   virtual void undo() override
   {
-    me_->setVal(oldVal_);
+    m_->setVal1(me_, oldVal_);
   }
   virtual void redo() override
   {
-    me_->setVal(newVal_);
+    m_->setVal1(me_, newVal_);
   }
 
 private:
@@ -242,7 +242,6 @@ bool MemoryWrapper::addFrom1(Memory::TME *parent, Memory::TME *mefrom, bool recu
 
   if(res)
     doChange(CreateMEW(parent), EMemoryChange::mcAddFrom);
-    //doChange(getById((uint)parent), EMemoryChange::mcAddFrom);
 
   return res;
 }
@@ -278,8 +277,6 @@ void MemoryWrapper::deleteMe1(MEWrapper *me)
 {
   if(me)
   {
-    auto parent = me->parent();
-
     ChangeEvent ev;
     ev.type = EMemoryChange::mcDel;
     ev.me = me;
@@ -289,7 +286,7 @@ void MemoryWrapper::deleteMe1(MEWrapper *me)
 
     auto me1 = me->getMe();
     me->clearR(me1);
-    parent->getMe()->Del(me1);
+    ev.parent->getMe()->Del(me1);
 
     doChange(ev);
   }
@@ -370,6 +367,72 @@ QVariant MemoryWrapper::getVal(const QString &path)
   return QVariant();
 }
 
+void MemoryWrapper::setVal(MEWrapper *me, const QVariant &val)
+{
+  if(me)
+  {
+    if(val == me->val())
+      return;
+
+    auto s = getStack();
+    if(s) {
+      auto cmd = new EditValCommand(this, me, val);
+      s->push(cmd);
+      return;
+    }
+
+    setVal1(me, val);
+  }
+}
+
+void MemoryWrapper::setVal1(MEWrapper *me, const QVariant &val)
+{
+  if(!me || !me->me_)
+    return;
+
+  ChangeEvent ev;
+  ev.type = EMemoryChange::mcEditVal;
+  ev.me = me;
+  ev.prevVal = me->val();
+
+  me->me_->setVal(val);
+
+  doChange(ev);
+}
+
+void MemoryWrapper::setName(MEWrapper *me, const QString &name)
+{
+  if(me)
+  {
+    if(name == me->name())
+      return;
+
+    auto s = getStack();
+    if(s) {
+      auto cmd = new EditNameCommand(this, me, name);
+      s->push(cmd);
+      return;
+    }
+
+    setName1(me, name);
+  }
+}
+
+void MemoryWrapper::setName1(MEWrapper *me, const QString &name)
+{
+  if(!me->me_)
+    return;
+
+  ChangeEvent ev;
+  ev.type = EMemoryChange::mcEditName;
+  ev.me = me;
+  ev.prevName = me->name();
+
+  me->me_->setName(name);
+
+  doChange(ev);
+}
+
 void MemoryWrapper::setSelected(MEWrapper *me)
 {
   if(!me)
@@ -438,15 +501,21 @@ void MemoryWrapper::doChange(const ChangeEvent &ev)
 void MemoryWrapper::clear()
 {
   setSelected(getME());
-  clearMe(getSelected());
-  //mem_->clear();
-
-  //doChange(getME(), EMemoryChange::mcClear);
+  clearMe(getME());
 }
 
 void MemoryWrapper::clearMe(MEWrapper *me)
 {
-  clearMe1(me);
+  if(me) {
+    auto s = getStack();
+    if(s) {
+      auto cmd = new ClearCommand(this, me);
+      s->push(cmd);
+      return;
+    }
+
+    clearMe1(me);
+  }
 }
 
 void MemoryWrapper::clearR(Memory::TME *me)
@@ -462,6 +531,7 @@ void MemoryWrapper::clearR(Memory::TME *me)
 
   me->clear();
 }
+
 void MemoryWrapper::clearMe1(MEWrapper *me)
 {
   if(me && me->getMe()) {
@@ -479,9 +549,18 @@ void MemoryWrapper::clearMe1(MEWrapper *me)
 
 bool MemoryWrapper::move(MEWrapper *me, MEWrapper *parent, int pos)
 {
+  if(me && parent) {
+    auto s = getStack();
+    if(s) {
+      auto cmd = new MoveCommand(this, me, pos);
+      s->push(cmd);
+      return true;
+    }
 
+    return move1(me, parent, pos);
+  }
 
-  return move1(me, parent, pos);
+  return false;
 }
 
 bool MemoryWrapper::move1(MEWrapper *me, MEWrapper *parent, int pos)
@@ -579,13 +658,6 @@ MEWrapper *MemoryWrapper::add1(MEWrapper *parent, const QString &name, bool chec
     me = CreateMEW(meParent->Add(name));
     if(me) {
       doChange(me, EMemoryChange::mcAdd);
-
-//      Memory::TopME meEvent;
-//      meEvent.setMem(this->mem_.get());
-//      meEvent.Add("type")->setVal("Add");
-//      meEvent.Add("me")->setVal(me->getPath());
-
-//      emit change1(meEvent);
     }
   }
 
