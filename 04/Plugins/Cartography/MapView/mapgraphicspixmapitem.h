@@ -18,6 +18,8 @@ public:
 
   void resize(int w, int h);
 
+  QPointF imageLT() const;
+
 protected:
 
   void setImageLT(const QPointF &pos);
@@ -31,6 +33,10 @@ protected:
   virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
   virtual void wheelEvent(QGraphicsSceneWheelEvent *event) override;
+
+  // Для обработки тачскрина
+  bool sceneEvent(QEvent *event) override;
+  bool touchEvent(QEvent *e);
 
 private:
   IMap *map_ = nullptr;

@@ -26,6 +26,8 @@ public slots:
   virtual void XmYm_BL(double Xm, double Ym, double &B, double &L) override;
   virtual void XY_XmYm(double X, double Y, double &Xm, double &Ym) override;
   virtual void XmYm_XY(double Xm, double Ym, double &X, double &Y) override;
+  virtual void BL_XY(double B, double L, double &X, double &Y) override;
+  virtual void XY_BL(double X, double Y, double &B, double &L) override;
   virtual double getHeight_XmYm(double Xm, double Ym) override;
   virtual bool getMagneticAngle_BL(double B, double L, double *Ma) override;
   virtual bool isMtrExist() override;

@@ -63,6 +63,14 @@ void SppzCartography::XmYm_XY(double Xm, double Ym, double &X, double &Y)
 {
 }
 
+void SppzCartography::BL_XY(double B, double L, double &X, double &Y)
+{
+}
+
+void SppzCartography::XY_BL(double X, double Y, double &B, double &L)
+{
+}
+
 double SppzCartography::getHeight_XmYm(double Xm, double Ym)
 {
 }

@@ -12,6 +12,7 @@
 #include <QMouseEvent>
 #include <QFile>
 #include <QGraphicsPixmapItem>
+#include <QGraphicsSimpleTextItem>
 #include <QtDebug>
 #include <cartographymap.h>
 
@@ -44,26 +45,25 @@ int GetMaxDistanceToDraw(int scale)
 
 myDMapView :: myDMapView(QWidget *parent) : QGraphicsView(parent), map_(NULL)
 {
-  this->setObjectName("MapView");
-  //viewport()->setMouseTracking(true);
+  viewport()->setMouseTracking(true);
+  viewport()->setAttribute(Qt::WA_AcceptTouchEvents);
 
   setScene(&scene_);
+
+  graphicsItemMap_ = new MapGraphicsPixmapItem();
+  scene_.addItem(graphicsItemMap_);
+  graphicsItemMap_->setPos(QPointF(0,0));
+
+  textItem_ = new QGraphicsSimpleTextItem(graphicsItemMap_);
+  textItem_->setPos(0, 0);
+  //scene_.addItem(textItem_);
 
   mapTaskDraw.clear();
   mapListTaskInvalidateForTask.clear();
   it_activeDrawTask = mapTaskDraw.end();
-  _cx = -1;
-  _cy = -1;
-  _cw = -1;
-  _ch = -1;
-  _oldScale = 0;
-  _contentsX = 0;
-  _contentsY = 0;
 
   keyboardGrabbed = false;
   isTaskPixmapFilled = false;
-
-  //viewport()->installEventFilter(this);
 }
 //--------------------------------------------------------------------------------------------
 
@@ -81,6 +81,8 @@ myDMapView :: ~myDMapView()
 void myDMapView :: setMapLogic(IMap* map)
 {
   map_ = map;
+
+  graphicsItemMap_->setMap(map_);
 }
 
 void myDMapView::setMap(CartographyMap *map)
@@ -270,27 +272,6 @@ bool myDMapView :: isMtrExist()
 
 // ЗАГРУЗКА ИСХОДНЫХ ДАННЫХ
 
-// Открыть карту по имени файла
-void myDMapView :: SetMapFileName(QString mapName)
-{
-  assert(map_ != NULL && "SetMapFileName");
-  if (map_->setMap(mapName))
-  {
-    refreshSize();
-    showMap();
-  }
-}
-//--------------------------------------------------------------------------------------------
-
-// Получить имя открытой карты
-QString myDMapView::GetMapFileName()
-{
-  assert(map_ != NULL && "GetMapFileName");
-
-  return map_->getMapFileName();
-}
-//--------------------------------------------------------------------------------------------
-
 // Установить матрицу высот для открытой карты
 void myDMapView :: setMapMtr(QString mtrName)
 {
@@ -315,7 +296,7 @@ void myDMapView :: openWorld()
   map_->openWorld();
 
   //изменение размеров содержимого
-  refreshSize();
+  //refreshSize();
   showMap();
 
 #if OS_VERSION == 0 // @TODO@ Временно, сделать нормально
@@ -329,10 +310,8 @@ void myDMapView :: openWorld()
 
 bool myDMapView :: isWorldMapOpened()
 {
-  return GetMapFileName().contains("world");
+  return map_->getMapFileName().contains("world");
 }
-
-//--------------------------------------------------------------------------------------------
 
 // НАСТРОЙКА ПАРАМЕТРОВ ОТОБРАЖЕНИЯ КАРТЫ
 
@@ -393,36 +372,7 @@ bool myDMapView :: GetMapContour()
 // Установить масштаб отображения
 void myDMapView :: SetViewScale(float value)
 {
-  assert(map_ != NULL && "SetViewScale");
 
-  long int X,Y;
-
-  //вычислим текущий центр
-  //X = contentsX()+ visibleRegion()/2;
-  //Y=contentsY()+ visibleHeight()/2;
-  X = _cw /2;
-  Y = _ch /2;
-
-  map_->setViewScale(X,Y,value);
-
-  //long int width, height;
-  //mapLogic->getMapImageSize(width, height);
-  //изменение размеров содержимого
-  //resizeContents(width, height);
-  //resize(width, height);
-
-  //вычислим новый центр
-  //X=X-visibleWidth()/2;
-  //if(X<0) X=0;
-  //Y=Y-visibleHeight()/2;
-  //if(Y<0) Y=0;
-  //setContentsPos(X,Y);
-
-  //const int x = horizontalScrollBar()->value() + dx;
-  //horizontalScrollBar()->setValue( x );
-
-  //const int y = verticalScrollBar()->value() + dy;
-  //verticalScrollBar()->setValue( y );
 }
 //--------------------------------------------------------------------------------------------
 
@@ -442,8 +392,6 @@ void myDMapView :: GetViewScaleForObjectShaper(int* scale)
 
 void myDMapView::on_change()
 {
-  //изменение размеров содержимого
-  refreshSize();
   showMap();
 }
 //--------------------------------------------------------------------------------------------
@@ -791,23 +739,12 @@ QPixmap myDMapView :: getCurrentPixmap()
 // Перерисовать контент
 void myDMapView :: Repaint()
 {
-  QPainter p(this);
-  drawContents(&p, x(), y(), width(), height());
+
 }
 
 void myDMapView::showMap()
 {
-  Repaint();
 
-  centerOn(_cw/2, _ch/2);
-}
-//--------------------------------------------------------------------------------------------
-
-void myDMapView :: badRepaint()
-{
-  //viewport()->setGeometry(viewport()->x(), viewport()->y(), viewport()->width(), viewport()->height()-1);
-  //viewport()->repaint(false);
-  //viewport()->setGeometry(viewport()->x(), viewport()->y(), viewport()->width(), viewport()->height()+1);
 }
 
 // Установить задачу для отрисовки
@@ -912,6 +849,18 @@ void myDMapView::DrawTask(QString nameTask, set<QString >& _drawTask, QPainter* 
     }
   }
 }
+
+void myDMapView::showTextHint()
+{
+  auto imageLT = graphicsItemMap_->imageLT();
+  auto p = imageLT + mousePos_;
+  double b = 0, l = 0;
+  if(map_)
+    map_->XY_BL(p.x(), p.y(), b, l);
+
+  textItem_->setPos(0, 0);
+  textItem_->setText("Map B: " + QString().setNum(b) + ", L: " + QString().setNum(l));
+}
 //--------------------------------------------------------------------------------------------
 
 // Выполнить задачу отрисовки (и связанные с ней)
@@ -988,99 +937,12 @@ bool myDMapView :: isMouseTaskExist(QString value)
   return (it != vectTaskMouse.end());
 }
 
-//--------------------------------------------------------------------------------------------
-
-void myDMapView::drawContents(QPainter* p, int cx, int cy, int cw, int ch)
-{
-
-  long int w, h;
-  int l = 0, t = 0;
-
-  map_->getMapImageSize(w, h);
-
-  if(w > _cw)
-    l = (w - _cw) / 2;
-  if(h > _ch)
-    t = (h - _ch) / 2;
-
-  QImage _image;
-  if(getImageMap(l, t, _cw, _ch, _image))
-  {
-    //bool saved = _image.save("c:\\image.png");
-
-    currentMap_ = QPixmap::fromImage(_image);
-
-    if(!graphicsItemMap_)
-    {
-      graphicsItemMap_ = scene_.addPixmap(currentMap_);
-      graphicsItemMap_->setPos(QPointF(0,0));
-      graphicsItemMap_->setFlags(QGraphicsItem::ItemIsMovable);
-    }
-    else
-      graphicsItemMap_->setPixmap(currentMap_);
-
-    //graphicsItemMap_->setScale(0.1);
-    //QTransform transform = graphicsItemMap_->transform();
-    //transform.
-  }
-  return;
-
-  if(cx < 0 || cy < 0 || cw<= 0 || ch <= 0)
-    return;
-  if(_oldScale!=GetViewScale() || cx != _cx || cy!=_cy || cw!=_cw || ch!=_ch)
-  {
-    int dx = x() - _contentsX;
-    int dy = y() - _contentsY;
-
-    int _x = dx > 0? 0: abs(dx);
-    int _y = dy > 0? 0: abs(dy);
-
-    int _x2 = dx > 0? abs(dx): 0;
-    int _y2 = dy > 0? abs(dy): 0;
-
-    //    QPainter cur_paint(&_currentPixmapMapViewPort);
-    //    QPainter old_paint(&old_currentPixmapMapViewPort);
-
-    //    cur_paint.drawPixmap(_x, _y, _currentPixmapMapViewPort, _x2, _y2,
-    //                     _currentPixmapMapViewPort.width() - abs(dx),
-    //                     _currentPixmapMapViewPort.height() - abs(dy));
-
-    _cx = cx;
-    _cy = cy;
-    _cw = cw;
-    _ch = ch;
-    _oldScale = GetViewScale();
-    _contentsX = x();
-    _contentsY = y();
-
-    //    QImage _image;
-    //    if(getImageMap(0, 0, width, height, _image))
-    //    {
-
-    //p->drawPixmap(0, 0, _cw, _ch, _pixmap);
-
-    //      cur_paint.drawPixmap(_cx - x(), _cy - y(), _pixmap, 0, 0, _cw, _ch);
-    //      old_paint.drawPixmap(0, 0, _currentPixmapMapViewPort, 0, 0,
-    //                           old_currentPixmapMapViewPort.width(),
-    //                           old_currentPixmapMapViewPort.height());
-    //DrawTask("Map");
-    //    }
-
-    //cur_paint.end();
-    //old_paint.end();
-  }
-
-  //p->drawPixmap(cx, cy, old_currentPixmapMapViewPort, cx - widget()->x(), cy - widget()->y(), cw, ch);
-
-}
-//--------------------------------------------------------------------------------------------
-
 void myDMapView :: mousePressEvent(QMouseEvent* e)
 {
   int x = e->x();
   int y = e->y();
 
-  double height = getHeight_XY(x, y);
+  //double height = getHeight_XY(x, y);
 
   double B, L;
   XY_BL(x, y, B, L);
@@ -1094,10 +956,13 @@ void myDMapView :: mousePressEvent(QMouseEvent* e)
 
 void myDMapView :: mouseMoveEvent(QMouseEvent* e)
 {
+  mousePos_ = e->pos();
+  showTextHint();
+
   int x = e->x();
   int y = e->y();
 
-  double height = getHeight_XY(x, y);
+  //double height = getHeight_XY(x, y);
 
   double B, L;
   XY_BL(x, y, B, L);
@@ -1113,7 +978,7 @@ void myDMapView :: mouseReleaseEvent(QMouseEvent* e)
   int x = e->x();
   int y = e->y();
 
-  double height = getHeight_XY(x, y);
+  //double height = getHeight_XY(x, y);
 
   double B, L;
   XY_BL(x, y, B, L);
@@ -1200,49 +1065,39 @@ void myDMapView :: keyPressEvent(QKeyEvent * keyEvent)
 
 }
 
-void myDMapView::refreshSize()
-{
-  map_->getMapImageSize(_cw, _ch);
-
-  viewport()->resize(_cw, _ch);
-}
-
-
 void myDMapView :: resizeEvent(QResizeEvent* e)
 {
-  //Q3ScrollView :: viewportResizeEvent(e);
-  //_currentPixmapMapViewPort.resize(viewport()->width(), viewport()->height());
-  //old_currentPixmapMapViewPort.resize(viewport()->width(), viewport()->height());
-  //task_currentPixmapMapViewPort.resize(viewport()->width(), viewport()->height());
+  scene()->setSceneRect(0, 0, viewport()->width(), viewport()->height());
+  graphicsItemMap_->resize(viewport()->width(), viewport()->height());
 
   QGraphicsView::resizeEvent(e);
 }
 
 void myDMapView::wheelEvent(QWheelEvent *e)
 {
-  if(e->modifiers().testFlag(Qt::ControlModifier))
-  {
-    QPoint numPixels = e->pixelDelta();
-    QPoint numDegrees = e->angleDelta() / 8;
+//  if(e->modifiers().testFlag(Qt::ControlModifier))
+//  {
+//    QPoint numPixels = e->pixelDelta();
+//    QPoint numDegrees = e->angleDelta() / 8;
 
-    if(!numPixels.isNull())
-    {
-      e->accept();
-      //qDebug() << "wheel1 x: " << numPixels.x() << " wheel1 y: " << numPixels.y();
-      return;
-    }
-    else if(!numDegrees.isNull())
-    {
-      e->accept();
-      QPoint numSteps = numDegrees / 15;
-      if(numSteps.y() > 0)
-        scale(1.1, 1.1);
-      else
-        scale(1/1.1, 1/1.1);
-      //qDebug() << "wheel2 x: " << numSteps.x() << " wheel2 y: " << numSteps.y();
-      return;
-    }
-  }
+//    if(!numPixels.isNull())
+//    {
+//      e->accept();
+//      //qDebug() << "wheel1 x: " << numPixels.x() << " wheel1 y: " << numPixels.y();
+//      return;
+//    }
+//    else if(!numDegrees.isNull())
+//    {
+//      e->accept();
+//      QPoint numSteps = numDegrees / 15;
+//      if(numSteps.y() > 0)
+//        scale(1.1, 1.1);
+//      else
+//        scale(1/1.1, 1/1.1);
+//      //qDebug() << "wheel2 x: " << numSteps.x() << " wheel2 y: " << numSteps.y();
+//      return;
+//    }
+//  }
 
   QGraphicsView::wheelEvent(e);
 }
@@ -1268,8 +1123,6 @@ bool myDMapView :: isKeyboardGrabbed()
 
 void myDMapView::paintEvent(QPaintEvent *pe)
 {
-  //QPainter p(this);
-  //drawContents(&p, x(), y(), width(), height());
 
   QGraphicsView::paintEvent(pe);
 }

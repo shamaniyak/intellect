@@ -9,15 +9,14 @@
 #include <QGraphicsView>
 #include <QMouseEvent>
 #include <set>
+#include "MapGraphicsPixmapItem.h"
 
 using namespace std;
 
 class IMap;
 class CartographyMap;
+class QGraphicsSimpleTextItem;
 
-const int MAXSCALE_40M = 40000000;
-const int MAX_ZOOM = 32;
-const double MIN_ZOOM = 0.03125;
 //Функция возвращает максимальную дистанцию отрисовки с учетом масштаба.
 //Максимально для 1.000.000 - 4.500 км.
 int GetMaxDistanceToDraw(int scale);
@@ -135,10 +134,6 @@ public:
 
     // ЗАГРУЗКА ИСХОДНЫХ ДАННЫХ
 
-    // Открыть карту по имени файла
-    void SetMapFileName(QString mapName);
-    // Получить имя открытой карты
-    QString GetMapFileName();
     // Установить матрицу высот для открытой карты
     void setMapMtr(QString mtrName);
     // Открыть карту мира
@@ -219,12 +214,6 @@ public:
     // Перерисовать контент
     void Repaint();
 
-    // Показать карту
-    void showMap();
-
-    //Перерисовка с помощью изменения размеров виджета :(
-    void badRepaint();
-
     // Установить задачу для отрисовки, параметры:
     // 1 - имя задачи (идентификатор)
     // 2 - класс содержащий указатель на функцию отрисовки
@@ -254,7 +243,8 @@ public:
     bool isKeyboardGrabbed();
 
 public slots:
-
+    // Показать карту
+    void showMap();
     // Перевод координат из геодезических в пиксели картинки карты
     void BL_XY(double B, double L, int* X, int* Y);
     // Перевод координат из пикселей картинки карты в геодезические
@@ -313,10 +303,6 @@ protected:
 
     virtual void keyPressEvent(QKeyEvent * keyEvent);
 
-    void refreshSize();
-
-    virtual void drawContents(QPainter* p, int cx, int cy, int cw, int ch);
-
 private:
 
     // Установить текущие экранные координаты левого верхнего угла
@@ -332,16 +318,15 @@ private:
     IMap* map_;
     // Сцена для отрисовки
     QGraphicsScene scene_;
-    // Изображение карты
-    QPixmap currentMap_;
     // Элемент сцены "Изображение карты"
-    QGraphicsPixmapItem *graphicsItemMap_ = 0;
+    MapGraphicsPixmapItem *graphicsItemMap_ = 0;
+    // Элемент для подсказки
+    QGraphicsSimpleTextItem *textItem_ = nullptr;
 
     QPixmap old_currentPixmapMapViewPort;
     QPixmap task_currentPixmapMapViewPort;
-    int _oldScale;
-    long int _cx, _cy, _cw, _ch;
-    int _contentsX, _contentsY;
+
+    QPointF mousePos_;
 
     map<QString, TBaseClassDraw* > mapTaskDraw;
     map<QString, TBaseClassDraw* >::iterator it_activeDrawTask;
@@ -351,7 +336,7 @@ private:
     bool keyboardGrabbed;
     bool isTaskPixmapFilled;
 
-
+    void showTextHint();
 };
 //--------------------------------------------------------------------------------------------
 

@@ -21,13 +21,15 @@ INCLUDEPATH += \
 SOURCES += sppzcartography.cpp \
     MapView/MapView.cpp \
     cartography.cpp \
-    cartographymap.cpp
+    cartographymap.cpp \
+    MapView/mapgraphicspixmapitem.cpp
 
 HEADERS += sppzcartography.h\
         sppzcartography_global.h \
     MapView/MapView.h \
     cartography.h \
-    cartographymap.h
+    cartographymap.h \
+    MapView/mapgraphicspixmapitem.h
 
 unix {
     target.path = /usr/lib

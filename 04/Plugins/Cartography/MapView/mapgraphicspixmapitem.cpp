@@ -119,6 +119,38 @@ void MapGraphicsPixmapItem::wheelEvent(QGraphicsSceneWheelEvent *e)
   //QGraphicsView::wheelEvent(e);
 }
 
+bool MapGraphicsPixmapItem::sceneEvent(QEvent *event)
+{
+  switch( event->type() )
+  {
+    case QEvent::TouchBegin:
+    case QEvent::TouchEnd:
+    case QEvent::TouchUpdate:
+    case QEvent::TouchCancel:
+      return touchEvent(event);
+  }
+
+  QGraphicsPixmapItem::sceneEvent(event);
+}
+
+bool MapGraphicsPixmapItem::touchEvent(QEvent *e)
+{
+  switch( e->type() )
+  {
+    case QEvent::TouchBegin:
+    case QEvent::TouchEnd:
+    case QEvent::TouchUpdate:
+    case QEvent::TouchCancel:
+      return true;
+  }
+  return false;
+}
+
+QPointF MapGraphicsPixmapItem::imageLT() const
+{
+  return imageLT_;
+}
+
 double MapGraphicsPixmapItem::GetMapZoom()
 {
   double result = 0;
