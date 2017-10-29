@@ -219,6 +219,16 @@ void IntellectMainWindowEx::loadSettings()
         treeView_->loadExpandItems(me);
 
         treeView_->resize(w, h);
+
+        // текущий элемент
+        if(intellect_)
+        {
+          QString selectedPath;
+          me = meTree->get("Selected");
+          if(me) selectedPath = me->val().toString();
+          auto selected = intellect_->obj()->mem()->get(selectedPath);
+          intellect_->obj()->mem()->setSelected(selected);
+        }
       }
 
     }
@@ -250,5 +260,10 @@ void IntellectMainWindowEx::saveSettings()
     // развернутые элементы
     auto me = meTree->add("Expanded");
     treeView_->saveExpandItems(me);
+    // текущий элемент
+    QString selectedPath;
+    auto selected = intellect_->obj()->mem()->getSelected();
+    if(selected) selectedPath = selected->getPath();
+    meTree->add("Selected")->setVal(selectedPath);
   }
 }
