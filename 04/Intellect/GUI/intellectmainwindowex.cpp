@@ -231,6 +231,12 @@ void IntellectMainWindowEx::loadSettings()
         }
       }
 
+      auto meMaximized = meSettings->get("maximized");
+      if(meMaximized)
+        if(meMaximized->val().toBool())
+          this->showMaximized();
+        else
+          this->showNormal();
     }
   }
 
@@ -265,5 +271,8 @@ void IntellectMainWindowEx::saveSettings()
     auto selected = intellect_->obj()->mem()->getSelected();
     if(selected) selectedPath = selected->getPath();
     meTree->add("Selected")->setVal(selectedPath);
+    // на весь экран
+    auto meMaximized = meSettings->add("maximized");
+    meMaximized->setVal(this->isMaximized());
   }
 }
