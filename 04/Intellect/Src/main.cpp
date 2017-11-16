@@ -1,6 +1,7 @@
 #include "Src/intellect.h"
 #include "GUI/intellectmainwindowex.h"
 #include <Test/TestSppzCartography/testsppzcartography.h>
+#include "inputpassword.h"
 
 #include <QApplication>
 #include <QQmlApplicationEngine>
@@ -10,41 +11,64 @@ class Application : public QApplication
 public:
   Application(int &argc, char **argv) : QApplication(argc, argv)
   {
-    // создать модель
-    // парент нам нужен для того, чтобы при уничтожении скрипта, не уничтожалась модель
-    pI = new Intellect(this);
+    if(inputPassword())
+    {
+      // создать модель
+      // парент нам нужен для того, чтобы при уничтожении скрипта, не уничтожалась модель
+      pI = new Intellect(this);
 
-    // создать главное окно редактора
-    w = new IntellectMainWindowEx(pI);
-    w->showMaximized();
+      // создать главное окно редактора
+      w = new IntellectMainWindowEx(pI);
+      w->show();
 
-    emit pI->start();// запустить модель
+      emit pI->start();// запустить модель
+
+      running_ = true;
+    }
+
   }
 
   ~Application()
   {
-    pI->stop();
+    if(pI) pI->stop();
 
-    delete w;// просмоторщики должны удалиться раньше модели
+    if(w) delete w;// просмоторщики должны удалиться раньше модели
 
-    delete pI;
+    if(pI) delete pI;
+  }
+
+  bool running() const
+  {
+    return running_;
   }
 
 private:
   Intellect *pI = nullptr;
   IntellectMainWindowEx *w = nullptr;
+  bool running_ = false;
+
+  bool inputPassword()
+  {
+    //return true;
+    InputPassword ip;
+    ip.exec();
+    return ip.isTrue();
+  }
 };
 
 int main(int argc, char *argv[])
 {
     Application a(argc, argv);
 
-//    QQmlApplicationEngine engine;
+    QQmlApplicationEngine engine;
 //    engine.load(QUrl(QLatin1String("qrc:/Src/Quick/main.qml")));
 //    if (engine.rootObjects().isEmpty())
 //      return -1;
 
-    int result = a.exec();
+    if(!a.running())
+      return -123;
 
-    return result;
+    return a.exec();
 }
+
+
