@@ -96,34 +96,10 @@ public:
     void setMapLogic(IMap* map);
     void setMap(CartographyMap* map);
 
-    // ПЕРЕВОД КООРДИНАТ
-
-    // Перевод координат из геодезических в пиксели картинки карты
-    void BL_XY(double B, double L, double& X, double& Y);
-    // Перевод координат из пикселей картинки карты в геодезические
-    void XY_BL(double X, double Y, double& B, double& L);
-    // Перевод геодезических координат  в координаты прямоугольной плоской системы
-    void BL_XmYm(double B, double L, double& Xm, double& Ym);
-    // Перевод координат из плоской прямоугольной системы в геодезические
-    void XmYm_BL(double Xm, double Ym, double& B, double& L);
-    // Перевод координат из пикселей картинки в координаты плоской прямоугольной системы
-    void XY_XmYm(double X, double Y, double& Xm, double& Ym);
-    // Перевод координат из плоской прямоугольной системы в пиксели картинки
-    void XmYm_XY(double Xm, double Ym, double& X, double& Y);
-
     // ПОЛУЧЕНИЕ ДАННЫХ С КАРТЫ
 
     // Получение высоты в точке по экранным координатам
-    double getHeight_XY(double x, double y);
     bool getHeight_XY(double x, double y, double &h);
-
-    // Получение высоты в точке по широте и долготе
-    double getHeight_BL(double B, double L);
-    void getHeight_BL(double B, double L, double* H);
-    bool getHeight_BL(double B, double L, double &H);
-
-    // Получение высоты в точке по прямоугольным координатам
-    double getHeight_XmYm(double Xm, double Ym);
 
     // Получение магнитного склонения
     bool getMagneticAngle_BL(double B, double L, double* Ma);
@@ -152,14 +128,6 @@ public:
     void calcCurrentCentreRegion(double &B, double &L);
     // Получить центр открытого изображения в геодезических координатах
     void getCenterOpenRegion(double &_CenterB, double &_CenterL);
-    // Получить текущие экранные координаты левого верхнего угла
-    void GetMapLeftTop(int * left, int * top);
-    //Получить координаты левого верхнего края экрана
-    void getMapLeftTopBL(double& B, double& L);
-    //Получить координаты нижнего правого края экрана
-    void getMapRightBottomBL(double& B, double& L);
-    //Установить левый верхний край экрана в указанные координаты B L
-    void setMapLeftTopBL(double B, double L);
     // Прочитать и применить настройки карты из файла (яркость, контраст, контур и слои)
     void readSettings(bool restoreSettings = false);
     // Записать настройки карты в файл (яркость, контраст, контур и слои)
@@ -236,6 +204,8 @@ public:
     void DeleteMouseTask(QString);
     // Существует ли задача мыши
     bool isMouseTaskExist(QString);
+    //Получить координаты мышы на карте
+    QPointF getMapMousePos() const;
 
     // РАБОТА С КЛАВИАТУРОЙ
     void grabMapViewKeyboard();
@@ -245,10 +215,6 @@ public:
 public slots:
     // Показать карту
     void showMap();
-    // Перевод координат из геодезических в пиксели картинки карты
-    void BL_XY(double B, double L, int* X, int* Y);
-    // Перевод координат из пикселей картинки карты в геодезические
-    void XY_BL(int X, int Y, double* B, double* L);
     // Получение масштаба
     void GetViewScaleForObjectShaper(int*);
 
@@ -275,17 +241,20 @@ public slots:
     //Получить текущий коэффициент увеличения
     double GetMapZoom();
     //Увеличивает изображение на текущей карте в два раза
-    void ZoomMapIn(double B = 0, double L = 0);
+    void ZoomMapIn();
     //Уменьшает изображение на текущей карте в два раза
-    void ZoomMapOut(double B = 0, double L = 0);
-    // Установить геодезические координаты центра отображаемой карты
-    void setMapCenter(double centerB, double centerL);
+    void ZoomMapOut();
+    //Установить центр карты
+    void SetCenter(double b, double l);
 
 signals:
 
-    void MouseDown(QString mouseTask, int x, int y, int X, int Y, double B, double L, double H, Qt::MouseButton btn, Qt::MouseButton btnState);
-    void MouseMove(QString mouseTask, int x, int y, int X, int Y, double B, double L, double H, Qt::MouseButton btn, Qt::MouseButton btnState);
-    void MouseUp(QString mouseTask, int x, int y, int X, int Y, double B, double L, double H, Qt::MouseButton btn, Qt::MouseButton btnState);
+    void MouseDown(QString mouseTask, int x, int y, int X, int Y, double B, double L, double H,
+                   Qt::MouseButton btn, Qt::MouseButton btnState);
+    void MouseMove(QString mouseTask, int x, int y, int X, int Y, double B, double L, double H,
+                   Qt::MouseButton btn, Qt::MouseButton btnState);
+    void MouseUp(QString mouseTask, int x, int y, int X, int Y, double B, double L, double H,
+                 Qt::MouseButton btn, Qt::MouseButton btnState);
     void escPressedSignal();
 
 protected slots:
@@ -303,13 +272,10 @@ protected:
 
     virtual void keyPressEvent(QKeyEvent * keyEvent);
 
+    // Можно использовать для обработки сенсорнго экрана
+    bool viewportEvent(QEvent *e);
+
 private:
-
-    // Установить текущие экранные координаты левого верхнего угла
-    void SetMapLeftTop(int left, int top);
-
-    // Получить текущие экранные координаты правого нижнего угла
-    void GetMapRightBottom(int * right, int * bottom);
 
     // Выполнить задачу отрисовки (и связанные с ней
     void DrawTask(QString ,  set<QString >&, QPainter* );
@@ -327,6 +293,7 @@ private:
     QPixmap task_currentPixmapMapViewPort;
 
     QPointF mousePos_;
+    QPointF mapMousePos_;
 
     map<QString, TBaseClassDraw* > mapTaskDraw;
     map<QString, TBaseClassDraw* >::iterator it_activeDrawTask;

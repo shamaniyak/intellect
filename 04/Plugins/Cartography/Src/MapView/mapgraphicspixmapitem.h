@@ -19,6 +19,10 @@ public:
   void resize(int w, int h);
 
   QPointF imageLT() const;
+  QPointF center() const;
+  void setCenter(const QPointF &pos);
+  // Изменить масштаб в полтора раза в зависимости от delta
+  void zoomInOut(const QPointF &pos, int delta);
 
 protected:
 
@@ -46,17 +50,20 @@ private:
   QPointF maxImageLT_;
   int imageW_ = 250;
   int imageH_ = 250;
+  bool drawed_ = false;
 
   //Получить текущий коэффициент увеличения
   double GetMapZoom();
-  //Увеличивает изображение на текущей карте в два раза
-  void ZoomMapIn(double B = 0, double L = 0);
-  //Уменьшает изображение на текущей карте в два раза
-  void ZoomMapOut(double B = 0, double L = 0);
   // Установить масштаб отображения
   void SetViewScale(double b, double l, float value);
   // Установить геодезические координаты центра отображаемой карты
   void setMapCenter(double B, double L);
+  //Увеличивает изображение на текущей карте в полтора раза
+  //Если координаты нулевые, то относительно текущего центра карты
+  void ZoomMapIn(double B = 0, double L = 0);
+  //Уменьшает изображение на текущей карте в полтора раза
+  //Если координаты нулевые, то относительно текущего центра карты
+  void ZoomMapOut(double B = 0, double L = 0);
 
 };
 

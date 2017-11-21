@@ -14,7 +14,7 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsSimpleTextItem>
 #include <QtDebug>
-#include <cartographymap.h>
+#include <Src/cartographymap.h>
 
 #include "imap.h"
 #include "version.h"
@@ -46,13 +46,15 @@ int GetMaxDistanceToDraw(int scale)
 myDMapView :: myDMapView(QWidget *parent) : QGraphicsView(parent), map_(NULL)
 {
   viewport()->setMouseTracking(true);
-  viewport()->setAttribute(Qt::WA_AcceptTouchEvents);
+  //viewport()->setAttribute(Qt::WA_AcceptTouchEvents);
 
+  scene_.setItemIndexMethod(QGraphicsScene::NoIndex);
   setScene(&scene_);
 
   graphicsItemMap_ = new MapGraphicsPixmapItem();
   scene_.addItem(graphicsItemMap_);
   graphicsItemMap_->setPos(QPointF(0,0));
+  //graphicsItemMap_->setAcceptTouchEvents(true);
 
   textItem_ = new QGraphicsSimpleTextItem(graphicsItemMap_);
   textItem_->setPos(0, 0);
@@ -69,6 +71,7 @@ myDMapView :: myDMapView(QWidget *parent) : QGraphicsView(parent), map_(NULL)
 
 myDMapView :: ~myDMapView()
 {
+  qDebug() << "myDMapView :: ~myDMapView()";
   map<QString, TBaseClassDraw* > :: iterator it = mapTaskDraw.begin();
   vector<QString> vectNameTask;
   for(; it != mapTaskDraw.end();it++)
@@ -94,100 +97,8 @@ void myDMapView::setMap(CartographyMap *map)
   }
 }
 
-// ПЕРЕВОД КООРДИНАТ
-
-// перевод координат из геодезических в пиксели картинки карты
-void myDMapView :: BL_XY(double B, double L, double& X, double& Y)
-{
-  double Xm, Ym;
-  BL_XmYm(B, L, Xm, Ym);
-  XmYm_XY(Xm, Ym, X, Y);
-}
-//--------------------------------------------------------------------------------------------
-
-// перевод координат из пикселей картинки карты в геодезические
-void myDMapView :: XY_BL(double X, double Y, double& B, double& L)
-{
-  double Xm, Ym;
-  XY_XmYm(X, Y, Xm, Ym);
-  XmYm_BL(Xm, Ym, B, L);
-
-  if( L > (M_PI - VERY_SMALL_VALUE) )
-    L = L - 2*M_PI;
-}
-//--------------------------------------------------------------------------------------------
-
-// перевод координат из геодезических в пиксели картинки карты
-void myDMapView :: BL_XY(double B, double L, int* X, int* Y)
-{
-  double tempX;
-  double tempY;
-
-  BL_XY(B, L, tempX, tempY);
-
-  *X = (int) tempX;
-  *Y = (int) tempY;
-}
-
-// перевод координат из пикселей картинки карты в геодезические
-void myDMapView :: XY_BL(int X, int Y, double* B, double* L)
-{
-  XY_BL((double) X, (double) Y, *B, *L);
-}
-
-//перевод геодезических координат  в координаты прямоугольной плоской системы
-void myDMapView :: BL_XmYm(double B, double L, double& Xm, double& Ym)
-{
-  assert(map_ != NULL && "BL_XmYm");
-
-  map_->BL_XmYm(B, L, Xm, Ym);
-}
-
-
-
-//--------------------------------------------------------------------------------------------
-
-// перевод координат из плоской прямоугольной системы в геодезические
-void myDMapView :: XmYm_BL(double Xm, double Ym, double& B, double& L)
-{
-  assert(map_ != NULL && "XmYm_BL");
-
-  map_->XmYm_BL(Xm, Ym, B, L);
-
-  if( L > (M_PI-VERY_SMALL_VALUE) )
-    L = L - 2*M_PI;
-}
-//--------------------------------------------------------------------------------------------
-
-// перевод координат из пикселей картинки в координаты плоской прямоугольной системы
-void myDMapView :: XY_XmYm(double X, double Y, double& Xm, double& Ym)
-{
-  assert(map_ != NULL && "XY_XmYm");
-
-  map_->XY_XmYm(X, Y, Xm, Ym);
-}
-//--------------------------------------------------------------------------------------------
-
-// перевод координат из плоской прямоугольной ситсемы в пиксели картинки
-void myDMapView :: XmYm_XY(double Xm, double Ym, double& X, double& Y)
-{
-  assert(map_ != NULL && "XmYm_XY");
-
-  map_->XmYm_XY(Xm, Ym, X, Y);
-}
-//--------------------------------------------------------------------------------------------
-
 // ПОЛУЧЕНИЕ ДАННЫХ С КАРТЫ
 
-
-// Получение высоты в точке по экранным координатам
-double myDMapView :: getHeight_XY(double x, double y)
-{
-  double Xm, Ym;
-  XY_XmYm(x, y, Xm, Ym);
-  return getHeight_XmYm(Xm, Ym);
-}
-//--------------------------------------------------------------------------------------------
 
 // Получение высоты в точке по экранным координатам
 bool myDMapView :: getHeight_XY(double x, double y, double &h)
@@ -195,50 +106,9 @@ bool myDMapView :: getHeight_XY(double x, double y, double &h)
   if (GetMapScale() == MAXSCALE_40M)
     return false;
 
-  h = getHeight_XY(x, y);
+  h = map_->getHeight_XY(x, y);
   return true;
 }
-//--------------------------------------------------------------------------------------------
-
-// Получение высоты в точке по широте и долготе
-double myDMapView :: getHeight_BL(double B, double L)
-{
-  double Xm, Ym;
-  BL_XmYm(B, L, Xm, Ym);
-  return getHeight_XmYm(Xm, Ym);
-}
-//--------------------------------------------------------------------------------------------
-
-// Получение высоты в точке по широте и долготе
-bool myDMapView :: getHeight_BL(double B, double L, double &H)
-{
-  if (GetMapScale() == MAXSCALE_40M)
-    return false;
-
-  double Xm, Ym;
-  BL_XmYm(B, L, Xm, Ym);
-  H = getHeight_XmYm(Xm, Ym);
-  return true;
-}
-//--------------------------------------------------------------------------------------------
-
-// Получение высоты в точке по широте и долготе
-void myDMapView :: getHeight_BL(double B, double L, double* H)
-{
-  double Xm, Ym;
-  BL_XmYm(B, L, Xm, Ym);
-  *H = getHeight_BL(B, L);
-}
-//--------------------------------------------------------------------------------------------
-
-// Получение высоты в точке по прямоугольным координатам
-double myDMapView :: getHeight_XmYm(double Xm, double Ym)
-{
-  assert(map_!=NULL && "getHeight_XmYm");
-
-  return map_->getHeight_XmYm(Xm, Ym);
-}
-//--------------------------------------------------------------------------------------------
 
 // получение магнитного склонения
 //возвращает код ошибки:
@@ -405,41 +275,23 @@ int myDMapView :: GetMapScale()
 }
 //--------------------------------------------------------------------------------------------
 //Увеличивает изображение на текущей карте в два раза
-void myDMapView :: ZoomMapIn(double B, double L)
+void myDMapView :: ZoomMapIn()
 {
-  if (GetMapZoom() < MAX_ZOOM)
-  {
-    SetViewScale(GetViewScale()/2);
-    if (B != 0 || L != 0)
-    {
-      setMapCenter(B, L);
-    }
-
-    Repaint();
-  }
-
-  //scale(1.1, 1.1);
+  graphicsItemMap_->zoomInOut(graphicsItemMap_->center(), 1);
 }
 
 //--------------------------------------------------------------------------------------------
 //Уменьшает изображение на текущей карте в два раза
-void myDMapView :: ZoomMapOut(double B, double L)
+void myDMapView :: ZoomMapOut()
 {
-  if (GetMapZoom() > MIN_ZOOM)
-  {
-    uint newView = (GetViewScale())*2;
-    if (newView > MAXSCALE_40M)
-      newView = MAXSCALE_40M;
-    SetViewScale(newView);
-    if (B != 0 || L != 0)
-    {
-      setMapCenter(B, L);
-    }
+  graphicsItemMap_->zoomInOut(graphicsItemMap_->center(), -1);
+}
 
-    Repaint();
-  }
-
-//  scale(1/1.1, 1/1.1);
+void myDMapView::SetCenter(double b, double l)
+{
+  double x, y;
+  map_->BL_XY(b, l, x, y);
+  graphicsItemMap_->setCenter(QPointF(x, y));
 }
 
 //--------------------------------------------------------------------------------------------
@@ -451,46 +303,6 @@ double myDMapView :: GetMapZoom()
   return(ms / vs);
 }
 
-//--------------------------------------------------------------------------------------------
-// Установить геодезические координаты центра отображаемой карты
-void myDMapView :: setMapCenter(double centerB, double centerL)
-{
-  assert(map_ != NULL && "GetMapScale");
-  map_->setMapCenter(centerB, centerL);
-
-  double centreX, centreY;
-  BL_XY(centerB, centerL, centreX, centreY);
-  int left, top;
-  left = (int)centreX - viewport()->width()/2;
-  top = (int)centreY - viewport()->height()/2;
-  SetMapLeftTop(left, top);
-}
-//--------------------------------------------------------------------------------------------
-
-// Получить центр отображаемой карты в геодезических координатах
-void myDMapView :: getMapCenter(double& centerB, double& centerL)
-{
-  int iLeft, iTop;
-  GetMapLeftTop(&iLeft, &iTop);
-  iLeft += viewport()->width()/2;
-  iTop += viewport()->height()/2;
-  XY_BL(iLeft, iTop, centerB, centerL);
-}
-//--------------------------------------------------------------------------------------------
-
-// Установить центр карты в центр экрана
-void myDMapView :: setMapCenterToScreenCenter()
-{
-  double dCenterB, dCenterL, dCenterX, dCenterY;
-  calcCurrentCentreRegion(dCenterB, dCenterL);
-  BL_XY(dCenterB, dCenterL, dCenterX, dCenterY);
-  int iLeft, iTop;
-  iLeft = (int)dCenterX - viewport()->width()/2;
-  iTop = (int)dCenterY - viewport()->height()/2;
-  SetMapLeftTop(iLeft, iTop);
-}
-//--------------------------------------------------------------------------------------------
-
 // Рассчитать геодезические координаты центра карты
 void myDMapView :: calcCurrentCentreRegion(double &B, double &L)
 {
@@ -498,51 +310,6 @@ void myDMapView :: calcCurrentCentreRegion(double &B, double &L)
 
   map_->calcCurrentCentreRegion(B, L);
 }
-//--------------------------------------------------------------------------------------------
-
-// Установить текущие экранные координаты левого верхнего угла
-void myDMapView :: SetMapLeftTop(int left, int top)
-{
-  //setContentsPos(left, top);
-}
-//--------------------------------------------------------------------------------------------
-
-// Получить текущие экранные координаты левого верхнего угла
-void myDMapView :: GetMapLeftTop(int * left, int * top)
-{
-  //*left = contentsX();
-  //*top = contentsY();
-}
-//--------------------------------------------------------------------------------------------
-void myDMapView :: GetMapRightBottom(int * right, int * bottom)
-{
-  GetMapLeftTop(right, bottom);
-  //*right += viewport()->width();
-  //*bottom += viewport()->height();
-}
-
-
-void myDMapView :: getMapLeftTopBL(double& B, double& L)
-{
-  int left, top;
-  GetMapLeftTop(&left, &top);
-  XY_BL(left, top, &B, &L);
-}
-
-void myDMapView :: getMapRightBottomBL(double& B, double& L)
-{
-  int right, bottom;
-  GetMapRightBottom(&right, &bottom);
-  XY_BL(right, bottom, &B, &L);
-}
-
-void myDMapView :: setMapLeftTopBL(double B, double L)
-{
-  int left, top;
-  BL_XY(B, L, &left, &top);
-  SetMapLeftTop(left, top);
-}
-
 //--------------------------------------------------------------------------------------------
 
 // Прочитать и применить настройки карты из файла (яркость, контраст, контур и слои)
@@ -850,16 +617,25 @@ void myDMapView::DrawTask(QString nameTask, set<QString >& _drawTask, QPainter* 
   }
 }
 
+QPointF myDMapView::getMapMousePos() const
+{
+  return mapMousePos_;
+}
+
 void myDMapView::showTextHint()
 {
-  auto imageLT = graphicsItemMap_->imageLT();
-  auto p = imageLT + mousePos_;
-  double b = 0, l = 0;
-  if(map_)
+  auto p = mapMousePos_;
+  double b = 0, l = 0, h = 0;
+  if(map_) {
     map_->XY_BL(p.x(), p.y(), b, l);
+    if( getHeight_XY(p.x(), p.y(), h) )
+      ;
+  }
 
+  QString text = "Map B: %1, L: %2, H: %3";
+  text = text.arg(b).arg(l).arg(h);
   textItem_->setPos(0, 0);
-  textItem_->setText("Map B: " + QString().setNum(b) + ", L: " + QString().setNum(l));
+  textItem_->setText(text);
 }
 //--------------------------------------------------------------------------------------------
 
@@ -939,15 +715,14 @@ bool myDMapView :: isMouseTaskExist(QString value)
 
 void myDMapView :: mousePressEvent(QMouseEvent* e)
 {
-  int x = e->x();
-  int y = e->y();
+  int x = mapMousePos_.x();
+  int y = mapMousePos_.y();
+  double B, L, H = 0;
 
-  //double height = getHeight_XY(x, y);
+  map_->XY_BL(x, y, B, L);
+  getHeight_XY(x, y, H);
 
-  double B, L;
-  XY_BL(x, y, B, L);
-
-  //emit MouseDown(GetActiveMouseTask(), e->x(), e->y(), x, y, B, L, height, e->button(), e->state());
+  emit MouseDown(GetActiveMouseTask(), e->x(), e->y(), x, y, B, L, H, e->button(), e->button());
 
   QGraphicsView::mousePressEvent(e);
 }
@@ -956,18 +731,20 @@ void myDMapView :: mousePressEvent(QMouseEvent* e)
 
 void myDMapView :: mouseMoveEvent(QMouseEvent* e)
 {
+  auto imageLT = graphicsItemMap_->imageLT();
   mousePos_ = e->pos();
+  mapMousePos_ = imageLT + mousePos_;
+
   showTextHint();
 
-  int x = e->x();
-  int y = e->y();
+  int x = mapMousePos_.x();
+  int y = mapMousePos_.y();
+  double B, L, H = 0;
 
-  //double height = getHeight_XY(x, y);
+  map_->XY_BL(x, y, B, L);
+  getHeight_XY(x, y, H);
 
-  double B, L;
-  XY_BL(x, y, B, L);
-
-  //emit MouseMove(GetActiveMouseTask(), e->x(), e->y(), x, y, B, L, height, e->button(), e->state());
+  emit MouseMove(GetActiveMouseTask(), e->x(), e->y(), x, y, B, L, H, e->button(), e->button());
 
   QGraphicsView::mouseMoveEvent(e);
 }
@@ -975,15 +752,14 @@ void myDMapView :: mouseMoveEvent(QMouseEvent* e)
 
 void myDMapView :: mouseReleaseEvent(QMouseEvent* e)
 {
-  int x = e->x();
-  int y = e->y();
+  int x = mapMousePos_.x();
+  int y = mapMousePos_.y();
+  double B, L, H;
 
-  //double height = getHeight_XY(x, y);
+  map_->XY_BL(x, y, B, L);
+  getHeight_XY(x, y, H);
 
-  double B, L;
-  XY_BL(x, y, B, L);
-
-  //emit MouseUp(GetActiveMouseTask(), e->x(), e->y(), x, y, B, L, height, e->button(), e->state());
+  emit MouseUp(GetActiveMouseTask(), e->x(), e->y(), x, y, B, L, H, e->button(), e->button());
 
   QGraphicsView::mouseReleaseEvent(e);
 }
@@ -1024,12 +800,12 @@ void myDMapView :: keyPressEvent(QKeyEvent * keyEvent)
     }break;
     case Qt::Key_Return:
     {
-      int x, y;
-      //this->viewportToContents(mapFromGlobal(cursor().pos()).x(), mapFromGlobal(cursor().pos()).y(), x, y);
 
-      double height = getHeight_XY(x, y);
-      double B, L;
-      XY_BL(x, y, B, L);
+      auto mapCentre = graphicsItemMap_->center();
+      int x = mapCentre.x(), y = mapCentre.y();
+      double B, L, height;
+      map_->XY_BL(x, y, B, L);
+      getHeight_XY(x, y, height);
 
       if(keyEvent->modifiers() == Qt::NoModifier)
       {
@@ -1063,6 +839,47 @@ void myDMapView :: keyPressEvent(QKeyEvent * keyEvent)
 
   QGraphicsView::keyPressEvent(keyEvent);
 
+}
+
+bool myDMapView::viewportEvent(QEvent *e)
+{
+//  QString str;
+//  switch(e->type())
+//  {
+//    case QEvent::TouchBegin:
+//      str = "Touch Begin";
+//      break;
+//    case QEvent::TouchEnd:
+//      str = "Touch End";
+//      break;
+//    case QEvent::TouchCancel:
+//      str = "Touch Cancel";
+//      break;
+//    case QEvent::TouchUpdate:
+//      str = "Touch Update";
+//      break;
+//  }
+
+//  QTouchEvent *te = dynamic_cast<QTouchEvent*>(e);
+//  if(te)
+//  {
+//    str += "\n";
+//    auto points = te->touchPoints();
+//    int i = 0;
+//    for(auto p: points)
+//    {
+//      ++i;
+//      auto pos1 = p.pos();
+//      QString str1 = "p %1: x=%2, y=%3; ";
+//      str1 = str1.arg(i).arg(pos1.x()).arg(pos1.y());
+//      str += str1;
+//    }
+//  }
+
+//  if(textItem_ && !str.isEmpty())
+//    textItem_->setText(str);
+
+  QGraphicsView::viewportEvent(e);
 }
 
 void myDMapView :: resizeEvent(QResizeEvent* e)

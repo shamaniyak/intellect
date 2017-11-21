@@ -29,6 +29,8 @@ public slots:
   virtual void BL_XY(double B, double L, double &X, double &Y) override;
   virtual void XY_BL(double X, double Y, double &B, double &L) override;
   virtual double getHeight_XmYm(double Xm, double Ym) override;
+  virtual double getHeight_XY(double x, double y) override;
+  virtual void getMapCentre(double &B, double &L) override;
   virtual bool getMagneticAngle_BL(double B, double L, double *Ma) override;
   virtual bool isMtrExist() override;
   virtual bool setMap(QString mapName) override;
@@ -75,7 +77,6 @@ public slots:
 private:
   ICartographyIntf *cart_ = nullptr;
   myDMapView *mapView_ = nullptr;
-
 };
 
 #endif // SPPZCARTOGRAPHY_H

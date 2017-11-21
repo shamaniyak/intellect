@@ -263,3 +263,12 @@ QWidget *SppzCartography::createMapView()
 
   return w;
 }
+
+
+double SppzCartography::getHeight_XY(double x, double y)
+{
+}
+
+void SppzCartography::getMapCentre(double &B, double &L)
+{
+}

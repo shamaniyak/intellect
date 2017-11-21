@@ -19,20 +19,21 @@ Cartography::~Cartography()
 
 QObject *Cartography::createMap()
 {
-  if(!map_) {
-    CartographyMap *cmap = new CartographyMap(this);
+  //if(!map_) {
+    CartographyMap *cmap = new CartographyMap();
     cmap->setObjectName("Map");
     map_ = cmap;
-  }
-  return map_;
+    return cmap;
+  //}
+  //return map_;
 }
 
 QWidget *Cartography::createMapView(QObject *map, QWidget *parent)
 {
   auto cmap = qobject_cast<CartographyMap*>(map);
 
-  if(!parent)
-    parent = parentWidget_;
+  //if(!parent)
+  //  parent = parentWidget_;
 
   if(cmap) {
     myDMapView *mv = new myDMapView(parent);
