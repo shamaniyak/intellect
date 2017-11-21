@@ -13,23 +13,23 @@ CONFIG += qt warn_on plugin c++14
 DEFINES += CARTOGRAPHY_LIBRARY _USE_MATH_DEFINES
 
 INCLUDEPATH += \
-  MapView \
-  MapView/Include \
+  Src/MapView \
+  Src/MapView/Include \
   ../../Interfaces \
   "d:/work/sppz/Include"
 
-SOURCES += sppzcartography.cpp \
-    MapView/MapView.cpp \
-    cartography.cpp \
-    cartographymap.cpp \
-    MapView/mapgraphicspixmapitem.cpp
+SOURCES += Src/sppzcartography.cpp \
+    Src/MapView/MapView.cpp \
+    Src/cartography.cpp \
+    Src/cartographymap.cpp \
+    Src/MapView/mapgraphicspixmapitem.cpp
 
-HEADERS += sppzcartography.h\
-        sppzcartography_global.h \
-    MapView/MapView.h \
-    cartography.h \
-    cartographymap.h \
-    MapView/mapgraphicspixmapitem.h
+HEADERS += Src/sppzcartography.h\
+        Src/sppzcartography_global.h \
+    Src/MapView/MapView.h \
+    Src/cartography.h \
+    Src/cartographymap.h \
+    Src/MapView/mapgraphicspixmapitem.h
 
 unix {
     target.path = /usr/lib
