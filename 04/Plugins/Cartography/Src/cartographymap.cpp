@@ -1,6 +1,5 @@
 #include "cartographymap.h"
 #include <imap.h>
-#include "sppzcartography.h"
 
 #include <QtDebug>
 #include <QLibrary>
@@ -48,12 +47,6 @@ IMap *CartographyMap::createMapIntegration()
     qDebug() << lib.errorString();
   }
 
-  return map;
-}
-
-IMap *CartographyMap::createSppzCartography()
-{
-  auto map = new SppzCartography();
   return map;
 }
 

@@ -51,7 +51,6 @@ public slots:
 protected:
   void init();
   IMap *createMapIntegration();
-  IMap *createSppzCartography();
 
 private:
   IMap *map_ = nullptr;

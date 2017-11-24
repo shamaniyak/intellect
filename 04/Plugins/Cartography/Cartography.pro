@@ -6,7 +6,7 @@
 
 QT += winextras widgets
 
-TARGET = Cartography
+TARGET = CartographyMap
 TEMPLATE = lib
 CONFIG += qt warn_on plugin c++14
 
@@ -18,14 +18,13 @@ INCLUDEPATH += \
   ../../Interfaces \
   "d:/work/sppz/Include"
 
-SOURCES += Src/sppzcartography.cpp \
+SOURCES += \
     Src/MapView/MapView.cpp \
     Src/cartography.cpp \
     Src/cartographymap.cpp \
     Src/MapView/mapgraphicspixmapitem.cpp
 
-HEADERS += Src/sppzcartography.h\
-        Src/sppzcartography_global.h \
+HEADERS +=\
     Src/MapView/MapView.h \
     Src/cartography.h \
     Src/cartographymap.h \
