@@ -1,6 +1,5 @@
 #include "Src/intellect.h"
 #include "GUI/intellectmainwindowex.h"
-#include <Test/TestSppzCartography/testsppzcartography.h>
 #include "inputpassword.h"
 
 #include <QApplication>
