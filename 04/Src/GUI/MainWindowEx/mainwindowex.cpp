@@ -17,6 +17,12 @@ MainWindowEx::~MainWindowEx()
   delete ui;
 }
 
+void MainWindowEx::showModal()
+{
+  setWindowModality(Qt::ApplicationModal);
+  show();
+}
+
 QWidget *MainWindowEx::createNewDoc(QWidget *wgt, bool deleteOnClose)
 {
   //QWidget *wgt = new QWidget;
@@ -55,13 +61,13 @@ QWidget *MainWindowEx::createNewDockWidget(QWidget *wgt, bool deleteOnClose)
   return pdoc;
 }
 
-QWidget *MainWindowEx::createDockWidget(QWidget *wgt, int area, int orientation)
+QWidget *MainWindowEx::createDockWidget(QWidget *wgt, int area, int orientation, bool deleteOnClose)
 {
   if(!wgt)
     return nullptr;
   QDockWidget *pdoc = new QDockWidget("New", this);
   pdoc->setWidget(wgt);
-  //pdoc->setAttribute(Qt::WA_DeleteOnClose, true);
+  pdoc->setAttribute(Qt::WA_DeleteOnClose, deleteOnClose);
   auto a = (Qt::DockWidgetArea)area;
   auto o = (Qt::Orientation)orientation;
   addDockWidget(a, pdoc, o);
