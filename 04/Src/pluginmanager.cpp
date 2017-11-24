@@ -27,8 +27,8 @@ void PluginManager::loadPlugins()
     QMessageBox::critical(0, "", "plugins directory does not exist");
     return;
   }
-  foreach (QString strFileName, dir.entryList(QDir::Files)) {
-    QPluginLoader loader(dir.absoluteFilePath(strFileName));
+  foreach (QString fileName, dir.entryList(QDir::Files)) {
+    QPluginLoader loader(dir.absoluteFilePath(fileName));
     addPlugin(qobject_cast<QObject*>(loader.instance()));
   }
 }
