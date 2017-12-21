@@ -11,7 +11,7 @@ class InputPassword : public QDialog
 public:
   explicit InputPassword(QWidget *parent = nullptr);
 
-  bool isTrue();
+  bool isTrue(const QString &str);
 
 signals:
 

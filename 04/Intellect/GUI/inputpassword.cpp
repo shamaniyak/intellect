@@ -15,9 +15,9 @@ InputPassword::InputPassword(QWidget *parent) : QDialog(parent)
   setLayout(layout);
 }
 
-bool InputPassword::isTrue()
+bool InputPassword::isTrue(const QString &str)
 {
-  return( pass_ == "shmnk");
+  return(pass_ == str);
 }
 
 int InputPassword::exec()

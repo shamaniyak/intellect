@@ -10,12 +10,12 @@ class Application : public QApplication
 public:
   Application(int &argc, char **argv) : QApplication(argc, argv)
   {
+    // создать модель
+    // парент нам нужен для того, чтобы при уничтожении скрипта, не уничтожалась модель
+    pI = new Intellect(this);
+
     if(inputPassword())
     {
-      // создать модель
-      // парент нам нужен для того, чтобы при уничтожении скрипта, не уничтожалась модель
-      pI = new Intellect(this);
-
       // создать главное окно редактора
       w = new IntellectMainWindowEx(pI);
       w->show();
@@ -31,7 +31,7 @@ public:
   {
     if(pI) pI->stop();
 
-    if(w) delete w;// просмоторщики должны удалиться раньше модели
+    if(w) delete w;// gui должны удалиться раньше модели
 
     if(pI) delete pI;
   }
@@ -41,18 +41,22 @@ public:
     return running_;
   }
 
+protected:
+  bool inputPassword()
+  {
+    auto me = pI->obj()->mem()->get("Intellect/password");
+    if(!me || me->val().toString().isEmpty())
+      return true;
+
+    InputPassword ip;
+    ip.exec();
+    return ip.isTrue(me->val().toString());
+  }
+
 private:
   Intellect *pI = nullptr;
   IntellectMainWindowEx *w = nullptr;
   bool running_ = false;
-
-  bool inputPassword()
-  {
-    //return true;
-    InputPassword ip;
-    ip.exec();
-    return ip.isTrue();
-  }
 };
 
 int main(int argc, char *argv[])
