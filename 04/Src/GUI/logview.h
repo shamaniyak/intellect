@@ -4,8 +4,6 @@
 #include <QObject>
 #include <QPlainTextEdit>
 
-class TAlgorithm;
-
 class LogView : public QPlainTextEdit
 {
   Q_OBJECT

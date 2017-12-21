@@ -1,5 +1,4 @@
 #include "logview.h"
-#include "Src/talgorithm.h"
 
 #include <QtDebug>
 
