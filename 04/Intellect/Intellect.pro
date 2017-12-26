@@ -7,9 +7,12 @@
 CONFIG += c++14
 QT       += core gui
 QT += script scripttools
-QT += qml quick quickcontrols2 quickwidgets
+QT += qml quick
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+CONFIG += mobility
+MOBILITY =
 
 TARGET = Intellect
 TEMPLATE = app
@@ -130,8 +133,3 @@ RESOURCES += \
     images.qrc \
     ../resources/dictionaries.qrc
 
-# Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH =
-
-# Additional import path used to resolve QML modules just for Qt Quick Designer
-QML_DESIGNER_IMPORT_PATH =

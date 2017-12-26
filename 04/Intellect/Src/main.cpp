@@ -1,6 +1,7 @@
 #include "Src/intellect.h"
 #include "GUI/intellectmainwindowex.h"
 #include "inputpassword.h"
+#include <Src/qqmlwrapper.h>
 
 #include <QApplication>
 #include <QQmlApplicationEngine>
@@ -63,8 +64,10 @@ int main(int argc, char *argv[])
 {
     Application a(argc, argv);
 
-    QQmlApplicationEngine engine;
-//    engine.load(QUrl(QLatin1String("qrc:/Src/Quick/main.qml")));
+    QQmlEngineWrapper::init();
+
+//    QQmlApplicationEngine engine;
+//    engine.load(QUrl(QLatin1String("qrc:/mainqml")));
 //    if (engine.rootObjects().isEmpty())
 //      return -1;
 

@@ -20,8 +20,12 @@ public:
 
   bool addObject(QObject *_o, const QString &_name=QString()) override;
 
+  static void init();
+
 private:
   QQmlEngine m_qml;
+
+  static QQmlApplicationEngine *engine;
 };
 
 #endif // QQMLWRAPPER_H
