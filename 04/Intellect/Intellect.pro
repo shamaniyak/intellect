@@ -30,8 +30,10 @@ INCLUDEPATH += ../ \
 SOURCES += \
     Src/main.cpp \
     Src/intellect.cpp \
+    Src/MemoryCompare/memorycompare.cpp \
     GUI/dialogmemoryeditor.cpp \
     GUI/intellectmainwindowex.cpp \
+    GUI/inputpassword.cpp \
     ../Src/Memory/elementsmanager.cpp \
     ../Src/Memory/memorymanager.cpp \
     ../Src/Memory/memorywrapper.cpp \
@@ -41,6 +43,7 @@ SOURCES += \
     ../Src/Memory/tme.cpp \
     ../Src/Memory/tmemory.cpp \
     ../Src/Memory/tmevalue.cpp \
+    ../Src/Memory/memorycompareproxymodel.cpp \
     ../Src/Plugins/intellectplugin.cpp \
     ../Src/Plugins/memoryplugin.cpp \
     ../Src/Plugins/qeventscriptplugin.cpp \
@@ -72,13 +75,14 @@ SOURCES += \
     ../Src/GUI/ScriptEditor/highlighter.cpp \
     ../Src/GUI/ScriptEditor/scripteditor.cpp \
     ../Third/qmlcreator/cpp/QMLHighlighter.cpp \
-    ../Third/qmlcreator/cpp/SyntaxHighlighter.cpp \
-    GUI/inputpassword.cpp
+    ../Third/qmlcreator/cpp/SyntaxHighlighter.cpp
 
 HEADERS  += \
     Src/intellect.h \
+    Src/MemoryCompare/memorycompare.h \
     GUI/dialogmemoryeditor.h \
     GUI/intellectmainwindowex.h \
+    GUI/inputpassword.h \
     ../Src/Memory/elementsmanager.h \
     ../Src/Memory/memorymanager.h \
     ../Src/Memory/memorywrapper.h \
@@ -88,6 +92,7 @@ HEADERS  += \
     ../Src/Memory/tme.h \
     ../Src/Memory/tmemory.h \
     ../Src/Memory/tmevalue.h \
+    ../Src/Memory/memorycompareproxymodel.h \
     ../Src/Plugins/intellectplugin.h \
     ../Src/Plugins/memoryplugin.h \
     ../Src/Plugins/qeventscriptplugin.h \
@@ -120,8 +125,7 @@ HEADERS  += \
     ../Src/GUI/ScriptEditor/highlighter.h \
     ../Src/GUI/ScriptEditor/scripteditor.h \
     ../Third/qmlcreator/cpp/QMLHighlighter.h \
-    ../Third/qmlcreator/cpp/SyntaxHighlighter.h \
-    GUI/inputpassword.h
+    ../Third/qmlcreator/cpp/SyntaxHighlighter.h
 
 FORMS    += \
     GUI/dialogmemoryeditor.ui \
