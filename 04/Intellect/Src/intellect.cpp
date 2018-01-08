@@ -92,11 +92,6 @@ QString Intellect::compileText(const QString &str)
   else
     return tr("Compiler not create");
 
-//  ScriptWrapper script;
-//  script.setText(ui->txtVal->toPlainText());
-//  script.execute();
-//  AddResult(script.msg());
-
   return "";
 }
 

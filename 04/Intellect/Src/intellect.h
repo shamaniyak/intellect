@@ -51,8 +51,6 @@ public:
 public slots:
   void stop();
 
-  void recreateMemory();
-
 protected slots:
   void on_addObject(QObject *obj);
   void on_start();
@@ -65,6 +63,9 @@ protected:
 private:
   IObject *obj_ = 0;
   QMainWindow *mainWindow_ = 0;
+
+  // Пересоздать памяти в папке bkp. Была нужна для устранения ошибки в базе слов.
+  void recreateMemory();
 };
 
 #endif // INTELLECT_H
