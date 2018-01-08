@@ -1,45 +1,140 @@
-#include "memorycompare.h"
+#include "memorycompareproxymodel.h"
 
-#include <Src/Memory/memorywrapper.h>
+#include <Src/Memory/qmemorymodel.h>
 
-MemoryCompare::MemoryCompare(QObject *parent) : QSortFilterProxyModel(parent)
+#include <QBrush>
+
+MemoryCompareProxyModel::MemoryCompareProxyModel(QObject *parent) : QAbstractProxyModel(parent)
 {
 
 }
 
-MemoryWrapper *MemoryCompare::srcMem() const
+MemoryWrapper *MemoryCompareProxyModel::srcMem() const
 {
   return srcMem_;
 }
 
-void MemoryCompare::setSrcMem(MemoryWrapper *srcMem)
+void MemoryCompareProxyModel::setSrcMem(MemoryWrapper *srcMem)
 {
   srcMem_ = srcMem;
+  Q_ASSERT(srcMem_);
+
+  if(!curMem_)
+  {
+    auto model = qobject_cast<QMemoryModel*>(sourceModel());
+    Q_ASSERT(model);
+    curMem_ = model->mem();
+  }
+
+  if(!resultMem_)
+    resultMem_ = new MemoryWrapper();
+
+//  resultMem_->clear();
+//  resultMem_->addFrom(resultMem_->getME(), curMem_->getME(), true);
+//  resultMem_->addFrom(resultMem_->getME(), srcMem_->getME(), true);
 }
 
-MemoryCompare::FilterType MemoryCompare::filter() const
+MemoryCompareProxyModel::FilterType MemoryCompareProxyModel::filter() const
 {
   return filter_;
 }
 
-void MemoryCompare::setFilter(const FilterType &filter)
+void MemoryCompareProxyModel::setFilter(const FilterType &filter)
 {
   filter_ = filter;
 }
 
-bool MemoryCompare::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
+QModelIndex MemoryCompareProxyModel::mapToSource(const QModelIndex &proxyIndex) const
 {
-  if(NoFilter == filter_) return true;
+  if(!proxyIndex.isValid())
+    return QModelIndex();
+  auto me = static_cast<MEWrapper*>(proxyIndex.internalPointer());
+  auto meP = me->parent();
+  return sourceModel()->index(proxyIndex.row(), proxyIndex.column(),
+                              mapToSource(proxyIndex.parent()));
+}
 
-  QModelIndex index = sourceModel()->index(source_row, 0, source_parent);
+QModelIndex MemoryCompareProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
+{
+  if(!sourceIndex.isValid())
+    return QModelIndex();
+  auto me = static_cast<MEWrapper*>(sourceIndex.internalPointer());
+  auto meP = me->parent();
+  return createIndex(sourceIndex.row(), sourceIndex.column(), me);
+}
 
-  auto me = static_cast<MEWrapper*>(index.internalPointer());
-  if(me) {
-    QString path = me->getPath();
-    QVariant val = me->val();
+QModelIndex MemoryCompareProxyModel::index(int row, int column, const QModelIndex &parent) const
+{
+  return mapFromSource(sourceModel()->index(row, column, parent));
+}
 
-    if(srcMem_) {
-      auto me1 = srcMem_->get(path);
+QModelIndex MemoryCompareProxyModel::parent(const QModelIndex &child) const
+{
+  return mapFromSource(sourceModel()->parent(child));
+}
+
+int MemoryCompareProxyModel::rowCount(const QModelIndex &parent) const
+{
+  // ѕодсчитать количество элементов с учетом удаленных
+  auto count = sourceModel()->rowCount(mapToSource(parent));
+
+
+
+  return count;
+}
+
+int MemoryCompareProxyModel::columnCount(const QModelIndex &parent) const
+{
+  return sourceModel()->columnCount(mapToSource(parent));
+}
+
+QVariant MemoryCompareProxyModel::data(const QModelIndex &index, int role) const
+{
+  if(role == Qt::BackgroundRole && index.isValid())
+  {
+    // ≈сли такого элемента не было, значит добавлен
+    auto me = static_cast<MEWrapper*>(index.internalPointer());
+    auto path = me->getPath();
+    auto me1 = srcMem_->get(path);
+    if(!me1) {
+      QBrush brush(Qt::green);
+      return QVariant(brush);
+    }
+    // если изменилось значение
+    else if(me->val() != me1->val())
+    {
+      QBrush brush(Qt::blue);
+      return QVariant(brush);
+    }
+    else {
+      if(checkChangesRecurs(me)) {
+        QBrush brush(Qt::yellow, Qt::FDiagPattern);
+        return QVariant(brush);
+      }
     }
   }
+
+  return QAbstractProxyModel::data(index, role);
+}
+
+bool MemoryCompareProxyModel::checkChangesRecurs(MEWrapper *me) const
+{
+  int i = 0;
+  auto me1 = me->getByI(i);
+  while(me1) {
+    auto path = me1->getPath();
+    auto me2 = srcMem_->get(path);
+    // ≈сли небыло, вернуть true, иначе заходим внутрь
+    if(!me2)
+      return true;
+    // если изменилось значение, вернуть true
+    else if(me1->val() != me2->val())
+      return true;
+    else {
+      if(checkChangesRecurs(me1))
+        return true;
+    }
+    me1 = me->getByI(++i);
+  }
+  return false;
 }

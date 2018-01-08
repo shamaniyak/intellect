@@ -1,14 +1,16 @@
-#ifndef MEMORYCOMPARE_H
-#define MEMORYCOMPARE_H
+#ifndef MEMORYCOMPAREPROXYMODEL_H
+#define MEMORYCOMPAREPROXYMODEL_H
 
 #include <QObject>
-#include <QSortFilterProxyModel>
+#include <QAbstractProxyModel>
 
 class MemoryWrapper;
+class MEWrapper;
 
-class MemoryCompare : public QSortFilterProxyModel
+class MemoryCompareProxyModel : public QAbstractProxyModel
 {
   Q_OBJECT
+  Q_PROPERTY(FilterType filter READ filter WRITE setFilter)
 public:
 
   // Тип фильтрации элементов
@@ -19,9 +21,9 @@ public:
     NotExist,           // Не существует (удален)
     NotEqualValue       // В одном и том же элементе данные отличаются
   };
-  //Q_ENUM(FilterType)
+  Q_ENUM(FilterType)
 
-  explicit MemoryCompare(QObject *parent = nullptr);
+  explicit MemoryCompareProxyModel(QObject *parent = nullptr);
 
   MemoryWrapper *srcMem() const;
   void setSrcMem(MemoryWrapper *srcMem);
@@ -34,14 +36,30 @@ signals:
 public slots:
 
 private:
-  // Указатель на память-источник
+  // Указатель на текущую память, которую сравнивать
+  MemoryWrapper *curMem_ = nullptr;
+  // Указатель на память, с которой сравнивать
   MemoryWrapper *srcMem_ = nullptr;
+  // Результирующая память
+  MemoryWrapper *resultMem_ = nullptr;
   // Тип фильтрации
   FilterType filter_ = NoFilter;
 
-  // QSortFilterProxyModel interface
-protected:
-  bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
+  // QAbstractProxyModel interface
+public:
+  QModelIndex mapToSource(const QModelIndex &proxyIndex) const override;
+  QModelIndex mapFromSource(const QModelIndex &sourceIndex) const override;
+
+  // QAbstractItemModel interface
+public:
+  QModelIndex index(int row, int column, const QModelIndex &parent) const override;
+  QModelIndex parent(const QModelIndex &child) const override;
+  int rowCount(const QModelIndex &parent) const override;
+  int columnCount(const QModelIndex &parent) const override;
+  QVariant data(const QModelIndex &index, int role) const override;
+
+private:
+  bool checkChangesRecurs(MEWrapper *me) const;
 };
 
-#endif // MEMORYCOMPARE_H
+#endif // MEMORYCOMPAREPROXYMODEL_H
