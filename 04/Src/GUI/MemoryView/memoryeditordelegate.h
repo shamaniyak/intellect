@@ -10,6 +10,8 @@ class MemoryEditorDelegate : public QStyledItemDelegate
 public:
   explicit MemoryEditorDelegate(QObject *parent = 0);
 
+  void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+
   QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                         const QModelIndex &index) const override;
 
@@ -23,6 +25,10 @@ public:
 signals:
 
 public slots:
+
+private:
+
+
 };
 
 #endif // MEMORYEDITORDELEGATE_H
