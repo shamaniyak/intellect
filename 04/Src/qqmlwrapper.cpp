@@ -2,6 +2,7 @@
 #include "Plugins/memoryplugin.h"
 
 #include <QQuickItem>
+#include <QQuickView>
 
 QQmlApplicationEngine *QQmlEngineWrapper::engine;
 
@@ -26,15 +27,18 @@ QQmlEngineWrapper &QQmlEngineWrapper::operator =(const QQmlEngineWrapper &)
   return *this;
 }
 
-bool QQmlEngineWrapper::execute()
+bool QQmlEngineWrapper::evaluate(const QString &txt)
 {
   QString msg;
-  engine->loadData(text().toLocal8Bit());
-  //QQmlComponent component(engine);
-  //component.setData(text().toLocal8Bit(), QUrl());
-  //if(component.isError())
-  //  msg = component.errorString();
-  //auto result = m_qml.evaluate(text());
+  //engine->loadData(text().toLocal8Bit());
+  QQmlComponent component(&m_qml);
+  component.setData(txt.toLocal8Bit(), QUrl());
+  if(component.isError())
+    msg = component.errorString();
+  QQuickView *view = new QQuickView(&m_qml, 0);
+  view->setContent(QUrl(), &component, component.create());
+  view->show();
+  //auto result = m_qml.evaluate(txt);
 //  if(result.isError()) {
 //    msg = "Line " + QString().setNum(result.property("lineNumber").toInt());
 //    msg = msg + ": " + result.toString();
@@ -44,8 +48,8 @@ bool QQmlEngineWrapper::execute()
 
   setMsg(msg);
 
-  return true;
-  //return !component.isError();
+  //return true;
+  return !component.isError();
   //return !result.isError();
 }
 

@@ -32,22 +32,7 @@ ScriptWrapper &ScriptWrapper::operator =(const ScriptWrapper &)
 
 void ScriptWrapper::clear()
 {
-  setText("");
   deleteScript();
-}
-
-QString ScriptWrapper::text() const
-{
-  return m_text;
-}
-
-void ScriptWrapper::setText(const QString &text)
-{
-  if(m_text !=text)
-  {
-    m_text = text;
-    textChanged = true;
-  }
 }
 
 void ScriptWrapper::initPlugins()
@@ -80,23 +65,6 @@ void ScriptWrapper::abort()
     m_script->abortEvaluation();
 }
 
-bool ScriptWrapper::compile()
-{
-  QScriptSyntaxCheckResult _res = script()->checkSyntax(m_text);
-  bool isErr = (_res.state()==QScriptSyntaxCheckResult::Error);
-  if(isErr){
-    m_msg = _res.errorMessage();
-  }
-  else{
-    if(!m_script->canEvaluate(m_text) )
-      m_msg = m_script->evaluate(m_text).toString();
-  }
-
-  return !isErr;
-}
-
-
-
 void ScriptWrapper::deleteScript()
 {
   m_debugger->detach();
@@ -120,25 +88,10 @@ void ScriptWrapper::insertObjectsInScript()
   }
 }
 
-bool ScriptWrapper::execute()
-{
-//  if(textChanged)
-//  {
-//    textChanged = false;
-//    deleteScript();
-//  }
-//  else
-//    return false;
-
-  //m_debugger->attachTo(script());
-
-  auto _val = evaluate(m_text);
-
-  return _val;
-}
-
 bool ScriptWrapper::evaluate(const QString &txt)
 {
+  // вызов в контексте вызывающего.
+  // это нужно для того, чтобы можно было поставить точку останова.
   auto parentContext = script()->currentContext()->parentContext();
   if(parentContext)
     m_script->currentContext()->setActivationObject(parentContext->activationObject());
@@ -212,7 +165,7 @@ void ScriptWrapper::setMsg(const QString &msg)
 
 JSEngineWrapper::JSEngineWrapper(ScriptWrapper *parent) : ScriptWrapper(parent)
 {
-
+  initPlugins();
 }
 
 JSEngineWrapper::~JSEngineWrapper()
@@ -230,17 +183,17 @@ JSEngineWrapper &JSEngineWrapper::operator =(const JSEngineWrapper &)
   return *this;
 }
 
-bool JSEngineWrapper::execute()
+bool JSEngineWrapper::evaluate(const QString &txt)
 {
   //if(m_debug)
-    return ScriptWrapper::execute();
+    return ScriptWrapper::evaluate(txt);
 
   m_jsengine.collectGarbage();
 
-  QJSValue result = m_jsengine.evaluate(text());
+  QJSValue result = m_jsengine.evaluate(txt);
   QString msg;
-  if(result.isError()){
-    msg = "Line " + QString().setNum(result.property("lineNumber").toInt());
+  if(result.isError()) {
+    msg = "Line " + result.property("lineNumber").toString();
     msg = msg + ": " + result.toString();
   }
   else
@@ -277,6 +230,6 @@ void JSEngineWrapper::deleteJSengine()
 
 void JSEngineWrapper::initPlugins()
 {
-  QJSEngineMemoryPlugin p(m_jsengine);
+  QJSEngineMemoryPlugin p1(m_jsengine);
 }
 

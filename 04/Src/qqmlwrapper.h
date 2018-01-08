@@ -5,7 +5,6 @@
 #include <QObject>
 #include <QtQml>
 
-
 //
 class QQmlEngineWrapper : public ScriptWrapper
 {
@@ -16,7 +15,9 @@ public:
   QQmlEngineWrapper(const QQmlEngineWrapper &val);
   QQmlEngineWrapper & operator =(const QQmlEngineWrapper &);
 
-  virtual bool execute() override;
+  // ScriptWrapper interface
+public:
+  bool evaluate(const QString &txt) override;
 
   bool addObject(QObject *_o, const QString &_name=QString()) override;
 
@@ -26,6 +27,7 @@ private:
   QQmlEngine m_qml;
 
   static QQmlApplicationEngine *engine;
+
 };
 
 #endif // QQMLWRAPPER_H

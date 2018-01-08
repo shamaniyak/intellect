@@ -156,8 +156,7 @@ bool IObject::runQML(const QString &text)
 
   if(qml_)
   {
-    qml_->setText(text);
-    bool is_exec = qml_->execute();
+    bool is_exec = qml_->evaluate(text);
     add_msg(qml_->msg());
 
     return is_exec;
