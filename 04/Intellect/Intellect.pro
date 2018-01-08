@@ -74,7 +74,8 @@ SOURCES += \
     ../Src/GUI/ScriptEditor/highlighter.cpp \
     ../Src/GUI/ScriptEditor/scripteditor.cpp \
     ../Third/qmlcreator/cpp/QMLHighlighter.cpp \
-    ../Third/qmlcreator/cpp/SyntaxHighlighter.cpp
+    ../Third/qmlcreator/cpp/SyntaxHighlighter.cpp \
+    ../Src/QmlManager/qmlmanager.cpp
 
 HEADERS  += \
     Src/intellect.h \
@@ -123,7 +124,8 @@ HEADERS  += \
     ../Src/GUI/ScriptEditor/highlighter.h \
     ../Src/GUI/ScriptEditor/scripteditor.h \
     ../Third/qmlcreator/cpp/QMLHighlighter.h \
-    ../Third/qmlcreator/cpp/SyntaxHighlighter.h
+    ../Third/qmlcreator/cpp/SyntaxHighlighter.h \
+    ../Src/QmlManager/qmlmanager.h
 
 FORMS    += \
     GUI/dialogmemoryeditor.ui \
