@@ -7,6 +7,8 @@
 class MyTreeWidgetItem;
 class MEWrapper;
 class QMemoryModel;
+class QMemorySelectionModel;
+class MemoryCompareProxyModel;
 
 class MemoryTreeView : public QTreeView
 {
@@ -35,7 +37,7 @@ protected:
   void contextMenuEvent(QContextMenuEvent *pe) override;
   void mousePressEvent ( QMouseEvent *event ) override;
 
-  void initModels();
+  void createModels();
 
   void createContextMenu();
 
@@ -52,6 +54,8 @@ signals:
   void memChanged();
 
 public slots:
+  void compareWith(MemoryWrapper *srcMem);
+  void deleteCompare();
 
 protected slots:
 
@@ -59,11 +63,17 @@ protected slots:
 
   void on_itemExpanded(const QModelIndex &item);
 
+  void on_currentRowChanged(const QModelIndex &current, const QModelIndex &previous);
+
 private:
   QMenu *m_pmenu = 0;
   MemoryWrapper *mem_ = 0;
   QStringList expanded_;
   QMemoryModel *model_ = 0;
+  QMemorySelectionModel *selectionModel_ = 0;
+  MemoryCompareProxyModel *memoryCompare_ = 0;
+
+  QWidget *createWidget(const QModelIndex &index);
 };
 
 #endif // MEMORYTREEVIEW_H

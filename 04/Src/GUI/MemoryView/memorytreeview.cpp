@@ -1,23 +1,28 @@
-#include "Src/GUI/menu.h"
 #include "memorytreeview.h"
-#include "mytreewidgetitem.h"
+
 #include "Src/Memory/qmemorymodel.h"
 #include "Src/Memory/qmemoryselectionmodel.h"
+#include "Src/Memory/memorycompareproxymodel.h"
+#include "memoryeditordelegate.h"
+#include "Src/GUI/menu.h"
 
 #include <QtDebug>
 #include <QMenu>
 #include <QMouseEvent>
 #include <QHeaderView>
+#include <QPushButton>
+#include <QLineEdit>
 
 MemoryTreeView::MemoryTreeView(QWidget *parent):
   QTreeView(parent)
 {
 //  qDebug() << "MemoryTreeView::MemoryTreeView()";
-  initModels();
+  createModels();
+
+  //auto delegate = new MemoryEditorDelegate;
+  //setItemDelegate(delegate);
 
   createContextMenu();
-
-  //initDragDrop();
 
   setup();
 
@@ -30,7 +35,7 @@ MemoryTreeView::~MemoryTreeView()
   disconnectSlots();
 }
 
-void MemoryTreeView::initModels()
+void MemoryTreeView::createModels()
 {
   if(!model_)
   {
@@ -38,8 +43,8 @@ void MemoryTreeView::initModels()
     model_->setObjectName("model");
   }
 
-  auto selectionModel = new QMemorySelectionModel(model_, this);
-  selectionModel->setObjectName("selectionModel");
+  selectionModel_ = new QMemorySelectionModel(model_, this);
+  selectionModel_->setObjectName("selectionModel");
 }
 
 void MemoryTreeView::createContextMenu()
@@ -52,18 +57,20 @@ void MemoryTreeView::connectSlots()
 {
   connect(this, &QTreeView::expanded, this, &MemoryTreeView::on_itemExpanded);
   connect(this, &QTreeView::collapsed, this, &MemoryTreeView::on_itemCollapsed);
+  connect(selectionModel_, &QMemorySelectionModel::currentRowChanged, this, &MemoryTreeView::on_currentRowChanged);
 }
 
 void MemoryTreeView::disconnectSlots()
 {
   this->disconnect(this);
+  selectionModel_->disconnect(this);
   if(mem_)
     mem_->disconnect(this);
 }
 
 void MemoryTreeView::initDragDrop()
 {
-  setSelectionMode(QAbstractItemView::SingleSelection);
+  setSelectionMode(QAbstractItemView::ExtendedSelection);
   this->setDragEnabled(true);
   this->setAcceptDrops(true);
   this->setDropIndicatorShown(true);
@@ -72,7 +79,11 @@ void MemoryTreeView::initDragDrop()
 
 void MemoryTreeView::setup()
 {
-
+  initDragDrop();
+//  this->setSelectionMode(QAbstractItemView::ExtendedSelection);
+//  this->setDragEnabled(true);
+//  this->setAcceptDrops(true);
+//  this->setDropIndicatorShown(true);
 }
 
 void MemoryTreeView::contextMenuEvent(QContextMenuEvent *pe)
@@ -82,11 +93,10 @@ void MemoryTreeView::contextMenuEvent(QContextMenuEvent *pe)
   m_pmenu->exec(pe->globalPos());
 }
 
-
-
 void MemoryTreeView::on_itemCollapsed(const QModelIndex &item)
 {
   auto *me = static_cast<MEWrapper*>(item.internalPointer());
+  if(!me) return;
   QString path = me->getPath();
 
   expanded_.removeOne(path);
@@ -95,10 +105,25 @@ void MemoryTreeView::on_itemCollapsed(const QModelIndex &item)
 void MemoryTreeView::on_itemExpanded(const QModelIndex &item)
 {
   auto *me = static_cast<MEWrapper*>(item.internalPointer());
+  if(!me) return;
   QString path = me->getPath();
 
   if(!expanded_.contains(path))
     expanded_ << path;
+}
+
+QWidget *MemoryTreeView::createWidget(const QModelIndex &index)
+{
+  auto wgt = new QLineEdit;
+  auto text = index.model()->data(index).toString();
+  wgt->setText(text);
+  return wgt;
+}
+
+void MemoryTreeView::on_currentRowChanged(const QModelIndex &current, const QModelIndex &previous)
+{
+  //setIndexWidget(previous, nullptr);
+  //setIndexWidget(current, createWidget(current));
 }
 
 MemoryWrapper *MemoryTreeView::getMem() const
@@ -110,8 +135,6 @@ void MemoryTreeView::setMem(MemoryWrapper *mem)
 {
   if(mem && mem != mem_)
   {
-    if(mem_)
-      mem_->disconnect(this);
 
     mem_ = mem;
     //auto model = this->findChild<QMemoryModel*>("model");
@@ -176,6 +199,30 @@ void MemoryTreeView::saveExpandItems(MEWrapper *me)
 MemoryWrapper *MemoryTreeView::memHeader() const
 {
   return(model_->getHeaderInfo());
+}
+
+void MemoryTreeView::compareWith(MemoryWrapper *srcMem)
+{
+  if(!srcMem) return;
+  if(!model_) return;
+  if(!memoryCompare_)
+    memoryCompare_ = new MemoryCompareProxyModel(this);
+  memoryCompare_->setSourceModel(model_);
+  memoryCompare_->setSrcMem(srcMem);
+  auto selectionModel = this->selectionModel();
+  if(selectionModel)
+  {
+    //selectionModel->setMem(mem_);
+    selectionModel->setModel(nullptr);
+  }
+  setModel(memoryCompare_);
+}
+
+void MemoryTreeView::deleteCompare()
+{
+  delete memoryCompare_;
+  memoryCompare_ = 0;
+  setModel(model_);
 }
 
 QMenu *MemoryTreeView::pmenu() const
