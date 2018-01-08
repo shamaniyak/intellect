@@ -44,12 +44,14 @@ public:
 
   QString compileText(const QString &str);
 
-  int loadPlugins();
+  Q_INVOKABLE int loadPlugins();
 
   void event(QObject *obj, QEvent *ev);
 
 public slots:
   void stop();
+
+  void recreateMemory();
 
 protected slots:
   void on_addObject(QObject *obj);
