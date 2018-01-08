@@ -7,6 +7,7 @@
 #include "objectmanager.h"
 #include "pluginmanager.h"
 #include "windowmanager.h"
+#include "QmlManager/qmlmanager.h"
 
 // Реализация алгоритма
 class TAlgorithm : public QObject
@@ -16,6 +17,7 @@ class TAlgorithm : public QObject
   Q_PROPERTY(QObject* OM READ getOM)
   Q_PROPERTY(QObject* PM READ getPM)
   Q_PROPERTY(WindowManager* WM READ getWM)
+  Q_PROPERTY(QObject* Qml READ getQml)
 
 public:
   explicit TAlgorithm(QObject *parent = 0);
@@ -38,6 +40,8 @@ public:
 
   IObject *getObject(const QString &name);
 
+  QmlManager *getQml() const;
+
 signals:
   void addResult(const QString &str);
   void start();
@@ -49,6 +53,7 @@ private:
   ObjectManager *OM_ = 0;// Мэнеджер объектов
   PluginManager *PM_ = 0;  // Мэнеджер плагинов
   WindowManager* WM_ = 0;
+  QmlManager* qml_ = 0;   // Мэнеджер QML
 };
 
 #endif // TALGORITHM_H

@@ -5,7 +5,8 @@ TAlgorithm::TAlgorithm(QObject *parent) : QObject(parent),
   MM_(new MemoryManager(this)),
   OM_(new ObjectManager(this)),
   PM_(new PluginManager(this)),
-  WM_(new WindowManager(this))
+  WM_(new WindowManager(this)),
+  qml_(new QmlManager(this))
 {
 }
 
@@ -28,6 +29,11 @@ bool TAlgorithm::addObject(QObject *obj, const QString &name)
 IObject *TAlgorithm::getObject(const QString &name)
 {
   return qobject_cast<IObject*>(OM_->Get(name));
+}
+
+QmlManager *TAlgorithm::getQml() const
+{
+    return qml_;
 }
 
 MemoryManager *TAlgorithm::getMM() const
