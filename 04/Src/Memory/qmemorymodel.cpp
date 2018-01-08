@@ -79,30 +79,46 @@ QVariant QMemoryModel::data(const QModelIndex &index, int role) const
   auto me = static_cast<MEWrapper*>(index.internalPointer());
 
   switch (index.column()) {
-  case NameColumn:
-  {
-    var = me->name();
-    if(var.toString().isEmpty())
-      var = "< >";
-  } break;
-
-  case PathColumn:
-    if(role == Qt::DisplayRole)
-      var = me->getPath();
-    break;
-
-  case ValueColumn:
-    if(role == Qt::DisplayRole)
+    case NameColumn:
     {
-      QStringList list(me->val().toString().split("\n"));
-      var = list[0];
+      var = me->name();
+      if(var.toString().isEmpty())
+        var = "< >";
+    } break;
+
+    case PathColumn:
+      if(role == Qt::DisplayRole)
+        var = me->getPath();
+      break;
+
+    case ValueColumn: {
+      var = me->val();
+      const auto type = var.type();
+      if(type == QMetaType::QVariantList) {
+        QStringList list = var.toStringList();
+        var = list.join(",");
+      }
+      else if(type == QMetaType::QObjectStar) {
+        auto x = (uint)(qvariant_cast<QObject*>(var));
+        var = QString("0x%1").arg(x,0,16).toUpper();
+      }
+      else {
+        if(role == Qt::DisplayRole)
+        {
+          QStringList list(me->val().toString().split("\n"));
+
+          if(!list.empty())
+            var = list[0];
+        }
+        else {
+
+        }
+      }
     }
-    else
-      var = me->val().toString();
     break;
 
-  default:
-      break;
+    default:
+        break;
   }
   return var;
 }
@@ -434,4 +450,112 @@ void QMemoryModel::header_change(MEWrapper *me, EMemoryChange idMsg)
 MemoryWrapper *QMemoryModel::getHeaderInfo() const
 {
   return headerInfo_;
+}
+
+
+QStringList QMemoryModel::mimeTypes() const
+{
+  QStringList types;
+  types << "application/vnd.text.list";
+  return types;
+}
+
+QMimeData *QMemoryModel::mimeData(const QModelIndexList &indexes) const
+{
+  QMimeData *mimeData = new QMimeData();
+  QByteArray encodedData;
+
+  QDataStream stream(&encodedData, QIODevice::WriteOnly);
+
+  foreach (const QModelIndex &index, indexes) {
+    if (index.isValid()) {
+      auto me = static_cast<MEWrapper*>(index.internalPointer());
+      me->getMe()->save(stream);
+    }
+  }
+
+  mimeData->setData("application/vnd.text.list", encodedData);
+  return mimeData;
+}
+
+bool QMemoryModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
+{
+  Q_UNUSED(action);
+  Q_UNUSED(row);
+  Q_UNUSED(parent);
+
+  if (!data->hasFormat("application/vnd.text.list"))
+    return false;
+
+  if (column > 0)
+    return false;
+
+  return true;
+}
+
+bool QMemoryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
+{
+  if (!canDropMimeData(data, action, row, column, parent))
+    return false;
+
+  if (action == Qt::IgnoreAction)
+    return true;
+
+  int beginRow;
+
+  if (row != -1)
+    beginRow = row;
+  else if (parent.isValid())
+    beginRow = rowCount(parent);
+  else
+    beginRow = rowCount(QModelIndex());
+
+  QByteArray encodedData = data->data("application/vnd.text.list");
+  QDataStream stream(&encodedData, QIODevice::ReadOnly);
+
+  while (!stream.atEnd())
+  {
+    Memory::TME me(mem_->getME()->getMe());
+    me.load(stream);
+
+    auto meParent = static_cast<MEWrapper*>(parent.internalPointer());
+    if(!meParent)
+      meParent = mem_->getME();
+    auto me1 = mem_->add(meParent, me.name());
+    if(me1) {
+      me1->setVal(me.val());
+      mem_->addFrom1(me1->getMe(), &me, true);
+    }
+  }
+
+  //  QStringList newItems;
+//  int rows = 0;
+
+//  while (!stream.atEnd()) {
+//    QString text;
+//    stream >> text;
+//    newItems << text;
+//    ++rows;
+//  }
+
+//  insertRows(beginRow, rows, parent);
+//  foreach (const QString &text, newItems) {
+//    QModelIndex idx = index(beginRow, 0, parent);
+//    setData(idx, text, Qt::EditRole);
+//    beginRow++;
+//  }
+
+  return true;
+}
+
+bool QMemoryModel::insertRows(int row, int count, const QModelIndex &parent)
+{
+  auto me = static_cast<MEWrapper*>(parent.internalPointer());
+  if(!me)
+    me = mem_->getME();
+  for(int i = 0; i < count; ++i)
+  {
+    auto me1 = mem_->add(me, "", false);
+    //mem_->move(me1, me, row+i);
+  }
 }

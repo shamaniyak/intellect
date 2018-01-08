@@ -40,7 +40,6 @@ public:
 
   bool hasChildren(const QModelIndex &parent) const override;
 
-
   Qt::DropActions  supportedDragActions() const override;
   Qt::DropActions supportedDropActions() const override;
 
@@ -54,7 +53,7 @@ public:
 protected:
 
   void updateMe(MEWrapper *me);
-  
+
 private slots:
   void memory_change(MEWrapper *me, EMemoryChange idMsg);
   void on_memory_change(const ChangeEvent &event);
@@ -72,6 +71,15 @@ private:
 
   MemoryWrapper *mem_ = nullptr;
   MemoryWrapper *headerInfo_ = nullptr;
+
+  // QAbstractItemModel interface
+public:
+  QStringList mimeTypes() const override;
+  QMimeData *mimeData(const QModelIndexList &indexes) const override;
+  bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+  bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+  bool insertRows(int row, int count, const QModelIndex &parent) override;
+
 };
 
 #endif // QMEMORYMODEL_H
