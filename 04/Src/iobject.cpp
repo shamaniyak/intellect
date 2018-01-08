@@ -64,10 +64,9 @@ bool IObject::execute(const QString &text)
   bool res = false;
 
   if(!text.isEmpty()) {
-    //scr_->setText(text);
     res = scr_->evaluate(text);
 
-    add_msg("Result = " + scr_->msg());
+    add_msg("execute = " + scr_->msg());
   }
   else
     add_msg("Скрипт не задан.");
@@ -152,6 +151,9 @@ void IObject::incCountLinks()
 
 bool IObject::runQML(const QString &text)
 {
+  msg_ = "Object " + objectName() + " runQML:";
+  add_msg(msg_);
+
   if(qml_)
   {
     qml_->setText(text);

@@ -50,9 +50,10 @@ public slots:
   // Выполнить скрипт, записанный в памяти объекта, находящийся по пути path
   bool run(const QString &path, const QVariant &params=QVariant());
 
-  // Выполнить скрипт
+  // Выполнить скрипт в контексте объекта
   bool execute(const QString &text);
 
+  // Очищает и удаляет скрипт.
   void reset();
 
   // Выполнить QML код
