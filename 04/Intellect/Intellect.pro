@@ -30,7 +30,6 @@ INCLUDEPATH += ../ \
 SOURCES += \
     Src/main.cpp \
     Src/intellect.cpp \
-    Src/MemoryCompare/memorycompare.cpp \
     GUI/dialogmemoryeditor.cpp \
     GUI/intellectmainwindowex.cpp \
     GUI/inputpassword.cpp \
@@ -79,7 +78,6 @@ SOURCES += \
 
 HEADERS  += \
     Src/intellect.h \
-    Src/MemoryCompare/memorycompare.h \
     GUI/dialogmemoryeditor.h \
     GUI/intellectmainwindowex.h \
     GUI/inputpassword.h \
