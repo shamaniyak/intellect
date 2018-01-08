@@ -147,6 +147,7 @@ void TMemory::clear()
 {
   TAbstractMemory::clear();
   id_names_.clear();
+  words_.clear();
 }
 
 
@@ -191,7 +192,7 @@ QString TMemory::getFilePath() const
   return file_path_;
 }
 
-void TMemory::setfilePath(const QString &path)
+void TMemory::setFilePath(const QString &path)
 {
   file_path_ = path;
 }
@@ -340,6 +341,11 @@ TME *TMemory::get(const QString &path)
     return top_me_;
 
   //path.remove()
+  //for debug
+//  if(path.indexOf("*") > 0)
+//  {
+//    int x =0; ++x;
+//  }
   auto path_ = path.split(QRegExp("[\\\\/]"), QString::SkipEmptyParts);
   auto me = getTopME();
   for(const auto &s: path_)
@@ -394,7 +400,15 @@ int TMemory::getWordIdx(const QString &w)
   if(w.isEmpty() || w == "<>")
     return -1;
 
-  int idx = words_.indexOf(QRegExp(w, Qt::CaseSensitive));
+//  const QRegExp rx(w, Qt::CaseSensitive, QRegExp::Wildcard);
+  //QRegularExpression rx(QRegularExpression::escape(w));
+  int idx = -1;//words_.indexOf(rx);
+  for(int i = 0; i < words_.size(); ++i)
+    if(words_[i] == w)
+    {
+      idx = i; break;
+    }
+
   if(idx >=0)
     return idx;
 
@@ -473,7 +487,7 @@ bool TMemory::saveTo(const QString &fileName)
 {
   if(fileName.isEmpty())
     return false;
-  setfilePath(fileName);
+  setFilePath(fileName);
   return save();
 }
 

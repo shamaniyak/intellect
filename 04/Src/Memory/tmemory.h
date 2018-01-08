@@ -76,7 +76,7 @@ public:
   void setName(TME *me, const QString &name);
 
   QString getFilePath() const;
-  void setfilePath(const QString &path);
+  void setFilePath(const QString &path);
 
   QStringList& words();
 
