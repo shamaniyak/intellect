@@ -19,7 +19,7 @@ QMemoryModel::~QMemoryModel()
 
 QModelIndex QMemoryModel::index(int row, int column, const QModelIndex &parent) const
 {
-  if (!hasIndex(row, column, parent)) {
+  if (!mem_ || !hasIndex(row, column, parent)) {
       return QModelIndex();
   }
 
@@ -35,7 +35,7 @@ QModelIndex QMemoryModel::index(int row, int column, const QModelIndex &parent) 
 
 QModelIndex QMemoryModel::parent(const QModelIndex &child) const
 {
-  if (!child.isValid()) {
+  if (!mem_ || !child.isValid()) {
       return QModelIndex();
   }
 
@@ -54,6 +54,9 @@ QModelIndex QMemoryModel::parent(const QModelIndex &child) const
 
 int QMemoryModel::rowCount(const QModelIndex &parent) const
 {
+  if(!mem_)
+    return 0;
+
   if (!parent.isValid())
     return mem_->getME()->count();
 
@@ -63,6 +66,8 @@ int QMemoryModel::rowCount(const QModelIndex &parent) const
 
 int QMemoryModel::columnCount(const QModelIndex &/*parent*/) const
 {
+  if(!headerInfo_)
+    return 0;
   return headerInfo_->getME()->count();
 }
 
@@ -185,7 +190,7 @@ Qt::ItemFlags QMemoryModel::flags(const QModelIndex &index) const
 
   if (canEdit) {
     auto me = static_cast<MEWrapper*>(index.internalPointer());
-    if (me != mem_->getME()) {
+    if (mem_ && me != mem_->getME()) {
         flags |= Qt::ItemIsEditable;
     }
   }
@@ -264,6 +269,12 @@ QModelIndex QMemoryModel::getIndexByMe(MEWrapper *me)
   }
 
   return mi;
+}
+
+QHash<int, QByteArray> QMemoryModel::roleNames() const
+{
+  QHash<int, QByteArray> result = QAbstractItemModel::roleNames();
+  return result;
 }
 
 void QMemoryModel::updateMe(MEWrapper *me)

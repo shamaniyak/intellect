@@ -9,6 +9,7 @@
 class QMemoryModel : public QAbstractItemModel
 {
   Q_OBJECT
+  Q_PROPERTY(MemoryWrapper* memory READ mem WRITE setMem)
   Q_PROPERTY(MemoryWrapper* header READ getHeaderInfo)
 
   typedef QAbstractItemModel inherited;
@@ -49,6 +50,8 @@ public:
   MemoryWrapper *getHeaderInfo() const;
 
   QModelIndex getIndexByMe(MEWrapper *me);
+
+  QHash<int,QByteArray> roleNames() const override;
 
 protected:
 
