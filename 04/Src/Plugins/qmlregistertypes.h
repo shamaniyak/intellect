@@ -9,6 +9,8 @@ class QmlRegisterTypes : public QObject
 public:
   explicit QmlRegisterTypes(QObject *parent = nullptr);
 
+  static void init();
+
 signals:
 
 public slots:
