@@ -166,5 +166,8 @@ bool IObject::runQML(const QString &text)
 
 bool IObject::addObject(QObject *obj, const QString &name)
 {
-  return(this->scr()->addObject(obj, name));
+  bool isAdd = this->scr()->addObject(obj, name);
+  if(isAdd)
+    qml_->addObject(obj, name);
+  return isAdd;
 }

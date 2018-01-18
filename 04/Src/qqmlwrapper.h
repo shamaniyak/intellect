@@ -25,6 +25,7 @@ public:
 
 private:
   QQmlEngine m_qml;
+  QObject *m_tempObject = nullptr;
 
   static QQmlApplicationEngine *engine;
 
