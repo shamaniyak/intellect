@@ -2,6 +2,6 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     ../Intellect \
-    ../Worker \
+    #../Worker \
     ../Plugins \
-    ../MemoryEditor
+    #../MemoryEditor

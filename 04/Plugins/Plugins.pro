@@ -4,4 +4,5 @@ SUBDIRS += \
     Multimedia \
     Cartography \
     SppzClassifierToQt \
-    SppzSituationToQt
+    SppzSituationToQt \
+    WindowManager
