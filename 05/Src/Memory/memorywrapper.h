@@ -122,7 +122,6 @@ protected:
   void clearDeleted();
   void clearMeWrappers();
 
-  MEWrapper* add1(MEWrapper *parent, const QString &name, bool checkExist = true);
   bool addFrom1(Memory::TME *parent, Memory::TME *mefrom, bool recurs);
   void deleteMe1(MEWrapper *me);
   void clearR(Memory::TME *me);

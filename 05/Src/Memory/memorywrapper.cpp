@@ -23,31 +23,20 @@ MEWrapper *MemoryWrapper::add(MEWrapper *parent, const QString &name, bool check
     parent = getME();
   if(parent)
   {
-    me = add1(parent, name, checkExist);
-  }
+    //me = add1(parent, name, checkExist);
+    auto meParent = parent->getMe();
+    if(!meParent)
+      return me;
 
-  return me;
-}
+    if(!name.isEmpty() && checkExist)
+      me = parent->get(name);
 
-MEWrapper *MemoryWrapper::add1(MEWrapper *parent, const QString &name, bool checkExist)
-{
-  if(!parent)
-    parent = getME();
-
-  MEWrapper *me = nullptr;
-
-  auto meParent = parent->getMe();
-  if(!meParent)
-    return me;
-
-  if(!name.isEmpty() && checkExist)
-    me = parent->get(name);
-
-  if(!me)
-  {
-    me = CreateMEW(meParent->Add(name));
-    if(me) {
-      doChange(me, EMemoryChange::mcAdd);
+    if(!me)
+    {
+      me = CreateMEW(meParent->Add(name));
+      if(me) {
+        doChange(me, EMemoryChange::mcAdd);
+      }
     }
   }
 

@@ -29,7 +29,7 @@ public:
   }
   virtual void redo() override
   {
-    newMe_ = m_->add1(parent_, name_, checkExist_);
+    newMe_ = m_->add(parent_, name_, checkExist_);
   }
 
   MEWrapper *newMe() const { return newMe_; }
@@ -79,7 +79,7 @@ public:
 
   virtual void undo() override
   {
-    me_ = m_->add1(parent_, name_, false);
+    me_ = m_->add(parent_, name_, false);
     m_->move(me_, parent_, index_);
     m_->addFrom1(me_->getMe(), &buf_, true);
   }
