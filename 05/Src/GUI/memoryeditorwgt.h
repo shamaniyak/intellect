@@ -1,5 +1,5 @@
-#ifndef MEMORYEDITOR_H
-#define MEMORYEDITOR_H
+#ifndef MEMORYEDITORWGT_H
+#define MEMORYEDITORWGT_H
 
 #include <QObject>
 #include <QWidget>
@@ -30,4 +30,4 @@ private:
   QFormLayout *formLayout;
 };
 
-#endif // MEMORYEDITOR_H
+#endif // MEMORYEDITORWGT_H

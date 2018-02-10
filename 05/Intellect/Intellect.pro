@@ -70,7 +70,7 @@ SOURCES += \
     ../Src/GUI/logview.cpp \
     ../Src/GUI/graphicsview.cpp \
     ../Src/GUI/filedialog.cpp \
-    ../Src/GUI/memoryeditor.cpp \
+    ../Src/GUI/memoryeditorwgt.cpp \
     ../Src/GUI/ScriptEditor/highlighter.cpp \
     ../Src/GUI/ScriptEditor/scripteditor.cpp \
     ../Third/qmlcreator/cpp/QMLHighlighter.cpp \
@@ -121,7 +121,7 @@ HEADERS  += \
     ../Src/GUI/logview.h \
     ../Src/GUI/graphicsview.h \
     ../Src/GUI/filedialog.h \
-    ../Src/GUI/memoryeditor.h \
+    ../Src/GUI/memoryeditorwgt.h \
     ../Src/GUI/ScriptEditor/highlighter.h \
     ../Src/GUI/ScriptEditor/scripteditor.h \
     ../Third/qmlcreator/cpp/QMLHighlighter.h \

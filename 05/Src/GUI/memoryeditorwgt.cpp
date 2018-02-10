@@ -1,4 +1,4 @@
-#include "memoryeditor.h"
+#include "memoryeditorwgt.h"
 #include <QFormLayout>
 #include <QVBoxLayout>
 #include <QtDebug>
