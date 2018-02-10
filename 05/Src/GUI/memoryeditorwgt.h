@@ -6,11 +6,11 @@
 
 class QFormLayout;
 
-class MemoryEditor : public QWidget
+class MemoryEditorWgt : public QWidget
 {
   Q_OBJECT
 public:
-  explicit MemoryEditor(QWidget *parent = 0);
+  explicit MemoryEditorWgt(QWidget *parent = 0);
 
 signals:
 

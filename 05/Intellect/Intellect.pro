@@ -43,6 +43,7 @@ SOURCES += \
     ../Src/Memory/tmemory.cpp \
     ../Src/Memory/tmevalue.cpp \
     ../Src/Memory/memorycompareproxymodel.cpp \
+    ../Src/Memory/memoryeditor.cpp \
     ../Src/Plugins/intellectplugin.cpp \
     ../Src/Plugins/memoryplugin.cpp \
     ../Src/Plugins/qeventscriptplugin.cpp \
@@ -93,6 +94,7 @@ HEADERS  += \
     ../Src/Memory/tmemory.h \
     ../Src/Memory/tmevalue.h \
     ../Src/Memory/memorycompareproxymodel.h \
+    ../Src/Memory/memoryeditor.h \
     ../Src/Plugins/intellectplugin.h \
     ../Src/Plugins/memoryplugin.h \
     ../Src/Plugins/qeventscriptplugin.h \

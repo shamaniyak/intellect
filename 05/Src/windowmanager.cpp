@@ -6,7 +6,7 @@
 #include "Src/GUI/MemoryView/memorytableview.h"
 #include "Src/GUI/MemoryView/memorylistview.h"
 #include "Src/GUI/MemoryView/memorytreeview.h"
-#include "Src/GUI/memoryeditor.h"
+#include "Src/GUI/memoryeditorwgt.h"
 #include "Src/Memory/qmemorymodel.h"
 #include "Src/GUI/graphicsview.h"
 #include "Src/GUI/MainWindowEx/mainwindowex.h"
@@ -133,7 +133,7 @@ QObject *WindowManager::createMemoryView(QWidget *parent)
 QObject *WindowManager::createMemoryEditor(QWidget *parent)
 {
   //makeParent(parent);
-  return new MemoryEditor(parent);
+  return new MemoryEditorWgt(parent);
 }
 
 QObject *WindowManager::createMemoryCompare()

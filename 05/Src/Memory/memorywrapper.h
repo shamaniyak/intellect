@@ -21,8 +21,6 @@ namespace Memory
   class TME;
 }
 
-class QUndoStack;
-
 enum EMemoryChange {
   mcNone, mcAdd, mcAddFrom, mcDel, mcEditName, mcEditVal, mcUpdate, mcSelect, mcClear, mcMove
 };
@@ -31,7 +29,7 @@ struct ChangeEvent
 {
 private:
   Q_GADGET
-  Q_PROPERTY(int x MEMBER x)
+
 public:
   EMemoryChange type = mcNone;
   MEWrapper *me = nullptr;
@@ -43,8 +41,7 @@ public:
   QString prevName;
   QVariant prevVal;
 
-private:
-  int x = 123;
+
 };
 
 class MemoryWrapper : public QObject//QMemoryModel
@@ -80,12 +77,7 @@ public:
   void setSelected(MEWrapper *me);
   MEWrapper *getSelected();
 
-  void createUndoStack();
-  QUndoStack *getStack();
-
 signals:
-  // посылается перед удалением
-  //before_change(MEWrapper *me, EMemoryChange idMsg);
   on_change(MEWrapper *me, EMemoryChange idMsg);
   change(const ChangeEvent &ev);
   change1(const Memory::TME &ev);
@@ -149,7 +141,6 @@ private:
   // Каждому имени сопоставлен список элементов
   t_multiMapMeWrappers elements_;
   t_vecMeWrappers deleted_; // Список удаленных
-  QUndoStack *stack_ = nullptr;
   bool canChange_ = true;
 
   friend class QMemoryModel;

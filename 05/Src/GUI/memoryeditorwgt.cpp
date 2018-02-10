@@ -3,7 +3,7 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 
-MemoryEditor::MemoryEditor(QWidget *parent) : QWidget(parent)
+MemoryEditorWgt::MemoryEditorWgt(QWidget *parent) : QWidget(parent)
 {
   auto mainLayout = new QVBoxLayout;
   formLayout = new QFormLayout;
@@ -18,7 +18,7 @@ MemoryEditor::MemoryEditor(QWidget *parent) : QWidget(parent)
   this->setLayout(mainLayout);
 }
 
-QObject *MemoryEditor::addLayout(int type, QObject *parent)
+QObject *MemoryEditorWgt::addLayout(int type, QObject *parent)
 {
   auto p = qobject_cast<QBoxLayout*>(parent);
   auto l = new QBoxLayout(QBoxLayout::Direction(type));
@@ -27,37 +27,37 @@ QObject *MemoryEditor::addLayout(int type, QObject *parent)
   return l;
 }
 
-void MemoryEditor::addWidget(QWidget *wgt, QObject *layout)
+void MemoryEditorWgt::addWidget(QWidget *wgt, QObject *layout)
 {
   auto l = qobject_cast<QBoxLayout*>(layout);
   if(l)
     l->addWidget(wgt);
 }
 
-void MemoryEditor::addWidget(QWidget *wgt, int row, int column, int align)
+void MemoryEditorWgt::addWidget(QWidget *wgt, int row, int column, int align)
 {
   Qt::Alignment alignment = Qt::Alignment(align);
   //gridLayout->addWidget(wgt, row, column, alignment);
 }
 
-void MemoryEditor::addWidget(QWidget *wgt, int row, int column, int rowSpan, int columnSpan, Qt::Alignment align)
+void MemoryEditorWgt::addWidget(QWidget *wgt, int row, int column, int rowSpan, int columnSpan, Qt::Alignment align)
 {
   //gridLayout->addWidget(wgt, row, column, rowSpan, columnSpan, align);
 }
 
-void MemoryEditor::addSpacer(QObject *parent)
+void MemoryEditorWgt::addSpacer(QObject *parent)
 {
   //auto s = new QVerticalSpaser();
 }
 
-void MemoryEditor::setLayout(QObject *layout)
+void MemoryEditorWgt::setLayout(QObject *layout)
 {
   auto l = qobject_cast<QBoxLayout*>(layout);
   if(l)
     QWidget::setLayout(l);
 }
 
-void MemoryEditor::addRow(const QString &name, QWidget *w)
+void MemoryEditorWgt::addRow(const QString &name, QWidget *w)
 {
   qDebug() << name;
   w->setParent(0);
