@@ -5,9 +5,10 @@
 
 IObject::IObject(QObject *parent) : QObject(parent)
   ,scr_(new JSEngineWrapper)
-  ,qml_(new QQmlEngineWrapper)
+  ,qml_(new QQmlEngineWrapper(this))
 {
   scr_->addObject(this, "IObj");
+  qml_->addObject(this, "IObj");
   //scr_->addObject(mem_, "Memory");
 }
 
@@ -130,6 +131,11 @@ void IObject::sendQuery(const QString &receiver, const QString &path, const QStr
 void IObject::onQuery(const QString &path, const QString &params)
 {
   run(path, params);
+}
+
+QQmlEngineWrapper *IObject::getQml() const
+{
+  return qml_;
 }
 
 QObject *IObject::getOM()

@@ -346,6 +346,17 @@ MEWrapper *MemoryWrapper::get(const QString &path)
   return CreateMEW(mem_->get(path));
 }
 
+MEWrapper1 MemoryWrapper::get11(const QString &path)
+{
+  auto me = get(path);
+  MEWrapper1 me1;
+  if(me) {
+    me1.name_ = me->name();
+    me1.val_ = me->val();
+  }
+  return me1;
+}
+
 MEWrapper *MemoryWrapper::getById(uint id)
 {
   auto me = reinterpret_cast<Memory::TME*>(id);
@@ -390,7 +401,7 @@ QString MemoryWrapper::getFilePath() const
 
 void MemoryWrapper::setFilePath(const QString &file_path)
 {
-  mem_->setfilePath(file_path);
+  mem_->setFilePath(file_path);
 }
 
 QVariant MemoryWrapper::getVal(const QString &path)

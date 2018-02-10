@@ -19,6 +19,8 @@ class QJSEngineMemoryPlugin
 public:
   explicit QJSEngineMemoryPlugin(QJSEngine &engine);
   ~QJSEngineMemoryPlugin() {}
+
+  static void registerTypes();
 };
 
 

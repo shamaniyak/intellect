@@ -1,33 +1,43 @@
 #ifndef QQMLWRAPPER_H
 #define QQMLWRAPPER_H
 
-#include "scriptwrapper.h"
 #include <QObject>
 #include <QtQml>
 
 //
-class QQmlEngineWrapper : public ScriptWrapper
+class QQmlEngineWrapper : public QObject
 {
+  Q_OBJECT
+  Q_PROPERTY(QString msg READ msg)
+
 public:
-  explicit QQmlEngineWrapper(QQmlEngineWrapper *parent=nullptr);
+  explicit QQmlEngineWrapper(QObject *parent=nullptr);
   ~QQmlEngineWrapper();
 
-  QQmlEngineWrapper(const QQmlEngineWrapper &val);
-  QQmlEngineWrapper & operator =(const QQmlEngineWrapper &);
+  Q_INVOKABLE bool evaluate(const QString &txt);
 
-  // ScriptWrapper interface
-public:
-  bool evaluate(const QString &txt) override;
-
-  bool addObject(QObject *_o, const QString &_name=QString()) override;
+  bool addObject(QObject *_o, const QString &_name=QString());
+  QObject* getObject(const QString &name) const;
 
   static void init();
 
+  QString msg() const;
+
+  Q_INVOKABLE void reset();
+
+protected:
+  void insertObjectsInQml();
+
 private:
-  QQmlEngine m_qml;
+  QQmlEngine *m_qml = nullptr;
   QObject *m_tempObject = nullptr;
+  QString m_msg;
+  QMap<QString, QObject*> m_objects;
 
   static QQmlApplicationEngine *engine;
+
+  QQmlEngineWrapper(const QQmlEngineWrapper &val);
+  QQmlEngineWrapper & operator =(const QQmlEngineWrapper &);
 
 };
 

@@ -232,11 +232,12 @@ void IntellectMainWindowEx::loadSettings()
       }
 
       auto meMaximized = meSettings->get("maximized");
-      if(meMaximized)
+      if(meMaximized) {
         if(meMaximized->val().toBool())
           this->showMaximized();
         else
           this->showNormal();
+      }
     }
   }
 

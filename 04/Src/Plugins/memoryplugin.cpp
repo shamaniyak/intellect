@@ -340,24 +340,27 @@ MemoryPlugin::MemoryPlugin(QScriptEngine *engine)
   }
 }
 
+//  QJSEngine Plugins
 
-QJSValue EMemoryChangeToJSValue(QJSEngine *engine, EMemoryChange const &in)
-{ return engine->toScriptValue<int>(int(in)); }
+// First, define the singleton type provider function (callback).
+//static QJSValue example_qjsvalue_singletontype_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
+//{
+//    Q_UNUSED(engine)
 
-void EMemoryChangeFromJSValue(const QJSValue &object, EMemoryChange &out)
-{ out = (EMemoryChange)(object.toInt()); }
+//    static int seedValue = 5;
+//    QJSValue example = scriptEngine->newObject();
+//    example.setProperty("someProperty", seedValue++);
+//    return example;
+//}
 
 QJSEngineMemoryPlugin::QJSEngineMemoryPlugin(QJSEngine &engine)
 {
-  //qScriptRegisterMetaType(engine, MemoryWrapperToScriptValue, MemoryWrapperFromScriptValue);
-  //qScriptRegisterMetaType(engine, MEWrapperToScriptValue, MEWrapperFromScriptValue);
-  //qScriptRegisterMetaType(engine, EMemoryChangeToJSValue, EMemoryChangeFromJSValue);
-  //qScriptRegisterMetaType(engine, tmeToScriptValue, tmeFromScriptValue);
-  qmlRegisterType<MemoryWrapper>("Intellect.MemoryWrapper", 1, 0, "Memory");
+  // Second, register the singleton type provider with QML by calling this function in an initialization function.
+  //qmlRegisterSingletonType("Intellect.qjsvalueApi", 1, 0, "MyApi", example_qjsvalue_singletontype_provider);
 
   QJSValue obj = engine.globalObject();
 
-  //mcNone, mcAdd, mcAddFrom, mcDel, mcEditName, mcEditVal, mcUpdate, mcSelect, mcClear
+  //mcNone, mcAdd, mcAddFrom, mcDel, mcEditName, mcEditVal, mcUpdate, mcSelect, mcClear, mcMove
   obj.setProperty("mcNone", mcNone);
   obj.setProperty("mcAdd", mcAdd);
   obj.setProperty("mcAddFrom", mcAddFrom);
@@ -367,4 +370,10 @@ QJSEngineMemoryPlugin::QJSEngineMemoryPlugin(QJSEngine &engine)
   obj.setProperty("mcUpdate", mcUpdate);
   obj.setProperty("mcSelect", mcSelect);
   obj.setProperty("mcClear", mcClear);
+  obj.setProperty("mcMove", mcMove);
+}
+
+void QJSEngineMemoryPlugin::registerTypes()
+{
+  qmlRegisterType<MemoryWrapper>("Intellect.MemoryWrapper", 1, 0, "Memory");
 }

@@ -93,6 +93,7 @@ public slots:
   void deleteMe(MEWrapper *me);
 
   MEWrapper *get(const QString &path);
+  MEWrapper1 get11(const QString &path);
   MEWrapper *getById(uint id);
 
   bool open(const QString &fileName);
@@ -144,6 +145,7 @@ private:
   QUndoStack *stack_ = nullptr;
   bool canChange_ = true;
 
+  friend class QMemoryModel;
   friend class MEWrapper;
   friend class AddCommand;
   friend class DelCommand;

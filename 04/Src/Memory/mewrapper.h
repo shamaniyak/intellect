@@ -11,18 +11,13 @@ namespace Memory
 
 class MemoryWrapper;
 
-class MEWrapper// : public QObject
+class MEWrapper
 {
   friend class MemoryWrapper;
-
-//  Q_OBJECT
-//  Q_PROPERTY(QString name READ name WRITE setName)
-//  Q_PROPERTY(QVariant val READ val WRITE setVal)
-//  Q_PROPERTY(QString path READ getPath)
-//  Q_PROPERTY(MEWrapper* parent READ parent)
 public:
-  explicit MEWrapper(MemoryWrapper *mem = 0);
-  explicit MEWrapper(Memory::TME *me = 0, MemoryWrapper *mem = 0);
+  MEWrapper();
+  explicit MEWrapper(MemoryWrapper *mem);
+  explicit MEWrapper(Memory::TME *me, MemoryWrapper *mem = 0);
   ~MEWrapper();
 
   void clear();

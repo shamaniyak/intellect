@@ -43,6 +43,7 @@ public slots:
 
   QObject * createMemoryView(QWidget *parent = 0);
   QObject * createMemoryEditor(QWidget *parent = 0);
+  QObject * createMemoryCompare();
 
 protected:
   void makeParent(QWidget *&parent);

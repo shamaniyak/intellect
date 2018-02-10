@@ -6,8 +6,7 @@
 #include "Plugins/memoryplugin.h"
 #include "Plugins/intellectplugin.h"
 
-ScriptWrapper::ScriptWrapper(ScriptWrapper *parent):
-  m_parent(parent),
+ScriptWrapper::ScriptWrapper(QObject *parent) : QObject(parent),
   m_debugger(new QScriptEngineDebugger())
 {
 

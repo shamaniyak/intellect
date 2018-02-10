@@ -2,6 +2,11 @@
 #include "tme.h"
 #include "memorywrapper.h"
 
+MEWrapper::MEWrapper()
+{
+
+}
+
 MEWrapper::MEWrapper(MemoryWrapper *mem)// : QObject(parent)
 {
   setMem(mem);

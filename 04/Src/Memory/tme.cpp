@@ -214,7 +214,7 @@ int TME::id_name() const
 
 void TME::remove(const TME *me)
 {
-  childs_.remove(me);;
+  childs_.remove(me);
 }
 
 TME::Elements &TME::getElements()

@@ -20,6 +20,8 @@ class IObject : public QObject
   //Q_PROPERTY(QObject* cm READ CM)
   Q_PROPERTY(QObject* OM READ getOM)
   //Q_PROPERTY(QString msg READ msg)
+  Q_PROPERTY(QObject* qml READ getQml)
+
 public:
   typedef std::shared_ptr<JSEngineWrapper> t_jswrapper;
   typedef std::shared_ptr<QQmlEngineWrapper> t_qmlwrapper;
@@ -35,6 +37,8 @@ public:
   void incCountLinks();
 
   QObject *getOM();
+
+  QQmlEngineWrapper *getQml() const;
 
 signals:
   // Послать запрос объекту с именем receiver.
@@ -92,7 +96,7 @@ private:
   int countLinks_ = 0;
   MemoryWrapper *mem_ = 0;// Данные объекта в виде дерева
   t_jswrapper scr_;// Функционал объекта в виде скрипта, расширяющего его возможности
-  t_qmlwrapper qml_;
+  QQmlEngineWrapper *qml_ = 0;// Объект по работе с QML движком
   QString msg_;// Сообщение об выполненных операциях
   WindowManager *WM_ = 0;// Оконный мэнеджер
   ObjectManager *OM_ = 0;

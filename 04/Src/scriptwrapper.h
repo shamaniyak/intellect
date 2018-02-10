@@ -8,7 +8,7 @@
 
 class QScriptEngineDebugger;
 
-class ScriptWrapper
+class ScriptWrapper : public QObject
 {
   struct Exec
   {
@@ -24,7 +24,7 @@ class ScriptWrapper
   };
 
 public:
-  explicit ScriptWrapper(ScriptWrapper *parent=nullptr);
+  explicit ScriptWrapper(QObject *parent=nullptr);
   virtual ~ScriptWrapper();
 
   ScriptWrapper(const ScriptWrapper &val);
