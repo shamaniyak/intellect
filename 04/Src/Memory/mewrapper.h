@@ -13,11 +13,16 @@ class MemoryWrapper;
 
 class MEWrapper
 {
-  friend class MemoryWrapper;
+  Q_GADGET
+  Q_PROPERTY(QString name READ name WRITE setName)
+  Q_PROPERTY(QString path READ getPath)
+  Q_PROPERTY(QVariant val READ val WRITE setVal)
+
 public:
   MEWrapper();
-  explicit MEWrapper(MemoryWrapper *mem);
-  explicit MEWrapper(Memory::TME *me, MemoryWrapper *mem = 0);
+  MEWrapper(MemoryWrapper *mem);
+  MEWrapper(Memory::TME *me, MemoryWrapper *mem = 0);
+  MEWrapper(const MEWrapper &src);
   ~MEWrapper();
 
   void clear();
@@ -45,6 +50,7 @@ public:
   void delByMe(MEWrapper *me);
 
   MEWrapper *parent() const;
+  MEWrapper parent1() const;
 
   int count() const;
 
@@ -61,9 +67,10 @@ private:
   MemoryWrapper *mem_;
 
   void clearR(Memory::TME *me);
+
+  friend class MemoryWrapper;
 };
 
-//Q_DECLARE_METATYPE(MEWrapper)
 Q_DECLARE_METATYPE(MEWrapper*)
 
 #endif // MEWRAPPER_H

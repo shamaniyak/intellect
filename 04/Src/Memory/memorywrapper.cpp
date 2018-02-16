@@ -346,15 +346,14 @@ MEWrapper *MemoryWrapper::get(const QString &path)
   return CreateMEW(mem_->get(path));
 }
 
-MEWrapper1 MemoryWrapper::get11(const QString &path)
+MEWrapper MemoryWrapper::get1(const QString &path)
 {
   auto me = get(path);
-  MEWrapper1 me1;
   if(me) {
-    me1.name_ = me->name();
-    me1.val_ = me->val();
+    MEWrapper me1(me->getMe(), this);
+    return me1;
   }
-  return me1;
+  return MEWrapper(this);
 }
 
 MEWrapper *MemoryWrapper::getById(uint id)
@@ -365,6 +364,25 @@ MEWrapper *MemoryWrapper::getById(uint id)
   if(!map_mew_.contains(me))
     return nullptr;
   return map_mew_[me];
+}
+
+ChangeEvent MemoryWrapper::getCE()
+{
+  ChangeEvent ce;
+  ce.row = 5;
+  return ce;
+}
+
+MEData MemoryWrapper::getMeData()
+{
+  auto me = get("Test");
+  MEData meData;
+  if(me) {
+    meData.name_ = me->name();
+    meData.path_ = me->getPath();
+    meData.val_ = me->val();
+  }
+  return meData;
 }
 
 bool MemoryWrapper::getAutosave() const

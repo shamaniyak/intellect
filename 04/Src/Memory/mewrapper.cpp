@@ -18,6 +18,12 @@ MEWrapper::MEWrapper(Memory::TME *me, MemoryWrapper *mem) : //QObject(parent),
   setMem(mem);
 }
 
+MEWrapper::MEWrapper(const MEWrapper &src)
+{
+  this->mem_ = src.mem_;
+  this->me_ = src.me_;
+}
+
 MEWrapper::~MEWrapper()
 {
 
@@ -153,6 +159,12 @@ MEWrapper *MEWrapper::parent() const
   if(mem_ && me_)
     return mem_->CreateMEW(me_->parent());
   return nullptr;
+}
+
+MEWrapper MEWrapper::parent1() const
+{
+  MEWrapper me(me_->parent(), mem_);
+  return me;
 }
 
 int MEWrapper::count() const

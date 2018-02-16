@@ -14,6 +14,10 @@ QmlRegisterTypes::QmlRegisterTypes(QObject *parent) : QObject(parent)
 void QmlRegisterTypes::init()
 {
   qmlRegisterType<MemoryWrapper>("Intellect.MemoryWrapper", 1, 0, "Memory");
+  //qRegisterMetaType<MEData>();
+  //qmlRegisterUncreatableType<MEData>("Intellect.MEData", 1, 0, "MEData", "MEData: can't create.");
+  qRegisterMetaType<MEWrapper>("MEWrapper");
+  qmlRegisterUncreatableType<MEWrapper>("Intellect.MemoryWrapper", 1, 0, "MEWrapper", "MEWrapper: can't create.");
   qmlRegisterType<QMemoryModel>("Intellect.MemoryModel", 1, 0, "MemoryModel");
   qmlRegisterType<MemoryTreeView>("Intellect.MemoryTreeView", 1, 0, "MemoryTreeView");
 }
