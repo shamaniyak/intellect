@@ -22,7 +22,7 @@ signals:
   void memChanged();
 
 protected slots:
-  void on_memory_change(MEWrapper *me, EMemoryChange idMsg);
+  void on_memory_change(const MEWrapper &me, EMemoryChange idMsg);
 
 private:
   MemoryWrapper *mem_ = 0;

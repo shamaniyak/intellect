@@ -31,7 +31,7 @@ void MemoryListView::setMem(MemoryWrapper *mem)
   }
 }
 
-void MemoryListView::on_memory_change(MEWrapper *me, EMemoryChange idMsg)
+void MemoryListView::on_memory_change(const MEWrapper &me, EMemoryChange idMsg)
 {
   if(me)
   {

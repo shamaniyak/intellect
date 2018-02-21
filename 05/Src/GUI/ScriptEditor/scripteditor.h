@@ -43,7 +43,7 @@ protected:
   void doReturn();
 
 protected slots:
-  void memory_change(MEWrapper *me, EMemoryChange idMsg);
+  void memory_change(const MEWrapper &me, EMemoryChange idMsg);
   void on_textChanged();
 
 private slots:
@@ -57,7 +57,7 @@ private:
   QSyntaxHighlighter *h_ = 0;
   IObject *iobj_ = 0;
   MemoryWrapper *mem_ = 0;
-  MEWrapper *sel_ = 0;
+  MEWrapper sel_;
   int timerId_ = 0;
   QWidget *lineNumberArea_ = 0;
   Completer *completer = 0;

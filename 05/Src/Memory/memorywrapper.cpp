@@ -16,22 +16,23 @@ MemoryWrapper::~MemoryWrapper()
   clearMeWrappers();
 }
 
-MEWrapper *MemoryWrapper::add(MEWrapper *parent, const QString &name, bool checkExist)
+MEWrapper MemoryWrapper::add(const MEWrapper &parent, const QString &name, bool checkExist)
 {
-  MEWrapper *me = nullptr;
-  if(!parent)
-    parent = getME();
-  if(parent)
+  MEWrapper me;
+  auto p = parent;
+  if(p.isNull())
+    p = getME();
+  if(p)
   {
     //me = add1(parent, name, checkExist);
-    auto meParent = parent->getMe();
+    auto meParent = p.getMe();
     if(!meParent)
       return me;
 
     if(!name.isEmpty() && checkExist)
-      me = parent->get(name);
+      me = p.get(name);
 
-    if(!me)
+    if(me.isNull())
     {
       me = CreateMEW(meParent->Add(name));
       if(me) {
@@ -43,16 +44,17 @@ MEWrapper *MemoryWrapper::add(MEWrapper *parent, const QString &name, bool check
   return me;
 }
 
-bool MemoryWrapper::addFrom(MEWrapper *parent, MEWrapper *mefrom, bool recurs)
+bool MemoryWrapper::addFrom(const MEWrapper &parent, const MEWrapper &mefrom, bool recurs)
 {
   bool  res = false;
 
-  if(!parent)
-    parent = getME();
+  auto p = parent;
+  if(p.isNull())
+    p = getME();
 
-  if(parent && mefrom)
+  if(p && mefrom)
   {
-    res = addFrom1(parent->me_, mefrom->me_, recurs);
+    res = addFrom1(p.me_, mefrom.me_, recurs);
   }
 
   return res;
@@ -75,7 +77,7 @@ void MemoryWrapper::del(const QString &path)
 {
   auto me = get(path);
 
-  if(!me || !me->parent())
+  if(me.isNull() || me.parent().isNull())
     return;
 
   //me->parent()->del(me->name());
@@ -83,70 +85,60 @@ void MemoryWrapper::del(const QString &path)
 
 }
 
-void MemoryWrapper::deleteMe(MEWrapper *me)
+void MemoryWrapper::deleteMe(MEWrapper &me)
 {
-  if(me)
+  if(!me.isNull())
   {
     deleteMe1(me);
   }
 }
 
-void MemoryWrapper::deleteMe1(MEWrapper *me)
+void MemoryWrapper::deleteMe1(MEWrapper &me)
 {
-  if(me)
+  if(!me.isNull())
   {
     ChangeEvent ev;
     ev.type = EMemoryChange::mcDel;
     ev.me = me;
-    ev.parent = me->parent();
-    ev.row = me->getIndex();
+    ev.parent = me.parent();
+    ev.row = me.getIndex();
     //ev.count = me->count();
 
-    auto me1 = me->getMe();
-    me->clearR(me1);
-    ev.parent->getMe()->Del(me1);
+    auto me1 = me.getMe();
+    me.clearR(me1);
+    ev.parent.getMe()->Del(me1);
 
     doChange(ev);
   }
 }
 
-MEWrapper *MemoryWrapper::getME()
+MEWrapper MemoryWrapper::getME()
 {
   return CreateMEW(mem_->getTopME());
 }
 
-void MemoryWrapper::addCount(MEWrapper *parent, int count)
+void MemoryWrapper::addCount(MEWrapper &parent, int count)
 {
-  if(!parent)
+  if(parent.isNull())
      parent = getME();
-  mem_->createNew(parent->getMe(), count);
+  mem_->createNew(parent.getMe(), count);
 
   doChange(parent, mcAddFrom);
 }
 
-MEWrapper *MemoryWrapper::get(const QString &path)
+MEWrapper MemoryWrapper::get(const QString &path)
 {
   return CreateMEW(mem_->get(path));
 }
 
-MEWrapper1 MemoryWrapper::get11(const QString &path)
-{
-  auto me = get(path);
-  MEWrapper1 me1;
-  if(me) {
-    me1.name_ = me->name();
-    me1.val_ = me->val();
-  }
-  return me1;
-}
-
-MEWrapper *MemoryWrapper::getById(uint id)
+MEWrapper MemoryWrapper::getById(uint id)
 {
   auto me = reinterpret_cast<Memory::TME*>(id);
+  MEWrapper resMe;
   if(!me)
-    return nullptr;
+    return resMe;
   if(!map_mew_.contains(me))
-    return nullptr;
+    return resMe;
   return map_mew_[me];
 }
 
@@ -191,81 +183,81 @@ QVariant MemoryWrapper::getVal(const QString &path)
 {
   auto me = get(path);
   if(me)
-    return me->val();
+    return me.val();
 
   return QVariant();
 }
 
-void MemoryWrapper::setVal(MEWrapper *me, const QVariant &val)
+void MemoryWrapper::setVal(MEWrapper &me, const QVariant &val)
 {
   if(me)
   {
-    if(val == me->val())
+    if(val == me.val())
       return;
 
     setVal1(me, val);
   }
 }
 
-void MemoryWrapper::setVal1(MEWrapper *me, const QVariant &val)
+void MemoryWrapper::setVal1(MEWrapper &me, const QVariant &val)
 {
-  if(!me || !me->me_)
+  if(!me || !me.me_)
     return;
 
   ChangeEvent ev;
   ev.type = EMemoryChange::mcEditVal;
   ev.me = me;
-  ev.prevVal = me->val();
+  ev.prevVal = me.val();
 
-  me->me_->setVal(val);
+  me.me_->setVal(val);
 
   doChange(ev);
 }
 
-void MemoryWrapper::setName(MEWrapper *me, const QString &name)
+void MemoryWrapper::setName(MEWrapper &me, const QString &name)
 {
   if(me)
   {
-    if(name == me->name())
+    if(name == me.name())
       return;
 
     setName1(me, name);
   }
 }
 
-void MemoryWrapper::setName1(MEWrapper *me, const QString &name)
+void MemoryWrapper::setName1(MEWrapper &me, const QString &name)
 {
-  if(!me->me_)
+  if(!me || !me.me_)
     return;
 
   ChangeEvent ev;
   ev.type = EMemoryChange::mcEditName;
   ev.me = me;
-  ev.prevName = me->name();
+  ev.prevName = me.name();
 
-  me->me_->setName(name);
+  me.me_->setName(name);
 
   doChange(ev);
 }
 
-void MemoryWrapper::setSelected(MEWrapper *me)
+void MemoryWrapper::setSelected(const MEWrapper &me)
 {
   if(!me)
     return;
 
-  if(mem_->getSelected() != me->me_) {
-    mem_->setSelected(me->me_);
+  if(mem_->getSelected() != me.me_) {
+    mem_->setSelected(me.me_);
 
   }
   doChange(me, EMemoryChange::mcSelect);
 }
 
-MEWrapper *MemoryWrapper::getSelected()
+MEWrapper MemoryWrapper::getSelected()
 {
   return CreateMEW(mem_->getSelected());
 }
 
-void MemoryWrapper::doChange(MEWrapper *me, EMemoryChange idMsg)
+void MemoryWrapper::doChange(const MEWrapper &me, EMemoryChange idMsg)
 {
   bool changed = idMsg !=EMemoryChange::mcSelect && idMsg != EMemoryChange::mcUpdate;
   if(changed)
@@ -282,9 +274,9 @@ void MemoryWrapper::doChange(MEWrapper *me, EMemoryChange idMsg)
     ChangeEvent ev;
     ev.type = idMsg;
     ev.me = me;
-    ev.parent = me->parent();
-    ev.row = me->getIndex();
-    ev.count = me->count();
+    ev.parent = me.parent();
+    ev.row = me.getIndex();
+    ev.count = me.count();
     emit change(ev);
   }
 }
@@ -313,7 +305,7 @@ void MemoryWrapper::clear()
   clearMe(getME());
 }
 
-void MemoryWrapper::clearMe(MEWrapper *me)
+void MemoryWrapper::clearMe(const MEWrapper &me)
 {
   if(me) {
     clearMe1(me);
@@ -334,22 +326,22 @@ void MemoryWrapper::clearR(Memory::TME *me)
   me->clear();
 }
 
-void MemoryWrapper::clearMe1(MEWrapper *me)
+void MemoryWrapper::clearMe1(const MEWrapper &me)
 {
-  if(me && me->getMe()) {
+  if(me && me.getMe()) {
     doChange(me, EMemoryChange::mcClear);
 
-    Memory::TME::Elements &childs = me->getMe()->getElements();
+    Memory::TME::Elements &childs = me.getMe()->getElements();
     int cnt = childs.count();
     for(int i = 0; i <cnt; ++i)
     {
       clearR(childs.get(i));
     }
-    me->getMe()->clear();
+    me.getMe()->clear();
   }
 }
 
-bool MemoryWrapper::move(MEWrapper *me, MEWrapper *parent, int pos)
+bool MemoryWrapper::move(MEWrapper &me, MEWrapper &parent, int pos)
 {
   if(me && parent) {
     return move1(me, parent, pos);
@@ -358,15 +350,15 @@ bool MemoryWrapper::move(MEWrapper *me, MEWrapper *parent, int pos)
   return false;
 }
 
-bool MemoryWrapper::move1(MEWrapper *me, MEWrapper *parent, int pos)
+bool MemoryWrapper::move1(const MEWrapper &me, const MEWrapper &parent, int pos)
 {
   if(!me || !parent)
     return false;
   // запрещаем перенос из одного владельца в другого
-  if(me->parent() != parent)
+  if(me.parent() != parent)
     return false;
 
-  bool ok = me->getMe()->move_to(parent->getMe(), pos);
+  bool ok = me.getMe()->move_to(parent.getMe(), pos);
   if(ok)
     doChange(me, mcMove);
 
@@ -427,20 +419,17 @@ void MemoryWrapper::clearDeleted()
 
 void MemoryWrapper::clearMeWrappers()
 {
-  foreach (auto me, map_mew_) {
-    delete me;
-  }
-
   map_mew_.clear();
 }
 
-MEWrapper *MemoryWrapper::CreateMEW(Memory::TME *me)
+MEWrapper MemoryWrapper::CreateMEW(Memory::TME *me)
 {
+  MEWrapper resMe;
   if(!me)
-    return nullptr;
+    return resMe;
 
   if(!map_mew_.contains(me))
-    map_mew_[me] = new MEWrapper(me, this);
+    map_mew_[me] = MEWrapper(me, this);
 
   return map_mew_[me];
 }
@@ -452,10 +441,6 @@ void MemoryWrapper::DeleteMEW(Memory::TME *me)
 
   if(map_mew_.contains(me))
   {
-    auto mew = map_mew_[me];
-    //delete mew;
     map_mew_.remove(me);
-    mew->me_ = nullptr;
-    deleted_.push_back(mew);
   }
 }

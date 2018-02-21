@@ -59,7 +59,8 @@ public:
   QVariant data(const QModelIndex &index, int role) const override;
 
 private:
-  bool checkChangesRecurs(MEWrapper *me) const;
+  bool checkChangesRecurs(MEWrapper &me) const;
+  MEWrapper getMeByIndex(const QModelIndex &index) const;
 };
 
 #endif // MEMORYCOMPAREPROXYMODEL_H

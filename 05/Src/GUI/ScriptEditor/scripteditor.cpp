@@ -113,18 +113,18 @@ void ScriptEditor::keyPressEvent(QKeyEvent *kev)
 
   if(iobj_)
   {
-    auto me = iobj_->mem()->add(0, "KeyEvent");
-    me->clear();
+    auto me = iobj_->mem()->add(MEWrapper(), "KeyEvent");
+    me.clear();
 
     if(ctrl_pressed)
-      me->add("Ctrl");
+      me.add("Ctrl");
     if(shift_pressed)
-      me->add("Shift");
+      me.add("Shift");
     if(alt_pressed)
-      me->add("Alt");
+      me.add("Alt");
 
-    me->add("Key")->setVal(kev->key());
-    me->add("Text")->setVal(kev->text());
+    me.add("Key").setVal(kev->key());
+    me.add("Text").setVal(kev->text());
   }
 
   emit signalKeyPress(this, kev->key());
@@ -175,7 +175,7 @@ void ScriptEditor::save()
   if(sel_)
   {
     disconnectMem();
-    sel_->setVal(this->toPlainText());
+    sel_.setVal(this->toPlainText());
     connectMem();
   }
 }
@@ -194,7 +194,7 @@ void ScriptEditor::doReturn()
   //this->textCursor().insertText("\n ");
 }
 
-void ScriptEditor::memory_change(MEWrapper *me, EMemoryChange idMsg)
+void ScriptEditor::memory_change(const MEWrapper &me, EMemoryChange idMsg)
 {
   switch(idMsg)
   {
@@ -226,7 +226,7 @@ void ScriptEditor::memory_change(MEWrapper *me, EMemoryChange idMsg)
     case EMemoryChange::mcDel:
       if(me == sel_)
       {
-        sel_ = 0;
+        sel_ = MEWrapper();
         showVal();
       }
       break;
@@ -352,7 +352,7 @@ void ScriptEditor::showVal()
   this->blockSignals(true);
   if(sel_)
   {
-    this->setPlainText(sel_->val().toString());
+    this->setPlainText(sel_.val().toString());
   }
   else
   {

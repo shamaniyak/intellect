@@ -46,12 +46,12 @@ protected:
   bool inputPassword()
   {
     auto me = pI->obj()->mem()->get("Intellect/password");
-    if(!me || me->val().toString().isEmpty())
+    if(!me || me.val().toString().isEmpty())
       return true;
 
     InputPassword ip;
     ip.exec();
-    return ip.isTrue(me->val().toString());
+    return ip.isTrue(me.val().toString());
   }
 
 private:

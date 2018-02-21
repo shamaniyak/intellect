@@ -20,7 +20,7 @@ public:
   void setMem(MemoryWrapper *mem);
 
 private slots:
-  void memory_change(MEWrapper *me, EMemoryChange idMsg);
+  void memory_change(const MEWrapper &me, EMemoryChange idMsg);
   void on_currentChanged(const QModelIndex &current, const QModelIndex &previous);
   void on_selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
@@ -28,8 +28,9 @@ private:
   MemoryWrapper *mem_ = nullptr;
 
   void init();
-  void setSelected(MEWrapper *me);
-  QModelIndex getIndexByMe(MEWrapper *me);
+  void setSelected(const MEWrapper &me);
+  QModelIndex getIndexByMe(const MEWrapper &me);
+  MEWrapper getMeByIndex(const QModelIndex &index);
 };
 
 #endif // QMEMORYSELECTIONMODEL_H

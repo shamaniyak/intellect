@@ -18,15 +18,15 @@ public:
 signals:
 
 public slots:
-  void add(MEWrapper *parent, const QString &name, bool checkExist = true);
-  void addFrom(MEWrapper *parent, MEWrapper *mefrom, bool recurs);
+  void add(MEWrapper &parent, const QString &name, bool checkExist = true);
+  void addFrom(MEWrapper &parent, MEWrapper &mefrom, bool recurs);
   void del(const QString &path);
-  void deleteMe(MEWrapper *me);
-  void setName(MEWrapper *me, const QString &name);
-  void setVal(MEWrapper *me, const QVariant &val);
+  void deleteMe(MEWrapper &me);
+  void setName(MEWrapper &me, const QString &name);
+  void setVal(MEWrapper &me, const QVariant &val);
   void clear();
-  void clearMe(MEWrapper *me);
-  void move(MEWrapper *me, MEWrapper *parent, int pos);
+  void clearMe(const MEWrapper &me);
+  void move(MEWrapper &me, MEWrapper &parent, int pos);
 
 private:
   MemoryWrapper *mem_ = nullptr;

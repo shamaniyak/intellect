@@ -26,10 +26,8 @@ public:
   void setMem(MemoryWrapper *mem);
 
   void expandItems();
-
-  void loadExpandItems(MEWrapper *me);
-
-  void saveExpandItems(MEWrapper *me);
+  void loadExpandItems(MEWrapper &me);
+  void saveExpandItems(MEWrapper &me);
 
   MemoryWrapper *memHeader() const;
 

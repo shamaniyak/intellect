@@ -42,10 +42,10 @@ bool IObject::run(const QString &path, const QVariant &/*params*/)
   add_msg(msg_);
 
   bool res = false;
-  MEWrapper *me = mem()->get(path);
+  MEWrapper me = mem()->get(path);
 
   if(me) {
-    res = execute( me->val().toString() );
+    res = execute( me.val().toString() );
   }
   else {
     msg_ = QString("Object ") + objectName() + ": Элемент памяти не найден.";

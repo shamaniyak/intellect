@@ -19,7 +19,7 @@ class AddCommand : public BaseCommand
 {
   // QUndoCommand interface
 public:
-  AddCommand(MemoryWrapper *m, MEWrapper *parent, const QString &name, bool checkExist) :
+  AddCommand(MemoryWrapper *m, MEWrapper &parent, const QString &name, bool checkExist) :
     BaseCommand(m, "Add"),
     parent_(parent), name_(name), checkExist_(checkExist) {   }
 
@@ -32,37 +32,37 @@ public:
     newMe_ = m_->add(parent_, name_, checkExist_);
   }
 
-  MEWrapper *newMe() const { return newMe_; }
+  MEWrapper newMe() const { return newMe_; }
 
 private:
-  MEWrapper *parent_ = nullptr;
+  MEWrapper parent_;
   QString name_;
   bool checkExist_ = true;
-  MEWrapper *newMe_ = nullptr;
+  MEWrapper newMe_;
 };
 
 class AddFromCommand : public BaseCommand
 {
 public:
-  AddFromCommand(MemoryWrapper *m, MEWrapper *parent, MEWrapper *from, bool recurs) : BaseCommand(m, "AddFrom"),
+  AddFromCommand(MemoryWrapper *m, MEWrapper &parent, MEWrapper &from, bool recurs) : BaseCommand(m, "AddFrom"),
     parent_(parent), from_(from), recurs_(recurs)
   {
-    beginIndex_ = parent_->count();
+    beginIndex_ = parent_.count();
   }
 
   virtual void undo() override
   {
-    for(int i = parent_->count() -1; i >= beginIndex_; --i)
-      parent_->delByI(i);
+    for(int i = parent_.count() -1; i >= beginIndex_; --i)
+      parent_.delByI(i);
   }
   virtual void redo() override
   {
-    m_->addFrom1(parent_->getMe(), from_->getMe(), recurs_);
+    m_->addFrom1(parent_.getMe(), from_.getMe(), recurs_);
   }
 
 private:
-  MEWrapper *parent_ = nullptr;
-  MEWrapper *from_ = nullptr;
+  MEWrapper parent_;
+  MEWrapper from_;
   bool recurs_ = true;
   int beginIndex_ = 0;
 };
@@ -70,18 +70,18 @@ private:
 class DelCommand : public BaseCommand
 {
 public:
-  DelCommand(MemoryWrapper *m, MEWrapper *me) : BaseCommand(m, "Del"),
-    me_(me), parent_(me->parent()), name_(me->name()), index_(me->getIndex())
+  DelCommand(MemoryWrapper *m, MEWrapper &me) : BaseCommand(m, "Del"),
+    me_(me), parent_(me.parent()), name_(me.name()), index_(me.getIndex())
   {
     buf_.setMem(m->mem_.get());
-    buf_.addFrom(me_->getMe(), true);
+    buf_.addFrom(me_.getMe(), true);
   }
 
   virtual void undo() override
   {
     me_ = m_->add(parent_, name_, false);
     m_->move(me_, parent_, index_);
-    m_->addFrom1(me_->getMe(), &buf_, true);
+    m_->addFrom1(me_.getMe(), &buf_, true);
   }
   virtual void redo() override
   {
@@ -89,8 +89,8 @@ public:
   }
 
 private:
-  MEWrapper *me_ = nullptr;
-  MEWrapper *parent_ = nullptr;
+  MEWrapper me_;
+  MEWrapper parent_;
   QString name_;
   int index_;
   Memory::TopME buf_;
@@ -99,8 +99,8 @@ private:
 class EditNameCommand : public BaseCommand
 {
 public:
-  EditNameCommand(MemoryWrapper *m, MEWrapper *me, const QString &name) :
-    BaseCommand(m, "EditName"), me_(me), newName_(name), oldName_(me->name())
+  EditNameCommand(MemoryWrapper *m, MEWrapper &me, const QString &name) :
+    BaseCommand(m, "EditName"), me_(me), newName_(name), oldName_(me.name())
   {  }
 
   virtual void undo() override
@@ -113,15 +113,15 @@ public:
   }
 
 private:
-  MEWrapper *me_ = nullptr;
+  MEWrapper me_;
   QString newName_, oldName_;
 };
 
 class EditValCommand : public BaseCommand
 {
 public:
-  EditValCommand(MemoryWrapper *m, MEWrapper *me, const QVariant &val) :
-    BaseCommand(m, "EditVal"), me_(me), newVal_(val), oldVal_(me->val())
+  EditValCommand(MemoryWrapper *m, MEWrapper &me, const QVariant &val) :
+    BaseCommand(m, "EditVal"), me_(me), newVal_(val), oldVal_(me.val())
   {  }
 
   virtual void undo() override
@@ -134,23 +134,23 @@ public:
   }
 
 private:
-  MEWrapper *me_ = nullptr;
+  MEWrapper me_;
   QVariant newVal_, oldVal_;
 };
 
 class ClearCommand : public BaseCommand
 {
 public:
-  ClearCommand(MemoryWrapper *m, MEWrapper *me) : BaseCommand(m, "Clear"),
+  ClearCommand(MemoryWrapper *m, const MEWrapper &me) : BaseCommand(m, "Clear"),
     me_(me)
   {
     buf_.setMem(m->mem_.get());
-    buf_.addFrom(me_->getMe(), true);
+    buf_.addFrom(me_.getMe(), true);
   }
 
   virtual void undo() override
   {
-    m_->addFrom1(me_->getMe(), &buf_, true);
+    m_->addFrom1(me_.getMe(), &buf_, true);
   }
   virtual void redo() override
   {
@@ -158,28 +158,28 @@ public:
   }
 
 private:
-  MEWrapper *me_ = nullptr;
+  MEWrapper me_;
   Memory::TopME buf_;
 };
 
 class MoveCommand : public BaseCommand
 {
 public:
-  MoveCommand(MemoryWrapper *m, MEWrapper *me, int index) : BaseCommand(m, "Move"),
-    me_(me), newIndex_(index), oldIndex_(me->getIndex())
+  MoveCommand(MemoryWrapper *m, MEWrapper me, int index) : BaseCommand(m, "Move"),
+    me_(me), newIndex_(index), oldIndex_(me.getIndex())
   {}
 
   virtual void undo() override
   {
-    m_->move1(me_, me_->parent(), oldIndex_);
+    m_->move1(me_, me_.parent(), oldIndex_);
   }
   virtual void redo() override
   {
-    m_->move1(me_, me_->parent(), newIndex_);
+    m_->move1(me_, me_.parent(), newIndex_);
   }
 
 private:
-  MEWrapper *me_ = nullptr;
+  MEWrapper me_;
   int newIndex_, oldIndex_;
 };
 
@@ -189,7 +189,7 @@ MemoryEditor::MemoryEditor(QObject *parent) : QObject(parent)
   stack_ = new QUndoStack(this);
 }
 
-void MemoryEditor::add(MEWrapper *parent, const QString &name, bool checkExist)
+void MemoryEditor::add(MEWrapper &parent, const QString &name, bool checkExist)
 {
   if(!mem_)
     return;
@@ -202,7 +202,7 @@ void MemoryEditor::add(MEWrapper *parent, const QString &name, bool checkExist)
   }
 }
 
-void MemoryEditor::addFrom(MEWrapper *parent, MEWrapper *mefrom, bool recurs)
+void MemoryEditor::addFrom(MEWrapper &parent, MEWrapper &mefrom, bool recurs)
 {
   if(!mem_) return;
   if(!parent)
@@ -220,13 +220,13 @@ void MemoryEditor::del(const QString &path)
   if(!mem_) return;
   auto me = mem_->get(path);
 
-  if(!me || !me->parent())
+  if(!me || !me.parent())
     return;
 
   deleteMe(me);
 }
 
-void MemoryEditor::deleteMe(MEWrapper *me)
+void MemoryEditor::deleteMe(MEWrapper &me)
 {
   if(mem_ && me)
   {
@@ -235,11 +235,11 @@ void MemoryEditor::deleteMe(MEWrapper *me)
   }
 }
 
-void MemoryEditor::setName(MEWrapper *me, const QString &name)
+void MemoryEditor::setName(MEWrapper &me, const QString &name)
 {
   if(mem_ && me)
   {
-    if(name == me->name())
+    if(name == me.name())
       return;
 
     auto cmd = new EditNameCommand(mem_, me, name);
@@ -247,11 +247,11 @@ void MemoryEditor::setName(MEWrapper *me, const QString &name)
   }
 }
 
-void MemoryEditor::setVal(MEWrapper *me, const QVariant &val)
+void MemoryEditor::setVal(MEWrapper &me, const QVariant &val)
 {
   if(mem_ && me)
   {
-    if(val == me->val())
+    if(val == me.val())
       return;
 
     auto cmd = new EditValCommand(mem_, me, val);
@@ -265,7 +265,7 @@ void MemoryEditor::clear()
     clearMe(mem_->getME());
 }
 
-void MemoryEditor::clearMe(MEWrapper *me)
+void MemoryEditor::clearMe(const MEWrapper &me)
 {
   if(mem_ && me) {
     auto cmd = new ClearCommand(mem_, me);
@@ -273,7 +273,7 @@ void MemoryEditor::clearMe(MEWrapper *me)
   }
 }
 
-void MemoryEditor::move(MEWrapper *me, MEWrapper *parent, int pos)
+void MemoryEditor::move(MEWrapper &me, MEWrapper &parent, int pos)
 {
   if(mem_ && me && parent) {
     auto cmd = new MoveCommand(mem_, me, pos);

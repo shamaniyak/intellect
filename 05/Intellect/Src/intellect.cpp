@@ -39,14 +39,14 @@ Intellect::Intellect(QObject *parent):
   obj_->mem()->open(fname);
 
   // Добавить элементы памяти
-  auto me = obj_->mem()->add(nullptr, "Intellect")->add("Create");
-  if(me->val().toString().isEmpty())
-    me->setVal("\"intellect version 4.0\"");
+  auto me = obj_->mem()->add(MEWrapper(), "Intellect").add("Create");
+  if(me.val().toString().isEmpty())
+    me.setVal("\"intellect version 4.0\"");
 
-  auto val = obj_->mem()->getME()->val();
+  auto val = obj_->mem()->getME().val();
   QString newVal = "intellect 4.0.0.0 " + QString(QChar(0xE3)) + "Shamaniyak ";
   if(val != newVal)
-    obj_->mem()->getME()->setVal(newVal);
+    obj_->mem()->getME().setVal(newVal);
 
   connect(getOM(), &ObjectManager::signalAddObject, this, &Intellect::on_addObject);
   connect(this, &TAlgorithm::start, this, &Intellect::on_start);
@@ -158,7 +158,7 @@ bool Intellect::keyEvent(QObject *obj, QEvent *ev)
   IObject *o = qobject_cast<IObject*>( getOM()->Get("KeyManager") );
   if(o)
   {
-    o->mem()->add(nullptr, "key")->setVal(kev->key());
+    o->mem()->add(MEWrapper(), "key").setVal(kev->key());
   }
 
   return false;

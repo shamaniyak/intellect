@@ -95,18 +95,18 @@ void MemoryTreeView::contextMenuEvent(QContextMenuEvent *pe)
 
 void MemoryTreeView::on_itemCollapsed(const QModelIndex &item)
 {
-  auto *me = static_cast<MEWrapper*>(item.internalPointer());
+  auto me = model_->getMeByIndex(item);
   if(!me) return;
-  QString path = me->getPath();
+  QString path = me.getPath();
 
   expanded_.removeOne(path);
 }
 
 void MemoryTreeView::on_itemExpanded(const QModelIndex &item)
 {
-  auto *me = static_cast<MEWrapper*>(item.internalPointer());
+  auto me = model_->getMeByIndex(item);
   if(!me) return;
-  QString path = me->getPath();
+  QString path = me.getPath();
 
   if(!expanded_.contains(path))
     expanded_ << path;
@@ -169,7 +169,7 @@ void MemoryTreeView::expandItems()
 
   for(auto path: expanded_)
   {
-    MEWrapper *me = mem_->get(path);
+    MEWrapper me = mem_->get(path);
     if(me)
     {
       QModelIndex mi = model_->getIndexByMe(me);
@@ -178,22 +178,22 @@ void MemoryTreeView::expandItems()
   }
 }
 
-void MemoryTreeView::loadExpandItems(MEWrapper *me)
+void MemoryTreeView::loadExpandItems(MEWrapper &me)
 {
   if(!me)
     return;
   expanded_.clear();
-  expanded_ = me->val().toString().split("\n");
+  expanded_ = me.val().toString().split("\n");
 
   expandItems();
 }
 
-void MemoryTreeView::saveExpandItems(MEWrapper *me)
+void MemoryTreeView::saveExpandItems(MEWrapper &me)
 {
   if(!me)
     return;
   QVariant val = expanded_.join("\n");
-  me->setVal(val);
+  me.setVal(val);
 }
 
 MemoryWrapper *MemoryTreeView::memHeader() const

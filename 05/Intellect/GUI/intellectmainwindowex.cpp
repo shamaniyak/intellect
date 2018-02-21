@@ -196,14 +196,14 @@ void IntellectMainWindowEx::loadSettings()
 
     if(meSettings)
     {
-      auto meTree = meSettings->get("treeView");
+      auto meTree = meSettings.get("treeView");
       if(meTree)
       {
-        int w = meTree->get("Width")->val().toInt();
-        int h = meTree->get("Height")->val().toInt();
+        int w = meTree.get("Width").val().toInt();
+        int h = meTree.get("Height").val().toInt();
 
         // развернутые элементы
-        auto me = meTree->get("Expanded");
+        auto me = meTree.get("Expanded");
         treeView_->loadExpandItems(me);
 
         treeView_->resize(w, h);
@@ -212,16 +212,16 @@ void IntellectMainWindowEx::loadSettings()
         if(intellect_)
         {
           QString selectedPath;
-          me = meTree->get("Selected");
-          if(me) selectedPath = me->val().toString();
+          me = meTree.get("Selected");
+          if(me) selectedPath = me.val().toString();
           auto selected = intellect_->obj()->mem()->get(selectedPath);
           intellect_->obj()->mem()->setSelected(selected);
         }
       }
 
-      auto meMaximized = meSettings->get("maximized");
+      auto meMaximized = meSettings.get("maximized");
       if(meMaximized) {
-        if(meMaximized->val().toBool())
+        if(meMaximized.val().toBool())
           this->showMaximized();
         else
           this->showNormal();
@@ -241,24 +241,24 @@ void IntellectMainWindowEx::saveSettings()
   mSettings.setAutosave(true);
   mSettings.setFilePath(filePath);
 
-  auto meSettings = mSettings.add(nullptr, "Intellect")->add("Settings");
+  auto meSettings = mSettings.add(MEWrapper(), "Intellect").add("Settings");
 
   if(meSettings)
   {
     // размеры дерева
-    auto meTree = meSettings->add("treeView");
-    meTree->add("Width")->setVal(treeView_->size().width());
-    meTree->add("Height")->setVal(treeView_->size().height());
+    auto meTree = meSettings.add("treeView");
+    meTree.add("Width").setVal(treeView_->size().width());
+    meTree.add("Height").setVal(treeView_->size().height());
     // развернутые элементы
-    auto me = meTree->add("Expanded");
+    auto me = meTree.add("Expanded");
     treeView_->saveExpandItems(me);
     // текущий элемент
     QString selectedPath;
     auto selected = intellect_->obj()->mem()->getSelected();
-    if(selected) selectedPath = selected->getPath();
-    meTree->add("Selected")->setVal(selectedPath);
+    if(selected) selectedPath = selected.getPath();
+    meTree.add("Selected").setVal(selectedPath);
     // на весь экран
-    auto meMaximized = meSettings->add("maximized");
-    meMaximized->setVal(this->isMaximized());
+    auto meMaximized = meSettings.add("maximized");
+    meMaximized.setVal(this->isMaximized());
   }
 }

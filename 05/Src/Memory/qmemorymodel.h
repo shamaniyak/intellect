@@ -49,18 +49,19 @@ public:
 
   MemoryWrapper *getHeaderInfo() const;
 
-  QModelIndex getIndexByMe(MEWrapper *me);
+  QModelIndex getIndexByMe(const MEWrapper &me);
+  MEWrapper getMeByIndex(const QModelIndex &index) const;
 
   QHash<int,QByteArray> roleNames() const override;
 
 protected:
 
-  void updateMe(MEWrapper *me);
+  void updateMe(const MEWrapper &me);
 
 private slots:
-  void memory_change(MEWrapper *me, EMemoryChange idMsg);
-  void on_memory_change(const ChangeEvent &event);
-  void header_change(MEWrapper *me, EMemoryChange idMsg);
+  void memory_change(MEWrapper &me, EMemoryChange idMsg);
+  void onMemoryChange(const ChangeEvent &event);
+  void onHeaderChange(const MEWrapper &me, EMemoryChange idMsg);
 
 private:
   enum Columns

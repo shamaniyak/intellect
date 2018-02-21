@@ -47,7 +47,7 @@ void QMemorySelectionModel::setMem(MemoryWrapper *mem)
   }
 }
 
-void QMemorySelectionModel::memory_change(MEWrapper *me, EMemoryChange idMsg)
+void QMemorySelectionModel::memory_change(const MEWrapper &me, EMemoryChange idMsg)
 {
   if(!me)
     return;
@@ -77,7 +77,7 @@ void QMemorySelectionModel::on_currentChanged(const QModelIndex &current, const 
   if(mem_)
   {
 //    mem_->disconnect(this);
-    mem_->setSelected((MEWrapper*)current.internalPointer());
+    mem_->setSelected(getMeByIndex(current));
 //    connect(mem_, &MemoryWrapper::on_change,
 //            this, &QMemorySelectionModel::memory_change);
   }
@@ -85,12 +85,16 @@ void QMemorySelectionModel::on_currentChanged(const QModelIndex &current, const 
 
 void QMemorySelectionModel::on_selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
-  int cnt = selected.size();
-  auto index = selected.indexes()[cnt-1];
-  mem_->setSelected((MEWrapper*)index.internalPointer());
+  if(mem_)
+  {
+    int cnt = selected.size();
+    auto index = selected.indexes()[cnt-1];
+    uint id = reinterpret_cast<uint>(index.internalPointer());
+    mem_->setSelected(mem_->getById(id));
+  }
 }
 
-void QMemorySelectionModel::setSelected(MEWrapper *me)
+void QMemorySelectionModel::setSelected(const MEWrapper &me)
 {
   QModelIndex index = getIndexByMe(me);
 //  auto me1 = static_cast<MEWrapper*>(index.internalPointer());
@@ -102,7 +106,7 @@ void QMemorySelectionModel::setSelected(MEWrapper *me)
   //       QItemSelectionModel::ClearAndSelect);
 }
 
-QModelIndex QMemorySelectionModel::getIndexByMe(MEWrapper *me)
+QModelIndex QMemorySelectionModel::getIndexByMe(const MEWrapper &me)
 {
   auto m = qobject_cast<QMemoryModel*>(model());
   if(m)
@@ -110,4 +114,14 @@ QModelIndex QMemorySelectionModel::getIndexByMe(MEWrapper *me)
     return m->getIndexByMe(me);
   }
   return QModelIndex();
+}
+
+MEWrapper QMemorySelectionModel::getMeByIndex(const QModelIndex &index)
+{
+  auto m = qobject_cast<QMemoryModel*>(model());
+  if(m)
+  {
+    return m->getMeByIndex(index);
+  }
+  return MEWrapper();
 }

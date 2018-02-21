@@ -24,12 +24,12 @@ void checkObjectData(QScriptEngine *eng, QScriptValue &obj)
   }
 }
 
-MEWrapper* getMEWrapperFromScriptValue(const QScriptValue &object)
+MEWrapper getMEWrapperFromScriptValue(const QScriptValue &object)
 {
   MemoryWrapper *mem = qobject_cast<MemoryWrapper*>( object.property("mem").toQObject() );
   if(mem)
     return( mem->getById(object.property("id").toUInt32()) );
-  return nullptr;
+  return MEWrapper();
 }
 
 QScriptValue getSetMeName(QScriptContext *ctx, QScriptEngine *eng)
@@ -44,9 +44,9 @@ QScriptValue getSetMeName(QScriptContext *ctx, QScriptEngine *eng)
 
     if (ctx->argumentCount() == 1) {
         auto name = ctx->argument(0).toString();
-        me->setName(name);
+        me.setName(name);
     } else {
-        result = me->name();
+        result = me.name();
     }
     return result;
 }
@@ -63,9 +63,9 @@ QScriptValue getSetMeVal(QScriptContext *ctx, QScriptEngine *eng)
 
     if (ctx->argumentCount() == 1) {
         QVariant val = ctx->argument(0).toVariant();
-        me->setVal(val);
+        me.setVal(val);
     } else {
-        result = eng->newVariant(me->val());
+        result = eng->newVariant(me.val());
     }
     return result;
 }
@@ -78,7 +78,7 @@ QScriptValue clearMe(QScriptContext *ctx, QScriptEngine *eng)
 
   auto me = getMEWrapperFromScriptValue(obj);
   if(me)
-    me->clear();
+    me.clear();
 
   return result;
 }
@@ -93,7 +93,7 @@ QScriptValue getMeByI(QScriptContext *ctx, QScriptEngine *eng)
   if(me && ctx->argumentCount() >0)
   {
     auto i = ctx->argument(0).toInt32();
-    auto me1 = me->getByI(i);
+    auto me1 = me.getByI(i);
     if(me1)
       result = eng->toScriptValue(me1);
   }
@@ -112,7 +112,7 @@ QScriptValue addChildMe(QScriptContext *ctx, QScriptEngine *eng)
   {
     auto name = ctx->argument(0).toString();
     auto checkExist = (ctx->argumentCount() >1) ? ctx->argument(1).toBool() : true;
-    auto me1 = me->add(name, checkExist);
+    auto me1 = me.add(name, checkExist);
     if(me1)
       result = eng->toScriptValue(me1);
   }
@@ -130,7 +130,7 @@ QScriptValue getChildMe(QScriptContext *ctx, QScriptEngine *eng)
   if(me)
   {
     auto name = ctx->argument(0).toString();
-    auto me1 = me->get(name);
+    auto me1 = me.get(name);
     if(me1)
       result = eng->toScriptValue(me1);
   }
@@ -148,7 +148,7 @@ QScriptValue delChildMe(QScriptContext *ctx, QScriptEngine *eng)
   if(me)
   {
     auto name = ctx->argument(0).toString();
-    me->del(name);
+    me.del(name);
   }
 
   return result;
@@ -164,7 +164,7 @@ QScriptValue delByIndexChildMe(QScriptContext *ctx, QScriptEngine *eng)
   if(me && ctx->argumentCount() >0)
   {
     auto i = ctx->argument(0).toInt32();
-    me->delByI(i);
+    me.delByI(i);
   }
 
   return result;
@@ -179,7 +179,7 @@ QScriptValue indexMe(QScriptContext *ctx, QScriptEngine *eng)
   auto me = getMEWrapperFromScriptValue(obj);
   if(me)
   {
-    result = me->getIndex();
+    result = me.getIndex();
   }
 
   return result;
@@ -194,9 +194,9 @@ QScriptValue moveMe(QScriptContext *ctx, QScriptEngine *eng)
   auto me = getMEWrapperFromScriptValue(obj);
   if(me && ctx->argumentCount() >0)
   {
-    auto meParent = me->parent();// getMEWrapperFromScriptValue( ctx->argument(0).toObject() );
+    auto meParent = me.parent();// getMEWrapperFromScriptValue( ctx->argument(0).toObject() );
     int pos = ctx->argument(1).toInt32();
-    result = me->getMem()->move(me, meParent, pos);
+    result = me.getMem()->move(me, meParent, pos);
   }
 
   return result;
@@ -211,20 +211,18 @@ QScriptValue getCountChildren(QScriptContext *ctx, QScriptEngine *eng)
   auto me = getMEWrapperFromScriptValue(obj);
   if(me)
   {
-    result = me->count();
+    result = me.count();
   }
 
   return result;
 }
 
-QScriptValue MEWrapperToScriptValue(QScriptEngine *engine, MEWrapper* const &in)
+QScriptValue MEWrapperToScriptValue(QScriptEngine *engine, MEWrapper const &in)
 {
   //return engine->newQObject(in/*, QScriptEngine::ScriptOwnership*/);
 
   QScriptValue obj = engine->newObject();
-  if(!in)
-    return obj;
-  if(in->deleted()) {
+  if(in.isNull()) {
     engine->currentContext()->throwError("MemoryElement is deleted.");
     return obj;
   }
@@ -234,16 +232,16 @@ QScriptValue MEWrapperToScriptValue(QScriptEngine *engine, MEWrapper* const &in)
                   QScriptValue::PropertyGetter|QScriptValue::PropertySetter);
   obj.setProperty("val", engine->newFunction(getSetMeVal),
                   QScriptValue::PropertyGetter|QScriptValue::PropertySetter);
-  obj.setProperty("path", in->getPath());
-  obj.setProperty("mem", engine->newQObject(in->getMem()),
+  obj.setProperty("path", in.getPath());
+  obj.setProperty("mem", engine->newQObject(in.getMem()),
                   QScriptValue::ReadOnly|QScriptValue::Undeletable);
-  obj.setProperty("id", (uint)in->getMe(),
+  obj.setProperty("id", (uint)in.getMe(),
                   QScriptValue::ReadOnly|QScriptValue::Undeletable);
   //auto parent = in->parent() ? (uint)in->parent()->getMe() : 0;
-  auto parent = in->parent() ? engine->toScriptValue(in->parent()) : QScriptValue();
+  auto parent = in.parent() ? engine->toScriptValue(in.parent()) : QScriptValue();
   obj.setProperty("parent", parent,
                   QScriptValue::ReadOnly|QScriptValue::Undeletable);
-  obj.setProperty("index", in->getIndex(),
+  obj.setProperty("index", in.getIndex(),
                   QScriptValue::ReadOnly|QScriptValue::Undeletable);
   // функции
   obj.setProperty("clear", engine->newFunction(clearMe),
@@ -265,7 +263,7 @@ QScriptValue MEWrapperToScriptValue(QScriptEngine *engine, MEWrapper* const &in)
   return obj;
 }
 
-void MEWrapperFromScriptValue(const QScriptValue &object, MEWrapper* &out)
+void MEWrapperFromScriptValue(const QScriptValue &object, MEWrapper &out)
 {
   out = getMEWrapperFromScriptValue(object);
 }
