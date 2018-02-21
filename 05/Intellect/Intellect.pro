@@ -61,7 +61,6 @@ SOURCES += \
     ../Src/windowmanager.cpp \
     ../Src/GUI/MainWindowEx/mainwindowex.cpp \
     ../Src/GUI/MemoryView/memorytreeview.cpp \
-    ../Src/GUI/MemoryView/mytreewidgetitem.cpp \
     ../Src/GUI/MemoryView/memorytableview.cpp \
     ../Src/GUI/MemoryView/memoryeditordelegate.cpp \
     ../Src/GUI/MemoryView/memorylistview.cpp \
@@ -113,7 +112,6 @@ HEADERS  += \
     ../Src/windowmanager.h \
     ../Src/GUI/MainWindowEx/mainwindowex.h \
     ../Src/GUI/MemoryView/memorytreeview.h \
-    ../Src/GUI/MemoryView/mytreewidgetitem.h \
     ../Src/GUI/MemoryView/memorytableview.h \
     ../Src/GUI/MemoryView/memorylistview.h \
     ../Src/GUI/MemoryView/memoryeditordelegate.h \
