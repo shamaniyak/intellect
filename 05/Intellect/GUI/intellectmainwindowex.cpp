@@ -1,6 +1,5 @@
 ﻿#include "intellectmainwindowex.h"
 #include "ui_mainwindowex.h"
-#include "gui/dialogmemoryeditor.h"
 #include "Src/GUI/logview.h"
 #include "Src/GUI/ScriptEditor/scripteditor.h"
 #include "Src/GUI/MemoryView/memorytreeview.h"
@@ -82,15 +81,7 @@ bool IntellectMainWindowEx::canClose()
 
 void IntellectMainWindowEx::createBaseEditor()
 {
-  if(!intellect_)
-    return;
 
-  memEditor_ = new DialogMemoryEditor();
-  memEditor_->setAttribute(Qt::WA_DeleteOnClose);
-  memEditor_->setIntellect(intellect_);
-  // новая вкладка для редактора БЗ
-  //auto wgt = createNewDoc(memEditor_);
-  //wgt->setWindowTitle(tr("База знаний"));
 }
 
 void IntellectMainWindowEx::createMemoryView()

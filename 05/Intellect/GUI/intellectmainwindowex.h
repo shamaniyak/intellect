@@ -7,7 +7,6 @@
 
 class Intellect;
 class MemoryTreeView;
-class DialogMemoryEditor;
 class ScriptEditor;
 
 class IntellectMainWindowEx : public MainWindowEx
@@ -51,7 +50,6 @@ protected:
 private:
   Intellect *intellect_ = 0;
   MemoryTreeView *treeView_ = 0;
-  DialogMemoryEditor *memEditor_ = 0;
   ScriptEditor *scriptEditor_ = 0;
   QWidget *treeDockWidget_ = 0;
   QWidget *editorDocWidget_ = 0;
