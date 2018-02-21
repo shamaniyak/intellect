@@ -366,25 +366,6 @@ MEWrapper *MemoryWrapper::getById(uint id)
   return map_mew_[me];
 }
 
-ChangeEvent MemoryWrapper::getCE()
-{
-  ChangeEvent ce;
-  ce.row = 5;
-  return ce;
-}
-
-MEData MemoryWrapper::getMeData()
-{
-  auto me = get("Test");
-  MEData meData;
-  if(me) {
-    meData.name_ = me->name();
-    meData.path_ = me->getPath();
-    meData.val_ = me->val();
-  }
-  return meData;
-}
-
 bool MemoryWrapper::getAutosave() const
 {
   return mem_->getAutosave();

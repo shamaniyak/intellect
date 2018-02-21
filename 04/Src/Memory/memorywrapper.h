@@ -42,20 +42,8 @@ public:
   int last = 0;
   QString prevName;
   QVariant prevVal;
-};
 
-class MEData
-{
-  Q_GADGET
 
-  //Q_PROPERTY(QString name MEMBER name_)
-  //Q_PROPERTY(QVariant val MEMBER val_)
-  //Q_PROPERTY(QString path MEMBER path_)
-
-public:
-  QString name_;
-  QVariant val_;
-  QString path_;
 };
 
 class MemoryWrapper : public QObject//QMemoryModel
@@ -113,9 +101,6 @@ public slots:
   MEWrapper *get(const QString &path);
   MEWrapper get1(const QString &path);
   MEWrapper *getById(uint id);
-  ChangeEvent getCE();
-  MEData getMeData();
-
 
   bool open(const QString &fileName);
   bool save();
