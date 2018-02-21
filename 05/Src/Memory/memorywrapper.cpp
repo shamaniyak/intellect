@@ -85,7 +85,7 @@ void MemoryWrapper::del(const QString &path)
 
 }
 
-void MemoryWrapper::deleteMe(MEWrapper &me)
+void MemoryWrapper::deleteMe(const MEWrapper &me)
 {
   if(!me.isNull())
   {
@@ -93,19 +93,20 @@ void MemoryWrapper::deleteMe(MEWrapper &me)
   }
 }
 
-void MemoryWrapper::deleteMe1(MEWrapper &me)
+void MemoryWrapper::deleteMe1(const MEWrapper &me)
 {
   if(!me.isNull())
   {
     ChangeEvent ev;
     ev.type = EMemoryChange::mcDel;
     ev.me = me;
+    ev.me.me_ = nullptr;
     ev.parent = me.parent();
     ev.row = me.getIndex();
     //ev.count = me->count();
 
     auto me1 = me.getMe();
-    me.clearR(me1);
+    ev.me.clearR(me1);
     ev.parent.getMe()->Del(me1);
 
     doChange(ev);
@@ -117,11 +118,12 @@ MEWrapper MemoryWrapper::getME()
   return CreateMEW(mem_->getTopME());
 }
 
-void MemoryWrapper::addCount(MEWrapper &parent, int count)
+void MemoryWrapper::addCount(const MEWrapper &parent, int count)
 {
-  if(parent.isNull())
-     parent = getME();
-  mem_->createNew(parent.getMe(), count);
+  auto p = parent;
+  if(!p)
+     p = getME();
+  mem_->createNew(p.getMe(), count);
 
   doChange(parent, mcAddFrom);
 }
@@ -188,7 +190,7 @@ QVariant MemoryWrapper::getVal(const QString &path)
   return QVariant();
 }
 
-void MemoryWrapper::setVal(MEWrapper &me, const QVariant &val)
+void MemoryWrapper::setVal(const MEWrapper &me, const QVariant &val)
 {
   if(me)
   {
@@ -199,7 +201,7 @@ void MemoryWrapper::setVal(MEWrapper &me, const QVariant &val)
   }
 }
 
-void MemoryWrapper::setVal1(MEWrapper &me, const QVariant &val)
+void MemoryWrapper::setVal1(const MEWrapper &me, const QVariant &val)
 {
   if(!me || !me.me_)
     return;
@@ -214,7 +216,7 @@ void MemoryWrapper::setVal1(MEWrapper &me, const QVariant &val)
   doChange(ev);
 }
 
-void MemoryWrapper::setName(MEWrapper &me, const QString &name)
+void MemoryWrapper::setName(const MEWrapper &me, const QString &name)
 {
   if(me)
   {
@@ -225,7 +227,7 @@ void MemoryWrapper::setName(MEWrapper &me, const QString &name)
   }
 }
 
-void MemoryWrapper::setName1(MEWrapper &me, const QString &name)
+void MemoryWrapper::setName1(const MEWrapper &me, const QString &name)
 {
   if(!me || !me.me_)
     return;
@@ -341,7 +343,7 @@ void MemoryWrapper::clearMe1(const MEWrapper &me)
   }
 }
 
-bool MemoryWrapper::move(MEWrapper &me, MEWrapper &parent, int pos)
+bool MemoryWrapper::move(const MEWrapper &me, const MEWrapper &parent, int pos)
 {
   if(me && parent) {
     return move1(me, parent, pos);

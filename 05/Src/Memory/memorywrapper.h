@@ -84,12 +84,12 @@ signals:
 
 public slots:
 
-  void addCount(MEWrapper &parent, int count = 1);
+  void addCount(const MEWrapper &parent, int count = 1);
   MEWrapper add(const MEWrapper &parent, const QString &name, bool checkExist = true);
   bool addFrom(const MEWrapper &parent, const MEWrapper &mefrom, bool recurs);
   // Удалить элемент памяти
   void del(const QString &path);
-  void deleteMe(MEWrapper &me);
+  void deleteMe(const MEWrapper &me);
 
   MEWrapper get(const QString &path);
   MEWrapper getById(uint id);
@@ -98,16 +98,16 @@ public slots:
   bool save();
 
   QVariant getVal(const QString &path);
-  void setVal(MEWrapper &me, const QVariant &val);
+  void setVal(const MEWrapper &me, const QVariant &val);
 
-  void setName(MEWrapper &me, const QString &name);
+  void setName(const MEWrapper &me, const QString &name);
 
   void doChange(const MEWrapper &me, EMemoryChange idMsg);
 
   void clear();
   void clearMe(const MEWrapper &me);
 
-  bool move(MEWrapper &me, MEWrapper &parent, int pos);
+  bool move(const MEWrapper &me, const MEWrapper &parent, int pos);
 
   bool changed() const;
 
@@ -122,12 +122,12 @@ protected:
   void clearMeWrappers();
 
   bool addFrom1(Memory::TME *parent, Memory::TME *mefrom, bool recurs);
-  void deleteMe1(MEWrapper &me);
+  void deleteMe1(const MEWrapper &me);
   void clearR(Memory::TME *me);
   void clearMe1(const MEWrapper &me);
   bool move1(const MEWrapper &me, const MEWrapper &parent, int pos);
-  void setVal1(MEWrapper &me, const QVariant &val);
-  void setName1(MEWrapper &me, const QString &name);
+  void setVal1(const MEWrapper &me, const QVariant &val);
+  void setName1(const MEWrapper &me, const QString &name);
 
 private:
   typedef QMap<Memory::TME*, MEWrapper> t_mapMeWrappers;
