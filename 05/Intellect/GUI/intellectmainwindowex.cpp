@@ -196,9 +196,6 @@ void IntellectMainWindowEx::loadSettings()
 
     if(meSettings)
     {
-      if(memEditor_)
-        memEditor_->LoadSettings(meSettings);
-
       auto meTree = meSettings->get("treeView");
       if(meTree)
       {
@@ -248,9 +245,6 @@ void IntellectMainWindowEx::saveSettings()
 
   if(meSettings)
   {
-    if(memEditor_)
-      memEditor_->SaveSettings(meSettings);
-
     // размеры дерева
     auto meTree = meSettings->add("treeView");
     meTree->add("Width")->setVal(treeView_->size().width());
