@@ -15,6 +15,8 @@ class QMemoryModel;
 class ScriptEditor : public QPlainTextEdit
 {
   Q_OBJECT
+  Q_PROPERTY(MemoryWrapper* mem READ mem WRITE setMem)
+  Q_PROPERTY(MEWrapper me READ me WRITE setMe)
 
 public:
   explicit ScriptEditor(QWidget *parent = 0);
@@ -23,11 +25,17 @@ public:
   MemoryWrapper *mem() const;
   void setMem(MemoryWrapper *mem);
 
+  MEWrapper me();
+  void setMe(const MEWrapper &me);
+
   void lineNumberAreaPaintEvent(QPaintEvent *event);
   int lineNumberAreaWidth();
 
   IObject *iobj() const;
   void setIobj(IObject *iobj);
+
+  bool getCanChangeSelected() const;
+  void setCanChangeSelected(bool canChangeSelected);
 
 signals:
   signalKeyPress(QObject *obj, int key);
@@ -50,7 +58,7 @@ private slots:
   void updateLineNumberAreaWidth(int newBlockCount);
   void highlightCurrentLine();
   void updateLineNumberArea(const QRect &rect, int dy);
-  void insertCompletion(const QString&);
+  void insertCompletion(const QString&completion);
   void performCompletion();
 
 private:
@@ -61,6 +69,7 @@ private:
   int timerId_ = 0;
   QWidget *lineNumberArea_ = 0;
   Completer *completer = 0;
+  bool canChangeSelected_ = false;
 
   void showVal();
   void disconnectMem();
@@ -100,13 +109,13 @@ public:
 
 public:
   void performCompletion();
-  void keyPressEvent(QKeyEvent *event);
+  bool keyPressEvent(QKeyEvent *event);
   void mousePressEvent(QMouseEvent *event);
+  void insertCompletion(const QString &completion, bool singleWord);
 
 protected:
   void performCompletion(const QString &completionPrefix);
   void populateModel(const QString &completionPrefix);
-  void insertCompletion(const QString &completion, bool singleWord);
   bool handledCompletedAndSelected(QKeyEvent *event);
 
 private:

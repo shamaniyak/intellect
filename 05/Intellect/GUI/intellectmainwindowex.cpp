@@ -111,6 +111,7 @@ void IntellectMainWindowEx::createScriptEditor()
   auto iobj = intellect_->getObject("Editor");
   scriptEditor_->setIobj(iobj);
   scriptEditor_->setMem(intellect_->obj()->mem());
+  scriptEditor_->setCanChangeSelected(true);
 
   editorDocWidget_ = createNewDoc(scriptEditor_, false);
   editorDocWidget_->setWindowTitle(tr("Редактор"));

@@ -42,6 +42,8 @@ void ScriptEditor::init()
   setFont(font);
   setLineWrapMode(QPlainTextEdit::NoWrap);
   setTabStopWidth(fontMetrics().width("  "));
+
+  setPlaceholderText("Input value here");
 }
 
 void ScriptEditor::createHighliter()
@@ -100,6 +102,18 @@ void ScriptEditor::setMem(MemoryWrapper *mem)
   }
 }
 
+MEWrapper ScriptEditor::me()
+{
+  return sel_;
+}
+
+void ScriptEditor::setMe(const MEWrapper &me)
+{
+  checkForSave();
+  sel_ = me;
+  showVal();
+}
+
 void ScriptEditor::timerEvent(QTimerEvent *)
 {
   save();
@@ -139,7 +153,8 @@ void ScriptEditor::keyPressEvent(QKeyEvent *kev)
     }
   }
 
-  completer->keyPressEvent(kev);
+  if(completer->keyPressEvent(kev) )
+    return;
 
   QPlainTextEdit::keyPressEvent(kev);
 }
@@ -209,11 +224,9 @@ void ScriptEditor::memory_change(const MEWrapper &me, EMemoryChange idMsg)
     }
 
     case EMemoryChange::mcSelect:
-      if(me != sel_)
+      if(me != sel_ && canChangeSelected_)
       {
-        checkForSave();
-        sel_ = me;
-        showVal();
+        setMe(me);
       }
       break;
 
@@ -281,14 +294,24 @@ void ScriptEditor::updateLineNumberArea(const QRect &rect, int dy)
     updateLineNumberAreaWidth(0);
 }
 
-void ScriptEditor::insertCompletion(const QString &)
+void ScriptEditor::insertCompletion(const QString &completion)
 {
-
+  completer->insertCompletion(completion, false);
 }
 
 void ScriptEditor::performCompletion()
 {
   completer->performCompletion();
+}
+
+bool ScriptEditor::getCanChangeSelected() const
+{
+  return canChangeSelected_;
+}
+
+void ScriptEditor::setCanChangeSelected(bool canChangeSelected)
+{
+  canChangeSelected_ = canChangeSelected;
 }
 
 IObject *ScriptEditor::iobj() const
@@ -439,10 +462,10 @@ void Completer::insertCompletion(const QString &completion, bool singleWord)
   editor->setTextCursor(cursor);
 }
 
-void Completer::keyPressEvent(QKeyEvent *event)
+bool Completer::keyPressEvent(QKeyEvent *event)
 {
   if (completedAndSelected && handledCompletedAndSelected(event))
-    return;
+    return false;
   completedAndSelected = false;
   if (popup()->isVisible()) {
     switch (event->key()) {
@@ -450,10 +473,12 @@ void Completer::keyPressEvent(QKeyEvent *event)
       case Qt::Key_Down: // Проваливаемся
       case Qt::Key_Enter: // Проваливаемся
       case Qt::Key_Return: // Проваливаемся
-      case Qt::Key_Escape: event->ignore(); return;
+      case Qt::Key_Escape: event->ignore(); return true;
       default: popup()->hide(); break;
     }
   }
+
+  return false;
 }
 
 bool Completer::handledCompletedAndSelected(QKeyEvent *event)

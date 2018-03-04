@@ -11,6 +11,7 @@
 #include "Src/GUI/graphicsview.h"
 #include "Src/GUI/MainWindowEx/mainwindowex.h"
 #include "Src/Memory/memorycompareproxymodel.h"
+#include "Src/GUI/ScriptEditor/scripteditor.h"
 
 #include <QtWidgets>
 #include <QProgressBar>
@@ -122,6 +123,11 @@ QWidget *WindowManager::createProgressBar(QWidget *parent)
 {
   //makeParent(parent);
   return new QProgressBar(parent);
+}
+
+QWidget *WindowManager::createScriptEditor()
+{
+  return new ScriptEditor();
 }
 
 QObject *WindowManager::createMemoryView(QWidget *parent)
