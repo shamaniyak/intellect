@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/resources">
-        <file>dictionaries/javascript.txt</file>
-        <file>dictionaries/keywords.txt</file>
-        <file>dictionaries/properties.txt</file>
-        <file>dictionaries/qml.txt</file>
-    </qresource>
-</RCC>
