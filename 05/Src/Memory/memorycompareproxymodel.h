@@ -6,6 +6,7 @@
 
 class MemoryWrapper;
 class MEWrapper;
+class QMemoryModel;
 
 class MemoryCompareProxyModel : public QAbstractProxyModel
 {
@@ -42,6 +43,7 @@ private:
   MemoryWrapper *srcMem_ = nullptr;
   // Результирующая память
   MemoryWrapper *resultMem_ = nullptr;
+  QMemoryModel *resultMemoryModel_ = nullptr;
   // Тип фильтрации
   FilterType filter_ = NoFilter;
 
@@ -61,6 +63,7 @@ public:
 private:
   bool checkChangesRecurs(MEWrapper &me) const;
   MEWrapper getMeByIndex(const QModelIndex &index) const;
+  void addFrom(MEWrapper &meFrom, MEWrapper &meTo);
 };
 
 #endif // MEMORYCOMPAREPROXYMODEL_H

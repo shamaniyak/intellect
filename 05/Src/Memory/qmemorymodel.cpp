@@ -14,7 +14,7 @@ QMemoryModel::QMemoryModel(QObject *parent) : QAbstractItemModel(parent)
 
 QMemoryModel::~QMemoryModel()
 {
-
+  setMem(nullptr);
 }
 
 QModelIndex QMemoryModel::index(int row, int column, const QModelIndex &parent) const

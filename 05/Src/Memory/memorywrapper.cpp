@@ -44,7 +44,7 @@ MEWrapper MemoryWrapper::add(const MEWrapper &parent, const QString &name, bool 
   return me;
 }
 
-bool MemoryWrapper::addFrom(const MEWrapper &parent, const MEWrapper &mefrom, bool recurs)
+bool MemoryWrapper::addFrom(const MEWrapper &parent, const MEWrapper &mefrom, bool recurs, bool checkExist)
 {
   bool  res = false;
 
@@ -54,18 +54,18 @@ bool MemoryWrapper::addFrom(const MEWrapper &parent, const MEWrapper &mefrom, bo
 
   if(p && mefrom)
   {
-    res = addFrom1(p.me_, mefrom.me_, recurs);
+    res = addFrom1(p.me_, mefrom.me_, recurs, checkExist);
   }
 
   return res;
 }
 
-bool MemoryWrapper::addFrom1(Memory::TME *parent, Memory::TME *mefrom, bool recurs)
+bool MemoryWrapper::addFrom1(Memory::TME *parent, Memory::TME *mefrom, bool recurs, bool checkExist)
 {
   if(!mefrom || ! parent)
     return false;
 
-  bool res = parent->addFrom(mefrom, recurs);
+  bool res = parent->addFrom(mefrom, recurs, checkExist);
 
   if(res)
     doChange(CreateMEW(parent), EMemoryChange::mcAddFrom);

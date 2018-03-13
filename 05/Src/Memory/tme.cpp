@@ -98,7 +98,7 @@ TME *TME::Add(const QString &name)
   return me;
 }
 
-bool TME::addFrom(TME *mefrom, bool recurs)
+bool TME::addFrom(TME *mefrom, bool recurs, bool checkExist)
 {
   bool res = false;
   if(!mefrom)
@@ -108,14 +108,20 @@ bool TME::addFrom(TME *mefrom, bool recurs)
   for(int i =0; i <elements.count(); ++i)
   {
     auto me1 = elements.get(i);
-    //auto me2 = parent->Get(me1->name());
-    auto me2 = Add(me1->name());
+    TME *me2 = nullptr;
+    if(checkExist)
+      me2 = Get(me1->name());
+    if(!me2) {
+      me2 = Add(me1->name());
+      if(me2)
+        me2->setVal(me1->val());
+    }
     if(me2)
     {
-      me2->setVal(me1->val());
+      //me2->setVal(me1->val());
 
       if(recurs)
-        res = me2->addFrom(me1, recurs);
+        res = me2->addFrom(me1, recurs, checkExist);
     }
   }
 

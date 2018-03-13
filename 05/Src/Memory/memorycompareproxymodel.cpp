@@ -26,12 +26,17 @@ void MemoryCompareProxyModel::setSrcMem(MemoryWrapper *srcMem)
     curMem_ = model->mem();
   }
 
-  if(!resultMem_)
-    resultMem_ = new MemoryWrapper();
+  if(!resultMem_) {
+    resultMem_ = new MemoryWrapper(this);
+    resultMemoryModel_ = new QMemoryModel(this);
+    resultMemoryModel_->setMem(resultMem_);
+  }
 
-//  resultMem_->clear();
-//  resultMem_->addFrom(resultMem_->getME(), curMem_->getME(), true);
-//  resultMem_->addFrom(resultMem_->getME(), srcMem_->getME(), true);
+  resultMem_->clear();
+  resultMem_->addFrom(resultMem_->getME(), curMem_->getME(), true);
+  resultMem_->addFrom(resultMem_->getME(), srcMem_->getME(), true, true);
+
+  setSourceModel(resultMemoryModel_);
 }
 
 MemoryCompareProxyModel::FilterType MemoryCompareProxyModel::filter() const
@@ -92,18 +97,25 @@ QVariant MemoryCompareProxyModel::data(const QModelIndex &index, int role) const
 {
   if(role == Qt::BackgroundRole && index.isValid())
   {
-    // Если такого элемента не было, значит добавлен
     auto me = getMeByIndex(index);
     auto path = me.getPath();
     auto me1 = srcMem_->get(path);
+    auto me2 = curMem_->get(path);
+    // Если такого элемента не было, значит добавлен
     if(!me1) {
       QBrush brush(Qt::green);
+      return QVariant(brush);
+    }
+    // если был, а теперь нету, значит удален
+    else if(!me2)
+    {
+      QBrush brush(Qt::red);
       return QVariant(brush);
     }
     // если изменилось значение
     else if(me.val() != me1.val())
     {
-      QBrush brush(Qt::blue);
+      QBrush brush(Qt::cyan);
       return QVariant(brush);
     }
     else {
@@ -124,8 +136,9 @@ bool MemoryCompareProxyModel::checkChangesRecurs(MEWrapper &me) const
   while(me1) {
     auto path = me1.getPath();
     auto me2 = srcMem_->get(path);
-    // Если небыло, вернуть true, иначе заходим внутрь
-    if(!me2)
+    auto me3 = curMem_->get(path);
+    // Если добавлен, удален или изменилось значение, вернуть true, иначе заходим внутрь
+    if(!me2 || !me3)
       return true;
     // если изменилось значение, вернуть true
     else if(me1.val() != me2.val())
@@ -142,5 +155,19 @@ bool MemoryCompareProxyModel::checkChangesRecurs(MEWrapper &me) const
 MEWrapper MemoryCompareProxyModel::getMeByIndex(const QModelIndex &index) const
 {
   uint id = reinterpret_cast<uint>(index.internalPointer());
-  return srcMem_->getById(id);
+  return resultMem_->getById(id);
+}
+
+void MemoryCompareProxyModel::addFrom(MEWrapper &meFrom, MEWrapper &meTo)
+{
+  int i = 0;
+  auto me = meFrom.getByI(i);
+  while(me)
+  {
+    auto me1 = meTo.get(me.name());
+    if(me1)
+    {
+
+    }
+  }
 }

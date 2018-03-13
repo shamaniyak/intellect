@@ -86,7 +86,7 @@ public slots:
 
   void addCount(const MEWrapper &parent, int count = 1);
   MEWrapper add(const MEWrapper &parent, const QString &name, bool checkExist = true);
-  bool addFrom(const MEWrapper &parent, const MEWrapper &mefrom, bool recurs);
+  bool addFrom(const MEWrapper &parent, const MEWrapper &mefrom, bool recurs, bool checkExist = false);
   // Удалить элемент памяти
   void del(const QString &path);
   void deleteMe(const MEWrapper &me);
@@ -121,7 +121,7 @@ protected:
   void clearDeleted();
   void clearMeWrappers();
 
-  bool addFrom1(Memory::TME *parent, Memory::TME *mefrom, bool recurs);
+  bool addFrom1(Memory::TME *parent, Memory::TME *mefrom, bool recurs, bool checkExist = false);
   void deleteMe1(const MEWrapper &me);
   void clearR(Memory::TME *me);
   void clearMe1(const MEWrapper &me);
