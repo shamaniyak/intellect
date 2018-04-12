@@ -38,7 +38,7 @@ public:
   void setCanChangeSelected(bool canChangeSelected);
 
 signals:
-  signalKeyPress(QObject *obj, int key);
+  void signalKeyPress(QObject *obj, int key);
 
 protected:
   void timerEvent(QTimerEvent *);

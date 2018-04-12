@@ -201,6 +201,11 @@ MemoryWrapper *MemoryTreeView::memHeader() const
   return(model_->getHeaderInfo());
 }
 
+QObject *MemoryTreeView::menu() const
+{
+  return m_menu;
+}
+
 void MemoryTreeView::compareWith(MemoryWrapper *srcMem)
 {
   if(!srcMem) return;
@@ -223,6 +228,18 @@ void MemoryTreeView::deleteCompare()
   delete memoryCompare_;
   memoryCompare_ = 0;
   setModel(model_);
+}
+
+void MemoryTreeView::setMenu(QObject *menu)
+{
+  if(m_menu)
+    m_menu->deleteLater();
+
+  if (m_menu == menu)
+    return;
+
+  m_menu = qobject_cast<QMenu*>(menu);
+  emit menuChanged(m_menu);
 }
 
 QMenu *MemoryTreeView::pmenu() const

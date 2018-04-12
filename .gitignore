@@ -1,8 +1,10 @@
 
+05/build-IntellectPro-Desktop_Qt_5_10_0_MinGW_32bit-Debug/Makefile
 *.moi
-05/Intellect/Makefile
-*Makefile
-*.jpg
+05/IntellectPro/IntellectPro.pro.user.e06b521
+*debug*
+release
 *.mdb
-*.png
+Worker
 05/tmp
+makefile

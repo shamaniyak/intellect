@@ -40,13 +40,16 @@ Intellect::Intellect(QObject *parent):
 
   // Добавить элементы памяти
   auto me = obj_->mem()->add(MEWrapper(), "Intellect").add("Create");
-  if(me.val().toString().isEmpty())
-    me.setVal("\"intellect version 4.0\"");
+  if(me && me.val().toString().isEmpty())
+    me.setVal("\"intellect version 5.0\"");
 
-  auto val = obj_->mem()->getME().val();
-  QString newVal = "intellect 4.0.0.0 " + QString(QChar(0xE3)) + "Shamaniyak ";
-  if(val != newVal)
-    obj_->mem()->getME().setVal(newVal);
+  me = obj_->mem()->getME();
+  if(me) {
+    auto val = me.val();
+    QString newVal = "intellect 5.0.0.0\n(c) 2010-2018 Shamaniyak";
+    if(val != newVal)
+      me.setVal(newVal);
+  }
 
   connect(getOM(), &ObjectManager::signalAddObject, this, &Intellect::on_addObject);
   connect(this, &TAlgorithm::start, this, &Intellect::on_start);

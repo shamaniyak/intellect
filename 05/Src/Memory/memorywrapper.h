@@ -78,9 +78,9 @@ public:
   MEWrapper getSelected();
 
 signals:
-  on_change(const MEWrapper &me, EMemoryChange idMsg);
-  change(const ChangeEvent &ev);
-  change1(const Memory::TME &ev);
+  void on_change(const MEWrapper &me, EMemoryChange idMsg);
+  void change(const ChangeEvent &ev);
+  void change1(const Memory::TME &ev);
 
 public slots:
 

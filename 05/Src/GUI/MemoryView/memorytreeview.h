@@ -15,6 +15,7 @@ class MemoryTreeView : public QTreeView
   Q_OBJECT
   Q_PROPERTY(MemoryWrapper* mem READ getMem WRITE setMem NOTIFY memChanged)
   Q_PROPERTY(MemoryWrapper* header READ memHeader)
+  Q_PROPERTY(QObject* menu READ menu WRITE setMenu NOTIFY menuChanged)
 
 public:
   explicit MemoryTreeView(QWidget *parent = 0);
@@ -30,6 +31,8 @@ public:
   void saveExpandItems(MEWrapper &me);
 
   MemoryWrapper *memHeader() const;
+
+  QObject* menu() const;
 
 protected:
   void contextMenuEvent(QContextMenuEvent *pe) override;
@@ -51,9 +54,13 @@ signals:
   void contextMenuPopup();
   void memChanged();
 
+  void menuChanged(QObject* menu);
+
 public slots:
   void compareWith(MemoryWrapper *srcMem);
   void deleteCompare();
+
+  void setMenu(QObject* menu);
 
 protected slots:
 
@@ -72,6 +79,7 @@ private:
   MemoryCompareProxyModel *memoryCompare_ = 0;
 
   QWidget *createWidget(const QModelIndex &index);
+  QObject* m_menu;
 };
 
 #endif // MEMORYTREEVIEW_H

@@ -45,7 +45,7 @@ signals:
   // me - входные и выходные параметры
   // path - путь к элементу памяти, где находится скрипт
   // params - это параметры в формате командной страки (может быть скриптом)
-  signalQuery(const QString &path, const QString &params);
+  void signalQuery(const QString &path, const QString &params);
 
 public slots:
   void release();

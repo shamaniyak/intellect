@@ -15,7 +15,7 @@ public:
   void abort();
 
 signals:
-  signalAddObject(QObject *obj);
+  void signalAddObject(QObject *obj);
 
 public slots:
   QObject *Add(const QString &name);
