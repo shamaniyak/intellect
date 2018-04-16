@@ -25,7 +25,7 @@ public:
 
   virtual void undo() override
   {
-    m_->deleteMe1(newMe_);
+    m_->deleteMe(newMe_);
   }
   virtual void redo() override
   {
@@ -57,7 +57,7 @@ public:
   }
   virtual void redo() override
   {
-    m_->addFrom1(parent_.getMe(), from_.getMe(), recurs_);
+    m_->addFrom(parent_, from_, recurs_);
   }
 
 private:
@@ -81,11 +81,11 @@ public:
   {
     me_ = m_->add(parent_, name_, false);
     m_->move(me_, parent_, index_);
-    m_->addFrom1(me_.getMe(), &buf_, true);
+    m_->addFrom(me_, MEWrapper(&buf_), true);
   }
   virtual void redo() override
   {
-    m_->deleteMe1(me_);
+    m_->deleteMe(me_);
   }
 
 private:
@@ -105,11 +105,11 @@ public:
 
   virtual void undo() override
   {
-    m_->setName1(me_, oldName_);
+    m_->setName(me_, oldName_);
   }
   virtual void redo() override
   {
-    m_->setName1(me_, newName_);
+    m_->setName(me_, newName_);
   }
 
 private:
@@ -126,11 +126,11 @@ public:
 
   virtual void undo() override
   {
-    m_->setVal1(me_, oldVal_);
+    m_->setVal(me_, oldVal_);
   }
   virtual void redo() override
   {
-    m_->setVal1(me_, newVal_);
+    m_->setVal(me_, newVal_);
   }
 
 private:
@@ -150,11 +150,11 @@ public:
 
   virtual void undo() override
   {
-    m_->addFrom1(me_.getMe(), &buf_, true);
+    m_->addFrom(me_, MEWrapper(&buf_), true);
   }
   virtual void redo() override
   {
-    m_->clearMe1(me_);
+    m_->clearMe(me_);
   }
 
 private:
@@ -171,11 +171,11 @@ public:
 
   virtual void undo() override
   {
-    m_->move1(me_, me_.parent(), oldIndex_);
+    m_->move(me_, me_.parent(), oldIndex_);
   }
   virtual void redo() override
   {
-    m_->move1(me_, me_.parent(), newIndex_);
+    m_->move(me_, me_.parent(), newIndex_);
   }
 
 private:

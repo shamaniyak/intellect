@@ -72,8 +72,6 @@ private:
   Memory::TME *me_ = 0;
   MemoryWrapper *mem_ = 0;
 
-  void clearR(Memory::TME *me);
-
   friend class MemoryWrapper;
 };
 

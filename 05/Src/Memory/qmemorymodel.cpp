@@ -542,7 +542,7 @@ bool QMemoryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, in
     auto me1 = mem_->add(meParent, me.name());
     if(me1) {
       me1.setVal(me.val());
-      mem_->addFrom1(me1.getMe(), &me, true);
+      mem_->addFrom(me1, MEWrapper(&me), true);
     }
   }
 

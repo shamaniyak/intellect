@@ -58,6 +58,7 @@ public:
   explicit MemoryWrapper(QObject *parent = 0);
   ~MemoryWrapper();
 
+  // Корневой элемент
   MEWrapper getME();
 
   MEWrapper CreateMEW(Memory::TME *me);
@@ -106,6 +107,7 @@ public slots:
 
   void clear();
   void clearMe(const MEWrapper &me);
+  //void deleteChildren
 
   bool move(const MEWrapper &me, const MEWrapper &parent, int pos);
 
@@ -121,13 +123,8 @@ protected:
   void clearDeleted();
   void clearMeWrappers();
 
-  bool addFrom1(Memory::TME *parent, Memory::TME *mefrom, bool recurs, bool checkExist = false);
-  void deleteMe1(const MEWrapper &me);
   void clearR(Memory::TME *me);
-  void clearMe1(const MEWrapper &me);
-  bool move1(const MEWrapper &me, const MEWrapper &parent, int pos);
-  void setVal1(const MEWrapper &me, const QVariant &val);
-  void setName1(const MEWrapper &me, const QString &name);
+  void clearME1(Memory::TME *me);
 
 private:
   typedef QMap<Memory::TME*, MEWrapper> t_mapMeWrappers;

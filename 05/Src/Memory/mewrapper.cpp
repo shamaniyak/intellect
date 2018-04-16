@@ -29,20 +29,6 @@ MEWrapper::~MEWrapper()
 
 }
 
-void MEWrapper::clearR(Memory::TME *me)
-{
-  mem_->DeleteMEW(me);
-
-  Memory::TME::Elements &childs = me->getElements();
-  for(int i = 0, cnt = childs.count(); i <cnt; ++i)
-  {
-    auto me1 = childs.get(i);
-    clearR(me1);
-  }
-
-  me->clear();
-}
-
 void MEWrapper::clear()
 {
   if(mem_)

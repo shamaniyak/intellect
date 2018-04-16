@@ -20,21 +20,23 @@ MEWrapper MemoryWrapper::add(const MEWrapper &parent, const QString &name, bool 
 {
   MEWrapper me;
   auto p = parent;
+  // если парент не задан, то парентом будет корневой элемент
   if(p.isNull())
-    p = getME();
+    p = this->getME();
   if(p)
   {
-    //me = add1(parent, name, checkExist);
-    auto meParent = p.getMe();
-    if(!meParent)
+    auto meP = p.getMe();
+    if(!meP)
       return me;
 
+    // проверка на существоваие с тем же именем
     if(!name.isEmpty() && checkExist)
       me = p.get(name);
 
     if(me.isNull())
     {
-      me = CreateMEW(meParent->Add(name));
+      // создаем, если не существует
+      me = CreateMEW(meP->Add(name));
       if(me) {
         doChange(me, EMemoryChange::mcAdd);
       }
@@ -47,28 +49,18 @@ MEWrapper MemoryWrapper::add(const MEWrapper &parent, const QString &name, bool 
 bool MemoryWrapper::addFrom(const MEWrapper &parent, const MEWrapper &mefrom, bool recurs, bool checkExist)
 {
   bool  res = false;
-
+  // если парент не задан, то парентом будет корневой элемент
   auto p = parent;
   if(p.isNull())
     p = getME();
 
   if(p && mefrom)
   {
-    res = addFrom1(p.me_, mefrom.me_, recurs, checkExist);
+    bool res = p.getMe()->addFrom(mefrom.getMe(), recurs, checkExist);
+
+    if(res)
+      doChange(parent, EMemoryChange::mcAddFrom);
   }
-
-  return res;
-}
-
-bool MemoryWrapper::addFrom1(Memory::TME *parent, Memory::TME *mefrom, bool recurs, bool checkExist)
-{
-  if(!mefrom || ! parent)
-    return false;
-
-  bool res = parent->addFrom(mefrom, recurs, checkExist);
-
-  if(res)
-    doChange(CreateMEW(parent), EMemoryChange::mcAddFrom);
 
   return res;
 }
@@ -89,24 +81,16 @@ void MemoryWrapper::deleteMe(const MEWrapper &me)
 {
   if(!me.isNull())
   {
-    deleteMe1(me);
-  }
-}
-
-void MemoryWrapper::deleteMe1(const MEWrapper &me)
-{
-  if(!me.isNull())
-  {
     ChangeEvent ev;
     ev.type = EMemoryChange::mcDel;
     ev.me = me;
-    ev.me.me_ = nullptr;
+    //ev.me.me_ = nullptr;
     ev.parent = me.parent();
     ev.row = me.getIndex();
     //ev.count = me->count();
 
     auto me1 = me.getMe();
-    ev.me.clearR(me1);
+    clearR(me1);
     ev.parent.getMe()->Del(me1);
 
     doChange(ev);
@@ -197,23 +181,15 @@ void MemoryWrapper::setVal(const MEWrapper &me, const QVariant &val)
     if(val == me.val())
       return;
 
-    setVal1(me, val);
+    ChangeEvent ev;
+    ev.type = EMemoryChange::mcEditVal;
+    ev.me = me;
+    ev.prevVal = me.val();
+
+    me.getMe()->setVal(val);
+
+    doChange(ev);
   }
-}
-
-void MemoryWrapper::setVal1(const MEWrapper &me, const QVariant &val)
-{
-  if(!me || !me.me_)
-    return;
-
-  ChangeEvent ev;
-  ev.type = EMemoryChange::mcEditVal;
-  ev.me = me;
-  ev.prevVal = me.val();
-
-  me.me_->setVal(val);
-
-  doChange(ev);
 }
 
 void MemoryWrapper::setName(const MEWrapper &me, const QString &name)
@@ -223,23 +199,15 @@ void MemoryWrapper::setName(const MEWrapper &me, const QString &name)
     if(name == me.name())
       return;
 
-    setName1(me, name);
+    ChangeEvent ev;
+    ev.type = EMemoryChange::mcEditName;
+    ev.me = me;
+    ev.prevName = me.name();
+
+    me.me_->setName(name);
+
+    doChange(ev);
   }
-}
-
-void MemoryWrapper::setName1(const MEWrapper &me, const QString &name)
-{
-  if(!me || !me.me_)
-    return;
-
-  ChangeEvent ev;
-  ev.type = EMemoryChange::mcEditName;
-  ev.me = me;
-  ev.prevName = me.name();
-
-  me.me_->setName(name);
-
-  doChange(ev);
 }
 
 void MemoryWrapper::setSelected(const MEWrapper &me)
@@ -295,7 +263,7 @@ void MemoryWrapper::doChange(const ChangeEvent &ev)
   }
 
   if(canChange_) {
-    emit on_change(ev.me, ev.type);
+    //emit on_change(ev.me, ev.type);
 
     emit change(ev);
   }
@@ -310,61 +278,42 @@ void MemoryWrapper::clear()
 void MemoryWrapper::clearMe(const MEWrapper &me)
 {
   if(me) {
-    clearMe1(me);
+    clearME1(me.getMe());
+    doChange(me, EMemoryChange::mcClear);
   }
 }
 
 void MemoryWrapper::clearR(Memory::TME *me)
 {
+  clearME1(me);
   DeleteMEW(me);
-
-  Memory::TME::Elements &childs = me->getElements();
-  for(int i = 0, cnt = childs.count(); i <cnt; ++i)
-  {
-    auto me1 = childs.get(i);
-    clearR(me1);
-  }
-
-  me->clear();
 }
 
-void MemoryWrapper::clearMe1(const MEWrapper &me)
+void MemoryWrapper::clearME1(Memory::TME *me)
 {
-  if(me && me.getMe()) {
-    doChange(me, EMemoryChange::mcClear);
-
-    Memory::TME::Elements &childs = me.getMe()->getElements();
-    int cnt = childs.count();
-    for(int i = 0; i <cnt; ++i)
-    {
-      clearR(childs.get(i));
-    }
-    me.getMe()->clear();
+  auto childs = me->getElements();
+  int cnt = childs.count();
+  for(int i = 0; i <cnt; ++i)
+  {
+    clearR(childs.get(i));
   }
+  me->clear();
 }
 
 bool MemoryWrapper::move(const MEWrapper &me, const MEWrapper &parent, int pos)
 {
   if(me && parent) {
-    return move1(me, parent, pos);
+    // запрещаем перенос из одного владельца в другого
+    if(me.parent() != parent)
+      return false;
+    bool ok = me.getMe()->move_to(parent.getMe(), pos);
+    if(ok)
+      doChange(me, mcMove);
+
+    return ok;
   }
 
   return false;
-}
-
-bool MemoryWrapper::move1(const MEWrapper &me, const MEWrapper &parent, int pos)
-{
-  if(!me || !parent)
-    return false;
-  // запрещаем перенос из одного владельца в другого
-  if(me.parent() != parent)
-    return false;
-
-  bool ok = me.getMe()->move_to(parent.getMe(), pos);
-  if(ok)
-    doChange(me, mcMove);
-
-  return ok;
 }
 
 bool MemoryWrapper::getCanChange() const
