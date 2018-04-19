@@ -48,7 +48,7 @@ protected:
 
   void checkForSave();
   void save();
-  void doReturn();
+  void doReturn(bool ctrl);
 
 protected slots:
   void memory_change(const MEWrapper &me, EMemoryChange idMsg);

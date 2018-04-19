@@ -147,9 +147,9 @@ void ScriptEditor::keyPressEvent(QKeyEvent *kev)
   {
     case Qt::Key_Return:
     {
-      //doReturn();
-      //kev->ignore();
-      break;
+      doReturn(ctrl_pressed);
+      kev->accept();
+      return;
     }
   }
 
@@ -195,18 +195,21 @@ void ScriptEditor::save()
   }
 }
 
-void ScriptEditor::doReturn()
+void ScriptEditor::doReturn(bool ctrl)
 {
-  //QString str = this->toPlainText();
-  //QStringList strList = str.split('\n');
-  //QTextCharFormat format;
-  //format.setVerticalAlignment(QTextCharFormat::AlignBaseline);
-  //this->textCursor().setBlockCharFormat(format);
-  //this->textCursor().insertBlock();
-
-  //int pos = this->textCursor().position();
-  //textCursor().movePosition(QTextCursor::Left);
-  //this->textCursor().insertText("\n ");
+  QTextCharFormat format;
+  format.setVerticalAlignment(QTextCharFormat::AlignBaseline);
+  auto cursor = this->textCursor();
+  cursor.beginEditBlock();
+  if(ctrl) cursor.movePosition(QTextCursor::EndOfLine);
+  QString text = cursor.block().text();
+  int n = 0;
+  while(text[n] == ' ' || text[n] == '\t') ++n;
+  text = text.left(n);
+  cursor.insertBlock();
+  cursor.insertText(text);
+  cursor.endEditBlock();
+  this->setTextCursor(cursor);
 }
 
 void ScriptEditor::memory_change(const MEWrapper &me, EMemoryChange idMsg)
