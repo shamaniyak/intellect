@@ -5,7 +5,7 @@
 #include <Src/Memory/qmemorymodel.h>
 #include <Third/qmlcreator/cpp/SyntaxHighlighter.h>
 
-#include <QtDebug>
+#include <QDebug>
 #include <QMessageBox>
 #include <QPainter>
 #include <QShortcut>
@@ -151,6 +151,12 @@ void ScriptEditor::keyPressEvent(QKeyEvent *kev)
       kev->accept();
       return;
     }
+  case Qt::Key_Tab:
+  {
+    doTab(shift_pressed);
+    kev->accept();
+    return;
+  }
   }
 
   if(completer->keyPressEvent(kev) )
@@ -197,8 +203,6 @@ void ScriptEditor::save()
 
 void ScriptEditor::doReturn(bool ctrl)
 {
-  QTextCharFormat format;
-  format.setVerticalAlignment(QTextCharFormat::AlignBaseline);
   auto cursor = this->textCursor();
   cursor.beginEditBlock();
   if(ctrl) cursor.movePosition(QTextCursor::EndOfLine);
@@ -208,6 +212,31 @@ void ScriptEditor::doReturn(bool ctrl)
   text = text.left(n);
   cursor.insertBlock();
   cursor.insertText(text);
+  cursor.endEditBlock();
+  this->setTextCursor(cursor);
+}
+
+void ScriptEditor::doTab(bool shift)
+{
+  auto cursor = this->textCursor();
+  cursor.beginEditBlock();
+  int pos = cursor.position();
+  auto lines = cursor.selectedText().split(QChar::ParagraphSeparator);
+  for(int i = 0; i < lines.size(); ++i)
+  {
+    QString s = lines.at(i);
+    qDebug() << s;
+    if(shift && (s[0] == '\t' || s[0] == ' '))
+       s.remove(0, 1);
+    else
+      s = '\t' + s;
+    lines[i] = s;
+  }
+  cursor.removeSelectedText();
+  QString s = lines.join(QChar::ParagraphSeparator);
+  cursor.insertText(s);
+  cursor.setPosition(pos+s.length());
+  cursor.setPosition(pos, QTextCursor::KeepAnchor);
   cursor.endEditBlock();
   this->setTextCursor(cursor);
 }
