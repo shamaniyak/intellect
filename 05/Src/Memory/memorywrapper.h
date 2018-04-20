@@ -30,6 +30,8 @@ struct ChangeEvent
 private:
   Q_GADGET
   Q_PROPERTY(int row MEMBER row)
+  Q_PROPERTY(int type READ getType)
+  Q_PROPERTY(QString path MEMBER path)
 public:
   EMemoryChange type = mcNone;
   MEWrapper me;
@@ -40,8 +42,9 @@ public:
   int last = 0;
   QString prevName;
   QVariant prevVal;
+  QString path;
 
-
+  int getType() {return type;}
 };
 
 class MemoryWrapper : public QObject//QMemoryModel

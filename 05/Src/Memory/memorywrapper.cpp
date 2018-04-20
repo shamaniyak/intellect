@@ -83,10 +83,11 @@ void MemoryWrapper::deleteMe(const MEWrapper &me)
   {
     ChangeEvent ev;
     ev.type = EMemoryChange::mcDel;
-    ev.me = me;
+    //ev.me = me;
     //ev.me.me_ = nullptr;
     ev.parent = me.parent();
     ev.row = me.getIndex();
+    ev.path = me.getPath();
     //ev.count = me->count();
 
     auto me1 = me.getMe();
@@ -185,6 +186,9 @@ void MemoryWrapper::setVal(const MEWrapper &me, const QVariant &val)
     ev.type = EMemoryChange::mcEditVal;
     ev.me = me;
     ev.prevVal = me.val();
+    ev.parent = me.parent();
+    ev.path = me.getPath();
+    ev.row = me.getIndex();
 
     me.getMe()->setVal(val);
 
@@ -218,8 +222,8 @@ void MemoryWrapper::setSelected(const MEWrapper &me)
   if(mem_->getSelected() != me.me_) {
     mem_->setSelected(me.me_);
 
+    doChange(me, EMemoryChange::mcSelect);
   }
-  doChange(me, EMemoryChange::mcSelect);
 }
 
 MEWrapper MemoryWrapper::getSelected()
@@ -247,6 +251,7 @@ void MemoryWrapper::doChange(const MEWrapper &me, EMemoryChange idMsg)
     ev.parent = me.parent();
     ev.row = me.getIndex();
     ev.count = me.count();
+    ev.path = me.getPath();
     emit change(ev);
   }
 }
