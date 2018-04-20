@@ -2,6 +2,7 @@
 #include "ui_mainwindowex.h"
 #include "Src/GUI/logview.h"
 #include "Src/GUI/ScriptEditor/scripteditor.h"
+#include "Src/GUI/memorycontroller.h"
 #include "Src/GUI/MemoryView/memorytreeview.h"
 #include "Src/intellect.h"
 #include "Src/GUI/menu.h"
@@ -17,6 +18,7 @@ IntellectMainWindowEx::IntellectMainWindowEx(Intellect *i, QWidget *parent) :
   createMemoryView();
   createLogView();
   createScriptEditor();
+  createMemoryController();
   //
   initIntellect();
   //
@@ -105,13 +107,19 @@ void IntellectMainWindowEx::createLogView()
   addDockWidget(Qt::BottomDockWidgetArea, wgt);
 }
 
+void IntellectMainWindowEx::createMemoryController()
+{
+  auto memoryController = new MemoryController(this);
+  auto iobj = intellect_->getObject("Editor");
+  memoryController->setIobj(iobj);
+  memoryController->setMem(intellect_->obj()->mem());
+  memoryController->setCanChangeSelected(true);
+  memoryController->setTextEdit(scriptEditor_);
+}
+
 void IntellectMainWindowEx::createScriptEditor()
 {
   scriptEditor_ = new ScriptEditor(this);
-  auto iobj = intellect_->getObject("Editor");
-  scriptEditor_->setIobj(iobj);
-  scriptEditor_->setMem(intellect_->obj()->mem());
-  scriptEditor_->setCanChangeSelected(true);
 
   editorDocWidget_ = createNewDoc(scriptEditor_, false);
   editorDocWidget_->setWindowTitle(tr("Редактор"));

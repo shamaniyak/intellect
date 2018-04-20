@@ -63,6 +63,7 @@ SOURCES += \
     ../Src/GUI/MemoryView/memorytableview.cpp \
     ../Src/GUI/MemoryView/memoryeditordelegate.cpp \
     ../Src/GUI/MemoryView/memorylistview.cpp \
+    ../Src/GUI/memorycontroller.cpp \
     ../Src/GUI/statusbar.cpp \
     ../Src/GUI/menu.cpp \
     ../Src/GUI/toolbar.cpp \
@@ -113,6 +114,7 @@ HEADERS  += \
     ../Src/GUI/MemoryView/memorytableview.h \
     ../Src/GUI/MemoryView/memorylistview.h \
     ../Src/GUI/MemoryView/memoryeditordelegate.h \
+    ../Src/GUI/memorycontroller.h \
     ../Src/GUI/statusbar.h \
     ../Src/GUI/menu.h \
     ../Src/GUI/toolbar.h \

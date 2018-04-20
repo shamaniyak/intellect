@@ -21,8 +21,6 @@ ScriptEditor::ScriptEditor(QWidget *parent) : QPlainTextEdit(parent)
   createHighliter();
 
   createLineNumberArea();
-
-  connect(this, &ScriptEditor::textChanged, this, &ScriptEditor::on_textChanged);
 }
 
 ScriptEditor::~ScriptEditor()
@@ -74,74 +72,29 @@ void ScriptEditor::createLineNumberArea()
   highlightCurrentLine();
 }
 
-MemoryWrapper *ScriptEditor::mem() const
-{
-  return mem_;
-}
-
-void ScriptEditor::disconnectMem()
-{
-  if(mem_)
-    mem_->disconnect(this);
-}
-
-void ScriptEditor::connectMem()
-{
-  if(mem_)
-    connect(mem_, &MemoryWrapper::on_change, this, &ScriptEditor::memory_change);
-}
-
-void ScriptEditor::setMem(MemoryWrapper *mem)
-{
-  disconnectMem();
-  mem_ = mem;
-  connectMem();
-  if(mem_)
-  {
-    memory_change(mem_->getSelected(), mcSelect);
-  }
-}
-
-MEWrapper ScriptEditor::me()
-{
-  return sel_;
-}
-
-void ScriptEditor::setMe(const MEWrapper &me)
-{
-  checkForSave();
-  sel_ = me;
-  showVal();
-}
-
-void ScriptEditor::timerEvent(QTimerEvent *)
-{
-  save();
-}
-
 void ScriptEditor::keyPressEvent(QKeyEvent *kev)
 {
   bool ctrl_pressed = kev->modifiers() & Qt::ControlModifier;
   bool shift_pressed = kev->modifiers() & Qt::ShiftModifier;
   bool alt_pressed = kev->modifiers() & Qt::AltModifier;
 
-  if(iobj_)
-  {
-    auto me = iobj_->mem()->add(MEWrapper(), "KeyEvent");
-    me.clear();
+//  if(iobj_)
+//  {
+//    auto me = iobj_->mem()->add(MEWrapper(), "KeyEvent");
+//    me.clear();
 
-    if(ctrl_pressed)
-      me.add("Ctrl");
-    if(shift_pressed)
-      me.add("Shift");
-    if(alt_pressed)
-      me.add("Alt");
+//    if(ctrl_pressed)
+//      me.add("Ctrl");
+//    if(shift_pressed)
+//      me.add("Shift");
+//    if(alt_pressed)
+//      me.add("Alt");
 
-    me.add("Key").setVal(kev->key());
-    me.add("Text").setVal(kev->text());
-  }
+//    me.add("Key").setVal(kev->key());
+//    me.add("Text").setVal(kev->text());
+//  }
 
-  emit signalKeyPress(this, kev->key());
+  emit signalKeyPress(this, kev->key(), ctrl_pressed, shift_pressed, alt_pressed);
 
   switch(kev->key())
   {
@@ -178,27 +131,6 @@ void ScriptEditor::mousePressEvent(QMouseEvent *event)
   completer->mousePressEvent(event);
 
   QPlainTextEdit::mousePressEvent(event);
-}
-
-void ScriptEditor::checkForSave()
-{
-  if(timerId_)
-  {
-      save();
-  }
-}
-
-void ScriptEditor::save()
-{
-  this->killTimer(timerId_);
-  timerId_ = 0;
-
-  if(sel_)
-  {
-    disconnectMem();
-    sel_.setVal(this->toPlainText());
-    connectMem();
-  }
 }
 
 void ScriptEditor::doReturn(bool ctrl)
@@ -239,56 +171,6 @@ void ScriptEditor::doTab(bool shift)
   cursor.setPosition(pos, QTextCursor::KeepAnchor);
   cursor.endEditBlock();
   this->setTextCursor(cursor);
-}
-
-void ScriptEditor::memory_change(const MEWrapper &me, EMemoryChange idMsg)
-{
-  switch(idMsg)
-  {
-    case EMemoryChange::mcNone:
-    case EMemoryChange::mcEditName:
-    case EMemoryChange::mcAdd:
-    case EMemoryChange::mcAddFrom:
-    case EMemoryChange::mcUpdate:
-    case mcMove:
-    {
-      break;
-    }
-
-    case EMemoryChange::mcSelect:
-      if(me != sel_ && canChangeSelected_)
-      {
-        setMe(me);
-      }
-      break;
-
-    case EMemoryChange::mcClear:
-    case EMemoryChange::mcEditVal:
-      if(me == sel_)
-        showVal();
-      break;
-
-    case EMemoryChange::mcDel:
-      if(me == sel_)
-      {
-        sel_ = MEWrapper();
-        showVal();
-      }
-      break;
-
-    default:
-      break;
-  }
-}
-
-void ScriptEditor::on_textChanged()
-{
-  if(this->document()->isModified())
-  {
-    if(timerId_)
-      this->killTimer(timerId_);
-    timerId_ = this->startTimer(1000);
-  }
 }
 
 void ScriptEditor::updateLineNumberAreaWidth(int /*newBlockCount*/)
@@ -336,26 +218,6 @@ void ScriptEditor::performCompletion()
   completer->performCompletion();
 }
 
-bool ScriptEditor::getCanChangeSelected() const
-{
-  return canChangeSelected_;
-}
-
-void ScriptEditor::setCanChangeSelected(bool canChangeSelected)
-{
-  canChangeSelected_ = canChangeSelected;
-}
-
-IObject *ScriptEditor::iobj() const
-{
-  return iobj_;
-}
-
-void ScriptEditor::setIobj(IObject *iobj)
-{
-  iobj_ = iobj;
-}
-
 void ScriptEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
   QPainter painter(lineNumberArea_);
@@ -400,24 +262,6 @@ int ScriptEditor::lineNumberAreaWidth()
   int space = 3 + fontMetrics().width(QLatin1Char('9')) * digits;
 
   return space;
-}
-
-void ScriptEditor::showVal()
-{
-  this->blockSignals(true);
-  if(sel_)
-  {
-    this->setPlainText(sel_.val().toString());
-  }
-  else
-  {
-    this->setPlainText("");
-  }
-
-  updateLineNumberAreaWidth(0);
-  //updateLineNumberArea(contentsRect(), 0);
-
-  this->blockSignals(false);
 }
 
 //  Completer

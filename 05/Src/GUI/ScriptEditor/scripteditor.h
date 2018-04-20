@@ -5,55 +5,32 @@
 #include <QPlainTextEdit>
 #include <QCompleter>
 
-#include <Src/Memory/memorywrapper.h>
-
 class QSyntaxHighlighter;
-class IObject;
 class Completer;
-class QMemoryModel;
 
 class ScriptEditor : public QPlainTextEdit
 {
   Q_OBJECT
-  Q_PROPERTY(MemoryWrapper* mem READ mem WRITE setMem)
-  Q_PROPERTY(MEWrapper me READ me WRITE setMe)
 
 public:
   explicit ScriptEditor(QWidget *parent = 0);
   ~ScriptEditor();
 
-  MemoryWrapper *mem() const;
-  void setMem(MemoryWrapper *mem);
-
-  MEWrapper me();
-  void setMe(const MEWrapper &me);
-
   void lineNumberAreaPaintEvent(QPaintEvent *event);
   int lineNumberAreaWidth();
 
-  IObject *iobj() const;
-  void setIobj(IObject *iobj);
-
-  bool getCanChangeSelected() const;
-  void setCanChangeSelected(bool canChangeSelected);
-
 signals:
-  void signalKeyPress(QObject *obj, int key);
+  void signalKeyPress(QObject *obj, int key, bool ctrl, bool shift, bool alt);
 
 protected:
-  void timerEvent(QTimerEvent *);
   void keyPressEvent(QKeyEvent * kev);
   void resizeEvent(QResizeEvent *event);
   void mousePressEvent(QMouseEvent *event);
 
-  void checkForSave();
-  void save();
   void doReturn(bool ctrl);
   void doTab(bool shift);
 
 protected slots:
-  void memory_change(const MEWrapper &me, EMemoryChange idMsg);
-  void on_textChanged();
 
 private slots:
   void updateLineNumberAreaWidth(int newBlockCount);
@@ -64,17 +41,9 @@ private slots:
 
 private:
   QSyntaxHighlighter *h_ = 0;
-  IObject *iobj_ = 0;
-  MemoryWrapper *mem_ = 0;
-  MEWrapper sel_;
-  int timerId_ = 0;
   QWidget *lineNumberArea_ = 0;
   Completer *completer = 0;
-  bool canChangeSelected_ = false;
 
-  void showVal();
-  void disconnectMem();
-  void connectMem();
   void createHighliter();
   void createLineNumberArea();
   void init();

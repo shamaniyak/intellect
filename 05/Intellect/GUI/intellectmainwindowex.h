@@ -33,6 +33,7 @@ protected:
   void createMemoryView();
   void createBaseEditor();
   void createLogView();
+  void createMemoryController();
   void createScriptEditor();
   void createActions();
   void createToolBar();
