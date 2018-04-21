@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui quick
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -29,12 +29,16 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     ../../05/Src/GUI/ScriptEditor/highlighter.cpp \
-    ../../05/Src/GUI/ScriptEditor/scripteditor.cpp
+    ../../05/Src/GUI/ScriptEditor/scripteditor.cpp \
+    ../../05/Third/qmlcreator/cpp/QMLHighlighter.cpp \
+    ../../05/Third/qmlcreator/cpp/SyntaxHighlighter.cpp
 
 HEADERS += \
         mainwindow.h \
     ../../05/Src/GUI/ScriptEditor/highlighter.h \
-    ../../05/Src/GUI/ScriptEditor/scripteditor.h
+    ../../05/Src/GUI/ScriptEditor/scripteditor.h \
+    ../../05/Third/qmlcreator/cpp/QMLHighlighter.h \
+    ../../05/Third/qmlcreator/cpp/SyntaxHighlighter.h
 
 FORMS += \
         mainwindow.ui

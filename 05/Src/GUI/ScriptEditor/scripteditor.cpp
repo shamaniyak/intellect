@@ -1,8 +1,8 @@
 #include "scripteditor.h"
 #include "highlighter.h"
 
-#include <Src/iobject.h>
-#include <Src/Memory/qmemorymodel.h>
+//#include <Src/iobject.h>
+//#include <Src/Memory/qmemorymodel.h>
 #include <Third/qmlcreator/cpp/SyntaxHighlighter.h>
 
 #include <QDebug>
@@ -78,6 +78,9 @@ void ScriptEditor::keyPressEvent(QKeyEvent *kev)
   bool shift_pressed = kev->modifiers() & Qt::ShiftModifier;
   bool alt_pressed = kev->modifiers() & Qt::AltModifier;
 
+  //qDebug() << "ctrl" << ctrl_pressed << "shift" << shift_pressed<< "alt" << alt_pressed << "key" << kev->key();
+  //qDebug() << kev->text();
+
 //  if(iobj_)
 //  {
 //    auto me = iobj_->mem()->add(MEWrapper(), "KeyEvent");
@@ -104,11 +107,17 @@ void ScriptEditor::keyPressEvent(QKeyEvent *kev)
       kev->accept();
       return;
     }
-  case Qt::Key_Tab:
+    case Qt::Key_Tab:
+    case Qt::Key_Backtab:
+    {
+      doTab(shift_pressed);
+      kev->accept();
+      return;
+    }
+  case Qt::Key_Slash:
   {
-    doTab(shift_pressed);
-    kev->accept();
-    return;
+    if(ctrl_pressed)
+      doComment();
   }
   }
 
@@ -152,23 +161,58 @@ void ScriptEditor::doTab(bool shift)
 {
   auto cursor = this->textCursor();
   cursor.beginEditBlock();
+  int selStart = cursor.selectionStart();
   int pos = cursor.position();
   auto lines = cursor.selectedText().split(QChar::ParagraphSeparator);
   for(int i = 0; i < lines.size(); ++i)
   {
     QString s = lines.at(i);
-    qDebug() << s;
     if(shift && (s[0] == '\t' || s[0] == ' '))
        s.remove(0, 1);
     else
-      s = '\t' + s;
+      s = "\t" + s;
     lines[i] = s;
   }
   cursor.removeSelectedText();
   QString s = lines.join(QChar::ParagraphSeparator);
   cursor.insertText(s);
-  cursor.setPosition(pos+s.length());
-  cursor.setPosition(pos, QTextCursor::KeepAnchor);
+  if(pos > selStart) {
+    cursor.setPosition(selStart);
+    cursor.setPosition(selStart+s.length(), QTextCursor::KeepAnchor);
+  } else {
+    cursor.setPosition(selStart+s.length());
+    cursor.setPosition(selStart, QTextCursor::KeepAnchor);
+  }
+  cursor.endEditBlock();
+  this->setTextCursor(cursor);
+}
+
+void ScriptEditor::doComment()
+{
+  auto cursor = this->textCursor();
+  cursor.beginEditBlock();
+  int selStart = cursor.selectionStart();
+  int pos = cursor.position();
+  auto lines = cursor.selectedText().split(QChar::ParagraphSeparator);
+  for(int i = 0; i < lines.size(); ++i)
+  {
+    QString s = lines.at(i);
+    if(s.length() >1 && s[0] == '/' && s[1] == '/')
+       s.remove(0, 2);
+    else
+      s = "//" + s;
+    lines[i] = s;
+  }
+  cursor.removeSelectedText();
+  QString s = lines.join(QChar::ParagraphSeparator);
+  cursor.insertText(s);
+  if(pos > selStart) {
+    cursor.setPosition(selStart);
+    cursor.setPosition(selStart+s.length(), QTextCursor::KeepAnchor);
+  } else {
+    cursor.setPosition(selStart+s.length());
+    cursor.setPosition(selStart, QTextCursor::KeepAnchor);
+  }
   cursor.endEditBlock();
   this->setTextCursor(cursor);
 }

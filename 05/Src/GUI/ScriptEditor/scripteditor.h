@@ -29,6 +29,7 @@ protected:
 
   void doReturn(bool ctrl);
   void doTab(bool shift);
+  void doComment();
 
 protected slots:
 
