@@ -210,6 +210,8 @@ void MemoryWrapper::setName(const MEWrapper &me, const QString &name)
 
     me.me_->setName(name);
 
+    ev.path = me.getPath();
+
     doChange(ev);
   }
 }
