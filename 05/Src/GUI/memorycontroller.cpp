@@ -130,7 +130,7 @@ void MemoryController::memory_change(const MEWrapper &me, EMemoryChange idMsg)
 
 void MemoryController::on_textChanged()
 {
-  if(textEdit_->document()->isModified())
+  //if(textEdit_->document()->isModified())
   {
     if(timerId_)
       this->killTimer(timerId_);
