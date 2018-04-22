@@ -5,13 +5,14 @@
 #-------------------------------------------------
 
 CONFIG += c++14
+CONFIG += mobility
+CONFIG += precompile_header
 QT       += core gui
 QT += script scripttools
 QT += qml quick positioning
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += mobility
 MOBILITY =
 
 TARGET = Intellect
@@ -23,6 +24,17 @@ win32 {
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
 }
+
+android {
+#  DESTDIR = ../apk
+  OTHER_FILES += ../platform-specific/android/AndroidManifest.xml
+  ANDROID_PACKAGE_SOURCE_DIR = $$PWD/../platform-specific/android
+#  UI_DIR = .ui
+#  MOC_DIR = .moc
+#  OBJECTS_DIR = .obj
+}
+
+PRECOMPILED_HEADER = ../Src/qtincludes.h
 
 INCLUDEPATH += ../ \
     GUI \
@@ -127,13 +139,12 @@ HEADERS  += \
     ../Third/qmlcreator/cpp/QMLHighlighter.h \
     ../Third/qmlcreator/cpp/SyntaxHighlighter.h \
     ../Src/QmlManager/qmlmanager.h \
-    ../Src/Plugins/qmlregistertypes.h
+    ../Src/Plugins/qmlregistertypes.h \
+    ../Src/qtincludes.h
 
 FORMS    += \
     GUI/dialogmemoryeditor.ui \
     ../Src/GUI/MainWindowEx/mainwindowex.ui
-
-DISTFILES += \
 
 RESOURCES += \
     images.qrc \
