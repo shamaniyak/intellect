@@ -113,7 +113,6 @@ void IntellectMainWindowEx::createMemoryController()
   auto iobj = intellect_->getObject("Editor");
   memoryController->setIobj(iobj);
   memoryController->setMem(intellect_->obj()->mem());
-  memoryController->setCanChangeSelected(true);
   memoryController->setTextEdit(scriptEditor_);
 }
 

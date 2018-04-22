@@ -110,9 +110,10 @@ void ScriptEditor::keyPressEvent(QKeyEvent *kev)
     case Qt::Key_Tab:
     case Qt::Key_Backtab:
     {
-      doTab(shift_pressed);
-      kev->accept();
-      return;
+      if(doTab(shift_pressed)) {
+        kev->accept();
+        return;
+      }
     }
   case Qt::Key_Slash:
   {
@@ -157,9 +158,10 @@ void ScriptEditor::doReturn(bool ctrl)
   this->setTextCursor(cursor);
 }
 
-void ScriptEditor::doTab(bool shift)
+bool ScriptEditor::doTab(bool shift)
 {
   auto cursor = this->textCursor();
+  if(cursor.selectedText().isEmpty()) return false;
   cursor.beginEditBlock();
   int selStart = cursor.selectionStart();
   int pos = cursor.position();
@@ -185,6 +187,7 @@ void ScriptEditor::doTab(bool shift)
   }
   cursor.endEditBlock();
   this->setTextCursor(cursor);
+  return true;
 }
 
 void ScriptEditor::doComment()

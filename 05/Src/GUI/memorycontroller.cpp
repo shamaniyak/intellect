@@ -82,6 +82,7 @@ void MemoryController::doSave()
 
 void MemoryController::showVal()
 {
+  if(!textEdit_) return;
   if(sel_)
     textEdit_->setPlainText(sel_.val().toString());
   else
@@ -148,8 +149,10 @@ void MemoryController::setTextEdit(QPlainTextEdit *textEdit)
   if(textEdit_)
     textEdit_->disconnect(this);
   textEdit_ = textEdit;
-  if(textEdit_)
+  if(textEdit_) {
+    showVal();
     connect(textEdit_, &QPlainTextEdit::textChanged, this, &MemoryController::on_textChanged);
+  }
 }
 
 void MemoryController::disconnectMem()

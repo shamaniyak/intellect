@@ -28,7 +28,7 @@ protected:
   void mousePressEvent(QMouseEvent *event);
 
   void doReturn(bool ctrl);
-  void doTab(bool shift);
+  bool doTab(bool shift);
   void doComment();
 
 protected slots:

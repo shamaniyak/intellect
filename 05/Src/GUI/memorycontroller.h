@@ -54,7 +54,7 @@ private:
   IObject *iobj_ = 0;
   MemoryWrapper *mem_ = 0;
   MEWrapper sel_;
-  bool canChangeSelected_ = false;
+  bool canChangeSelected_ = true;
 
   void disconnectMem();
   void connectMem();
