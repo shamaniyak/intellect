@@ -23,13 +23,11 @@ void MemoryCompareProxyModel::setSrcMem(MemoryWrapper *srcMem)
   {
     auto model = qobject_cast<QMemoryModel*>(sourceModel());
     Q_ASSERT(model);
-    curMem_ = model->mem();
+    curMem_ = model;
   }
 
   if(!resultMem_) {
-    resultMem_ = new MemoryWrapper(this);
     resultMemoryModel_ = new QMemoryModel(this);
-    resultMemoryModel_->setMem(resultMem_);
   }
 
   resultMem_->clear();

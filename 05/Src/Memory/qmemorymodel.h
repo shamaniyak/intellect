@@ -3,16 +3,11 @@
 
 #include "memorywrapper.h"
 
-#include <QObject>
-#include <QAbstractItemModel>
-
-class QMemoryModel : public QAbstractItemModel
+class QMemoryModel : public MemoryWrapper
 {
   Q_OBJECT
-  Q_PROPERTY(MemoryWrapper* memory READ mem WRITE setMem)
-  Q_PROPERTY(MemoryWrapper* header READ getHeaderInfo)
 
-  typedef QAbstractItemModel inherited;
+  typedef MemoryWrapper inherited;
 public:
   explicit QMemoryModel(QObject *parent = 0);
   ~QMemoryModel();
@@ -44,37 +39,9 @@ public:
   Qt::DropActions  supportedDragActions() const override;
   Qt::DropActions supportedDropActions() const override;
 
-  MemoryWrapper *mem() const;
-  void setMem(MemoryWrapper *mem);
-
-  MemoryWrapper *getHeaderInfo() const;
-
-  QModelIndex getIndexByMe(const MEWrapper &me);
-  MEWrapper getMeByIndex(const QModelIndex &index) const;
-
   QHash<int,QByteArray> roleNames() const override;
 
 protected:
-
-  void updateMe(const MEWrapper &me);
-
-private slots:
-  void memory_change(MEWrapper &me, EMemoryChange idMsg);
-  void onMemoryChange(const ChangeEvent &event);
-  void onHeaderChange(const MEWrapper &me, EMemoryChange idMsg);
-
-private:
-  enum Columns
-  {
-    NameColumn,
-    ValueColumn,
-    PathColumn,
-
-    ColumnCount
-  };
-
-  MemoryWrapper *mem_ = nullptr;
-  MemoryWrapper *headerInfo_ = nullptr;
 
   // QAbstractItemModel interface
 public:

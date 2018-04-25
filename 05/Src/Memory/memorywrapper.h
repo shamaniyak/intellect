@@ -8,8 +8,9 @@
 
 
 #include <QObject>
-#include <memory>
+#include <QAbstractItemModel>
 #include <QMap>
+#include <memory>
 
 #include "tmemory.h"
 #include "mewrapper.h"
@@ -47,7 +48,7 @@ public:
   int getType() {return type;}
 };
 
-class MemoryWrapper : public QObject//QMemoryModel
+class MemoryWrapper : public QAbstractItemModel
 {
   Q_OBJECT
   Q_PROPERTY(MEWrapper me READ getME)
@@ -62,7 +63,7 @@ public:
   ~MemoryWrapper();
 
   // Корневой элемент
-  MEWrapper getME();
+  MEWrapper getME() const;
 
   MEWrapper CreateMEW(Memory::TME *me);
   void DeleteMEW(Memory::TME *me);
@@ -81,10 +82,11 @@ public:
   void setSelected(const MEWrapper &me);
   MEWrapper getSelected();
 
+  QModelIndex getIndexByMe(const MEWrapper &me);
+  Q_INVOKABLE MEWrapper getMeByIndex(const QModelIndex &index) const;
+
 signals:
-  void on_change(const MEWrapper &me, EMemoryChange idMsg);
   void change(const ChangeEvent &ev);
-  void change1(const Memory::TME &ev);
 
 public slots:
 
@@ -123,6 +125,15 @@ public slots:
   bool canRedoBackup();
 
 protected:
+  enum Columns
+  {
+    NameColumn,
+    ValueColumn,
+    PathColumn,
+
+    ColumnCount
+  };
+
   void clearDeleted();
   void clearMeWrappers();
 

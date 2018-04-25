@@ -41,34 +41,6 @@ void QMemorySelectionModel::setMem(MemoryWrapper *mem)
   if(mem_)
   {
     setSelected(mem_->getSelected());
-
-    connect(mem_, &MemoryWrapper::on_change,
-            this, &QMemorySelectionModel::memory_change);
-  }
-}
-
-void QMemorySelectionModel::memory_change(const MEWrapper &me, EMemoryChange idMsg)
-{
-  if(!me)
-    return;
-
-  switch(idMsg)
-  {
-    case EMemoryChange::mcSelect:
-      setSelected(me);
-      break;
-    case EMemoryChange::mcDel:
-      break;
-
-    case EMemoryChange::mcNone:
-    case EMemoryChange::mcAdd:
-    case EMemoryChange::mcEditName:
-    case EMemoryChange::mcEditVal:
-    case EMemoryChange::mcClear:
-    case EMemoryChange::mcAddFrom:
-    case EMemoryChange::mcUpdate:
-    case mcMove:
-      break;
   }
 }
 

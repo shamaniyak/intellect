@@ -20,7 +20,6 @@ public:
   void setMem(MemoryWrapper *mem);
 
 private slots:
-  void memory_change(const MEWrapper &me, EMemoryChange idMsg);
   void on_currentChanged(const QModelIndex &current, const QModelIndex &previous);
   void on_selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 

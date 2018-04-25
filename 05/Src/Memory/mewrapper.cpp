@@ -7,12 +7,12 @@ MEWrapper::MEWrapper()
 
 }
 
-MEWrapper::MEWrapper(MemoryWrapper *mem)// : QObject(parent)
+MEWrapper::MEWrapper(MemoryWrapper *mem)
 {
   setMem(mem);
 }
 
-MEWrapper::MEWrapper(Memory::TME *me, MemoryWrapper *mem) : //QObject(parent),
+MEWrapper::MEWrapper(Memory::TME *me, MemoryWrapper *mem) :
   me_(me)
 {
   setMem(mem);
