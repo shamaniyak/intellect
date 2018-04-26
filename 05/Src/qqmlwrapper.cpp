@@ -117,6 +117,11 @@ void QQmlEngineWrapper::reset()
   //m_qml.collectGarbage();
 }
 
+void QQmlEngineWrapper::addImportPath(const QString &path)
+{
+  m_qml->addImportPath(path);
+}
+
 void QQmlEngineWrapper::insertObjectsInQml()
 {
   auto it = m_objects.begin();

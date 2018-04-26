@@ -24,6 +24,7 @@ public:
   QString msg() const;
 
   Q_INVOKABLE void reset();
+  Q_INVOKABLE void addImportPath(const QString &path);
 
 protected:
   void insertObjectsInQml();

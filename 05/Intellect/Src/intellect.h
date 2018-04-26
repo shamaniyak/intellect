@@ -53,6 +53,9 @@ public slots:
 
   QString applicationDirPath();
 
+  bool putEnv(const QString &name, const QVariant &val);
+  QVariant getEnv(const QString &name);
+
 protected slots:
   void on_addObject(QObject *obj);
   void on_start();

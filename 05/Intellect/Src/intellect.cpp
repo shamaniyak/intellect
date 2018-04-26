@@ -129,6 +129,17 @@ QString Intellect::applicationDirPath()
   return QApplication::applicationDirPath();
 }
 
+bool Intellect::putEnv(const QString &name, const QVariant &val)
+{
+  return(qputenv(name.toStdString().data(), val.toByteArray())!=0);
+}
+
+QVariant Intellect::getEnv(const QString &name)
+{
+  auto barr = qgetenv(name.toStdString().data());
+  return QVariant(barr);
+}
+
 void Intellect::on_start()
 {
   disconnect(this, &TAlgorithm::start, this, &Intellect::on_start);
