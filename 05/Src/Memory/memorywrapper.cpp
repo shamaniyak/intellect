@@ -384,9 +384,13 @@ bool MemoryWrapper::move(const MEWrapper &me, const MEWrapper &parent, int pos)
       return false;
 
     auto source = getIndexByMe(parent);
-    beginMoveRows(source, me.getIndex(), me.getIndex(), source, pos);
-    bool ok = me.getMe()->move_to(parent.getMe(), pos);
+    if(!source.isValid())
+      return false;
+    int row = me.getIndex();
+    int destRow = pos > row ? pos + 1: pos;
+    beginMoveRows(source, row, row, source, destRow);
 
+    bool ok = me.getMe()->move_to(parent.getMe(), pos);
 
     endMoveRows();
 

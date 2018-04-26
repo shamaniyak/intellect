@@ -51,6 +51,8 @@ public:
 public slots:
   void stop();
 
+  QString applicationDirPath();
+
 protected slots:
   void on_addObject(QObject *obj);
   void on_start();

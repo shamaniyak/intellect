@@ -124,6 +124,11 @@ void Intellect::stop()
   this->getOM()->abort();
 }
 
+QString Intellect::applicationDirPath()
+{
+  return QApplication::applicationDirPath();
+}
+
 void Intellect::on_start()
 {
   disconnect(this, &TAlgorithm::start, this, &Intellect::on_start);

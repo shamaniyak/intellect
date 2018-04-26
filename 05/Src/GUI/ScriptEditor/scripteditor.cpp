@@ -169,8 +169,10 @@ bool ScriptEditor::doTab(bool shift)
   for(int i = 0; i < lines.size(); ++i)
   {
     QString s = lines.at(i);
-    if(shift && (s[0] == '\t' || s[0] == ' '))
-       s.remove(0, 1);
+    if(shift) {
+      if(s[0] == '\t' || s[0] == ' ')
+        s.remove(0, 1);
+    }
     else
       s = "\t" + s;
     lines[i] = s;
