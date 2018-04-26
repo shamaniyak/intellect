@@ -16,7 +16,7 @@ void MemoryListView::setMem(MemoryWrapper *mem)
   //if(mem_ !=mem)
   {
     if(mem_)
-      disconnect(mem_, &MemoryWrapper::on_change, this, &MemoryListView::on_memory_change);
+      mem_->disconnect(this);
 
     mem_ = mem;
 
@@ -26,16 +26,16 @@ void MemoryListView::setMem(MemoryWrapper *mem)
     {
       //setSelected(mem_->selected());
 
-      connect(mem_, &MemoryWrapper::on_change, this, &MemoryListView::on_memory_change);
+      connect(mem_, &MemoryWrapper::change, this, &MemoryListView::on_memory_change);
     }
   }
 }
 
-void MemoryListView::on_memory_change(const MEWrapper &me, EMemoryChange idMsg)
+void MemoryListView::on_memory_change(const ChangeEvent &ev)
 {
-  if(me)
+  if(ev.me)
   {
-    if(idMsg != mcNone)
+    if(ev.type != mcNone)
     {
 
     }

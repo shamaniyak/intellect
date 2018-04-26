@@ -40,6 +40,7 @@ void QMemorySelectionModel::setMem(MemoryWrapper *mem)
 
   if(mem_)
   {
+    setModel(mem_);
     setSelected(mem_->getSelected());
   }
 }
@@ -69,18 +70,13 @@ void QMemorySelectionModel::on_selectionChanged(const QItemSelection &selected, 
 void QMemorySelectionModel::setSelected(const MEWrapper &me)
 {
   QModelIndex index = getIndexByMe(me);
-//  auto me1 = static_cast<MEWrapper*>(index.internalPointer());
-//  auto name = me->name();
-//  auto name1 = me1->name();
 
   setCurrentIndex(index, QItemSelectionModel::ClearAndSelect);
-  //select(index,
-  //       QItemSelectionModel::ClearAndSelect);
 }
 
 QModelIndex QMemorySelectionModel::getIndexByMe(const MEWrapper &me)
 {
-  auto m = qobject_cast<QMemoryModel*>(model());
+  auto m = qobject_cast<MemoryWrapper*>(model());
   if(m)
   {
     return m->getIndexByMe(me);
@@ -90,7 +86,7 @@ QModelIndex QMemorySelectionModel::getIndexByMe(const MEWrapper &me)
 
 MEWrapper QMemorySelectionModel::getMeByIndex(const QModelIndex &index)
 {
-  auto m = qobject_cast<QMemoryModel*>(model());
+  auto m = qobject_cast<MemoryWrapper*>(model());
   if(m)
   {
     return m->getMeByIndex(index);

@@ -4,6 +4,7 @@
 #include "Src/Memory/tme.h"
 #include <QtScript>
 #include <QQmlEngine>
+#include <src/Memory/qmemorymodel.h>
 
 //  MemoryWrapper
 
@@ -375,5 +376,5 @@ QJSEngineMemoryPlugin::QJSEngineMemoryPlugin(QJSEngine &engine)
 
 void QJSEngineMemoryPlugin::registerTypes()
 {
-  qmlRegisterType<MemoryWrapper>("Intellect.MemoryWrapper", 1, 0, "Memory");
+  //qmlRegisterType<QMemoryModel>("Intellect.MemoryWrapper", 1, 0, "Memory");
 }

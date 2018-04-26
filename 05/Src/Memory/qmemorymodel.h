@@ -15,6 +15,8 @@ public:
 signals:
 
 public slots:
+  int getColumnCount() const;
+  void setColumnCount(int columnCount);
 
   // QAbstractItemModel interface
 public:
@@ -28,6 +30,7 @@ public:
   bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
   QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+  bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role) override;
 
   bool canFetchMore(const QModelIndex &parent) const override;
   void fetchMore(const QModelIndex &parent) override;
@@ -41,8 +44,6 @@ public:
 
   QHash<int,QByteArray> roleNames() const override;
 
-protected:
-
   // QAbstractItemModel interface
 public:
   QStringList mimeTypes() const override;
@@ -50,6 +51,10 @@ public:
   bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
   bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
   bool insertRows(int row, int count, const QModelIndex &parent) override;
+
+private:
+  int columnCount_ = 1;
+  QStringList headers = {tr("Name"), tr("Value"), tr("Path"), tr("Type")};
 
 };
 

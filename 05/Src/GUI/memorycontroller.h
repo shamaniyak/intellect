@@ -6,7 +6,7 @@
 #include <Src/Memory/memorywrapper.h>
 
 class IObject;
-class QMemoryModel;
+class MemoryWrapper;
 class QPlainTextEdit;
 
 
@@ -45,7 +45,7 @@ protected:
   void showVal();
 
 protected slots:
-  void memory_change(const MEWrapper &me, EMemoryChange idMsg);
+  void memory_change(const ChangeEvent &ev);
   void on_textChanged();
 
 private:

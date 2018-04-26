@@ -37,14 +37,9 @@ MemoryTreeView::~MemoryTreeView()
 
 void MemoryTreeView::createModels()
 {
-  if(!model_)
-  {
-    model_ = new QMemoryModel(this);
-    model_->setObjectName("model");
-  }
-
-  selectionModel_ = new QMemorySelectionModel(model_, this);
+  selectionModel_ = new QMemorySelectionModel();
   selectionModel_->setObjectName("selectionModel");
+  //setSelectionModel(selectionModel_);
 }
 
 void MemoryTreeView::createContextMenu()
@@ -63,7 +58,8 @@ void MemoryTreeView::connectSlots()
 void MemoryTreeView::disconnectSlots()
 {
   this->disconnect(this);
-  selectionModel_->disconnect(this);
+  if(selectionModel_)
+    selectionModel_->disconnect(this);
   if(mem_)
     mem_->disconnect(this);
 }
@@ -95,7 +91,7 @@ void MemoryTreeView::contextMenuEvent(QContextMenuEvent *pe)
 
 void MemoryTreeView::on_itemCollapsed(const QModelIndex &item)
 {
-  auto me = model_->getMeByIndex(item);
+  auto me = mem_->getMeByIndex(item);
   if(!me) return;
   QString path = me.getPath();
 
@@ -104,7 +100,7 @@ void MemoryTreeView::on_itemCollapsed(const QModelIndex &item)
 
 void MemoryTreeView::on_itemExpanded(const QModelIndex &item)
 {
-  auto me = model_->getMeByIndex(item);
+  auto me = mem_->getMeByIndex(item);
   if(!me) return;
   QString path = me.getPath();
 
@@ -135,28 +131,21 @@ void MemoryTreeView::setMem(MemoryWrapper *mem)
 {
   if(mem && mem != mem_)
   {
-
     mem_ = mem;
-    //auto model = this->findChild<QMemoryModel*>("model");
-    if(model_)
+    if(mem_)
     {
-      model_->setMem(mem);
-      //this->setModel(nullptr);
-      this->setModel(model_);
+      setModel(mem_);
 
-      auto selectionModel = findChild<QMemorySelectionModel*>("selectionModel");
-      if(selectionModel)
+      if(selectionModel_)
       {
-        selectionModel->setMem(mem_);
-        selectionModel->setModel(model_);
-        this->setSelectionModel(selectionModel);
+        selectionModel_->setMem(mem_);
+        setSelectionModel(selectionModel_);
       }
 
       this->header()->resizeSection(0, 200);
 
+      this->setCurrentIndex(mem_->getIndexByMe(mem_->getSelected()));
     }
-
-    this->setCurrentIndex(model_->getIndexByMe(mem_->getSelected()));
 
     expandItems();
   }
@@ -172,7 +161,7 @@ void MemoryTreeView::expandItems()
     MEWrapper me = mem_->get(path);
     if(me)
     {
-      QModelIndex mi = model_->getIndexByMe(me);
+      QModelIndex mi = mem_->getIndexByMe(me);
       this->setExpanded(mi, true);
     }
   }
@@ -196,9 +185,13 @@ void MemoryTreeView::saveExpandItems(MEWrapper &me)
   me.setVal(val);
 }
 
-MemoryWrapper *MemoryTreeView::memHeader() const
+MemoryWrapper *MemoryTreeView::memHeader()
 {
-  return(model_->getHeaderInfo());
+  if(!header_) {
+    header_ = new QMemoryModel(this);
+
+  }
+  return header_;
 }
 
 QObject *MemoryTreeView::menu() const
@@ -209,16 +202,16 @@ QObject *MemoryTreeView::menu() const
 void MemoryTreeView::compareWith(MemoryWrapper *srcMem)
 {
   if(!srcMem) return;
-  if(!model_) return;
+  if(!mem_) return;
   if(!memoryCompare_)
     memoryCompare_ = new MemoryCompareProxyModel(this);
-  memoryCompare_->setSourceModel(model_);
+  memoryCompare_->setSourceModel(mem_);
   memoryCompare_->setSrcMem(srcMem);
-  auto selectionModel = this->selectionModel();
-  if(selectionModel)
+
+  if(selectionModel_)
   {
     //selectionModel->setMem(mem_);
-    selectionModel->setModel(nullptr);
+    selectionModel_->setModel(nullptr);
   }
   setModel(memoryCompare_);
 }
@@ -227,7 +220,7 @@ void MemoryTreeView::deleteCompare()
 {
   delete memoryCompare_;
   memoryCompare_ = 0;
-  setModel(model_);
+  setModel(mem_);
 }
 
 void MemoryTreeView::setMenu(QObject *menu)

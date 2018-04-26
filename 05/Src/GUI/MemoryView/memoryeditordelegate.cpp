@@ -11,7 +11,7 @@ MemoryEditorDelegate::MemoryEditorDelegate(QObject *parent) : QStyledItemDelegat
 
 void MemoryEditorDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-  const QMemoryModel *model = qobject_cast<const QMemoryModel*>(index.model());
+  const MemoryWrapper *model = qobject_cast<const MemoryWrapper*>(index.model());
   Q_ASSERT(model);
   //const QDateTime &lastModified = model->lastModified(index);
   painter->save();

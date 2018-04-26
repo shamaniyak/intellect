@@ -3,6 +3,8 @@
 #include "talgorithm.h"
 #include "windowmanager.h"
 
+#include <src/Memory/qmemorymodel.h>
+
 IObject::IObject(QObject *parent) : QObject(parent)
   ,scr_(new JSEngineWrapper)
   ,qml_(new QQmlEngineWrapper(this))
@@ -32,7 +34,7 @@ void IObject::release()
 MemoryWrapper *IObject::mem()
 {
   if(!mem_)
-    mem_ = new MemoryWrapper(this);
+    mem_ = new QMemoryModel(this);
   return mem_;
 }
 

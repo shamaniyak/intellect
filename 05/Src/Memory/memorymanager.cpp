@@ -1,5 +1,6 @@
 #include "memorymanager.h"
 #include "tmemory.h"
+#include "qmemorymodel.h"
 
 //  TMemoryManager
 
@@ -9,7 +10,7 @@ int MemoryManager::countLinksToGlobalMemory_= 0;
 MemoryManager::MemoryManager(QObject *parent) : QObject(parent)
 {
   if(!globalMemory_) {
-    globalMemory_ = new MemoryWrapper();
+    globalMemory_ = new QMemoryModel();
     globalMemory_->setObjectName("globalMemory");
   }
   ++countLinksToGlobalMemory_;
@@ -28,7 +29,7 @@ MemoryWrapper *MemoryManager::Add(const QString &name)
 {
   auto mem = this->findChild<MemoryWrapper*>(name);
   if(!mem) {
-    mem = new MemoryWrapper(this);
+    mem = new QMemoryModel(this);
   }
 
   return mem;

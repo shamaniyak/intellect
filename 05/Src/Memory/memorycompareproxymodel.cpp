@@ -21,20 +21,20 @@ void MemoryCompareProxyModel::setSrcMem(MemoryWrapper *srcMem)
 
   if(!curMem_)
   {
-    auto model = qobject_cast<QMemoryModel*>(sourceModel());
+    auto model = qobject_cast<MemoryWrapper*>(sourceModel());
     Q_ASSERT(model);
     curMem_ = model;
   }
 
   if(!resultMem_) {
-    resultMemoryModel_ = new QMemoryModel(this);
+    resultMem_ = new QMemoryModel(this);
   }
 
   resultMem_->clear();
   resultMem_->addFrom(resultMem_->getME(), curMem_->getME(), true);
   resultMem_->addFrom(resultMem_->getME(), srcMem_->getME(), true, true);
 
-  setSourceModel(resultMemoryModel_);
+  setSourceModel(resultMem_);
 }
 
 MemoryCompareProxyModel::FilterType MemoryCompareProxyModel::filter() const

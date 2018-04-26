@@ -19,7 +19,8 @@ void MemoryController::setMem(MemoryWrapper *mem)
   if(mem_)
   {
     connectMem();
-    memory_change(mem_->getSelected(), mcSelect);
+    setMe(mem_->getSelected());
+    //memory_change(mem_->getSelected(), mcSelect);
   }
 }
 
@@ -89,8 +90,10 @@ void MemoryController::showVal()
     textEdit_->setPlainText("");
 }
 
-void MemoryController::memory_change(const MEWrapper &me, EMemoryChange idMsg)
+void MemoryController::memory_change(const ChangeEvent &ev)
 {
+  const MEWrapper me = ev.me;
+  EMemoryChange idMsg = ev.type;
   switch(idMsg)
   {
   case EMemoryChange::mcNone:
@@ -164,7 +167,7 @@ void MemoryController::disconnectMem()
 void MemoryController::connectMem()
 {
   if(mem_)
-    connect(mem_, &MemoryWrapper::on_change, this, &MemoryController::memory_change);
+    connect(mem_, &MemoryWrapper::change, this, &MemoryController::memory_change);
 }
 
 

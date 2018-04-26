@@ -6,7 +6,6 @@
 
 class MyTreeWidgetItem;
 class MEWrapper;
-class QMemoryModel;
 class QMemorySelectionModel;
 class MemoryCompareProxyModel;
 
@@ -30,7 +29,7 @@ public:
   void loadExpandItems(MEWrapper &me);
   void saveExpandItems(MEWrapper &me);
 
-  MemoryWrapper *memHeader() const;
+  MemoryWrapper *memHeader();
 
   QObject* menu() const;
 
@@ -73,8 +72,9 @@ protected slots:
 private:
   QMenu *m_pmenu = 0;
   MemoryWrapper *mem_ = 0;
+  MemoryWrapper *header_ = 0;
   QStringList expanded_;
-  QMemoryModel *model_ = 0;
+  //QMemoryModel *model_ = 0;
   QMemorySelectionModel *selectionModel_ = 0;
   MemoryCompareProxyModel *memoryCompare_ = 0;
 

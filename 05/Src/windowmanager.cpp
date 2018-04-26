@@ -75,9 +75,10 @@ QObject *WindowManager::createTreeView(MemoryWrapper *mem, QWidget *parent)
 {
   //makeParent(parent);
   auto treeView = new QTreeView(parent);
-  auto model = new QMemoryModel(treeView);
-  model->setMem(mem);
-  treeView->setModel(model);
+  //auto model = new QMemoryModel(treeView);
+  //model->setMem(mem);
+  if(mem)
+    treeView->setModel(mem);
   return treeView;
 }
 

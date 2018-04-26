@@ -7,6 +7,8 @@
 #include "Src/intellect.h"
 #include "Src/GUI/menu.h"
 
+#include <src/Memory/qmemorymodel.h>
+
 IntellectMainWindowEx::IntellectMainWindowEx(Intellect *i, QWidget *parent) :
   MainWindowEx(parent),
   intellect_(i)
@@ -196,7 +198,7 @@ void IntellectMainWindowEx::closeEvent(QCloseEvent *event)
 void IntellectMainWindowEx::loadSettings()
 {
   QString filePath = QApplication::applicationDirPath() + "/settings.moi";
-  MemoryWrapper mSettings;
+  QMemoryModel mSettings;
 
   if(mSettings.open(filePath))
   {
@@ -245,7 +247,7 @@ void IntellectMainWindowEx::saveSettings()
     return;
 
   QString filePath = QApplication::applicationDirPath() + "/settings.moi";
-  MemoryWrapper mSettings;
+  QMemoryModel mSettings;
   mSettings.setAutosave(true);
   mSettings.setFilePath(filePath);
 

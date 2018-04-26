@@ -163,7 +163,7 @@ private:
   friend class EditValCommand;
 };
 //
-Q_DECLARE_METATYPE(MemoryWrapper*)
+//Q_DECLARE_METATYPE(MemoryWrapper*)
 Q_DECLARE_METATYPE(ChangeEvent)
 
 #endif // MEMORYWRAPPER_H
