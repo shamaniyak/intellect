@@ -119,7 +119,11 @@ void QQmlEngineWrapper::reset()
 
 void QQmlEngineWrapper::addImportPath(const QString &path)
 {
-  m_qml->addImportPath(path);
+  if(!m_qml)
+    m_qml = new QQmlEngine();
+  if(m_qml) {
+    m_qml->addImportPath(path);
+  }
 }
 
 void QQmlEngineWrapper::insertObjectsInQml()
