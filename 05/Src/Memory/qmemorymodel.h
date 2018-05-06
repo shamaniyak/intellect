@@ -55,6 +55,10 @@ public:
 private:
   int columnCount_ = 1;
   QStringList headers = {tr("Name"), tr("Value"), tr("Path"), tr("Type")};
+  enum MyRoles
+  {
+    ValueRole = Qt::UserRole + 1
+  };
 
 };
 

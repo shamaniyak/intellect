@@ -73,10 +73,14 @@ QVariant QMemoryModel::data(const QModelIndex &index, int role) const
     return var;
   }
 
-  if(role != Qt::DisplayRole && role != Qt::EditRole && role != Qt::ToolTipRole)
+  if(role != Qt::DisplayRole && role != Qt::EditRole && role != Qt::ToolTipRole && ValueRole != role)
     return var;
 
   auto me = getMeByIndex(index);
+
+  if(ValueRole == role) {
+    return me.val();
+  }
 
   switch (index.column()) {
     case NameColumn:
@@ -231,6 +235,7 @@ Qt::DropActions QMemoryModel::supportedDropActions() const
 QHash<int, QByteArray> QMemoryModel::roleNames() const
 {
   QHash<int, QByteArray> result = QAbstractItemModel::roleNames();
+  result[ValueRole] = "value";
   return result;
 }
 
