@@ -12,10 +12,18 @@ TEMPLATE = lib
 CONFIG += c++14 plugin
 
 win32 {
-  DESTDIR = ../../exe/plugins
-  UI_DIR = .ui
-  MOC_DIR = .moc
-  OBJECTS_DIR = .obj
+  debug {
+    DESTDIR = ../../win32/debug/exe/plugins
+    UI_DIR = .ui/win32/debug
+    MOC_DIR = .moc/win32/debug
+    OBJECTS_DIR = .obj/win32/debug
+  }
+  release {
+    DESTDIR = ../../win32/release/exe/plugins
+    UI_DIR = .ui/win32/release
+    MOC_DIR = .moc/win32/release
+    OBJECTS_DIR = .obj/win32/release
+  }
 }
 
 DEFINES += SPPZSITUATIONTOQT_LIBRARY

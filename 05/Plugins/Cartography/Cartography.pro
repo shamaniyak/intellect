@@ -36,8 +36,16 @@ unix {
 }
 
 win32 {
-    DESTDIR = ../../Exe/Plugins
-    UI_DIR = .ui/win
-    MOC_DIR = .moc/win
-    OBJECTS_DIR = .obj/win
+  debug {
+    DESTDIR = ../../win32/debug/exe/plugins
+    UI_DIR = .ui/win32/debug
+    MOC_DIR = .moc/win32/debug
+    OBJECTS_DIR = .obj/win32/debug
+  }
+  release {
+    DESTDIR = ../../win32/release/exe/plugins
+    UI_DIR = .ui/win32/release
+    MOC_DIR = .moc/win32/release
+    OBJECTS_DIR = .obj/win32/release
+  }
 }

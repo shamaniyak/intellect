@@ -19,11 +19,25 @@ TARGET = Intellect
 TEMPLATE = app
 
 win32 {
-  DESTDIR = ../exe
-  UI_DIR = .ui
-  MOC_DIR = .moc
-  OBJECTS_DIR = .obj
+  debug {
+    DESTDIR = ../win32/debug/exe/
+    UI_DIR = .ui/win32/debug
+    MOC_DIR = .moc/win32/debug
+    OBJECTS_DIR = .obj/win32/debug
+  }
+  release {
+    DESTDIR = ../win32/release/exe/
+    UI_DIR = .ui/win32/release
+    MOC_DIR = .moc/win32/release
+    OBJECTS_DIR = .obj/win32/release
+
+    #target.path = ../exe
+    //target.files = $$join(DESTDIR,,,"*.exe")
+    #INSTALLS += target
+  }
 }
+
+#message($$target.files)
 
 android {
 #  DESTDIR = ../apk
