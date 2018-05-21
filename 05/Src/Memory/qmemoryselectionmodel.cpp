@@ -42,6 +42,7 @@ void QMemorySelectionModel::setMem(MemoryWrapper *mem)
   {
     setModel(mem_);
     setSelected(mem_->getSelected());
+    connect(mem_, &MemoryWrapper::change, this, &QMemorySelectionModel::onMemoryChanged);
   }
 }
 
@@ -64,6 +65,13 @@ void QMemorySelectionModel::on_selectionChanged(const QItemSelection &selected, 
     auto index = selected.indexes()[cnt-1];
     uint id = reinterpret_cast<uint>(index.internalPointer());
     mem_->setSelected(mem_->getById(id));
+  }
+}
+
+void QMemorySelectionModel::onMemoryChanged(const ChangeEvent &ev)
+{
+  if(ev.type == mcSelect) {
+    setSelected(ev.me);
   }
 }
 

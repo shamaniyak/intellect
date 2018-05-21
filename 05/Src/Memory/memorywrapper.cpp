@@ -382,10 +382,12 @@ bool MemoryWrapper::move(const MEWrapper &me, const MEWrapper &parent, int pos)
     // запрещаем перенос из одного владельца в другого
     if(me.parent() != parent)
       return false;
+    if(pos < 0 || pos >= parent.count())
+      return false;
 
     auto source = getIndexByMe(parent);
-    if(!source.isValid())
-      return false;
+//    if(!source.isValid())
+//      return false;
     int row = me.getIndex();
     int destRow = pos > row ? pos + 1: pos;
     beginMoveRows(source, row, row, source, destRow);

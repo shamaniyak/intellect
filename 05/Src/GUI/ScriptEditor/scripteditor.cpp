@@ -99,6 +99,9 @@ void ScriptEditor::keyPressEvent(QKeyEvent *kev)
 
   emit signalKeyPress(this, kev->key(), ctrl_pressed, shift_pressed, alt_pressed);
 
+  if(completer->keyPressEvent(kev) )
+    return;
+
   switch(kev->key())
   {
     case Qt::Key_Return:
@@ -121,9 +124,6 @@ void ScriptEditor::keyPressEvent(QKeyEvent *kev)
       doComment();
   }
   }
-
-  if(completer->keyPressEvent(kev) )
-    return;
 
   QPlainTextEdit::keyPressEvent(kev);
 }
