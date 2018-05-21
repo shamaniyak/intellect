@@ -225,11 +225,12 @@ void MemoryTreeView::deleteCompare()
 
 void MemoryTreeView::setMenu(QObject *menu)
 {
+  if (m_menu == menu)
+    return;
+
   if(m_menu)
     m_menu->deleteLater();
 
-  if (m_menu == menu)
-    return;
 
   m_menu = qobject_cast<QMenu*>(menu);
   emit menuChanged(m_menu);
