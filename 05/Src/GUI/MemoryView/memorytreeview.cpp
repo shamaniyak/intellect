@@ -46,6 +46,7 @@ void MemoryTreeView::createContextMenu()
 {
   m_pmenu = new Menu(this);
   m_pmenu->setObjectName("menu");
+  m_menu = m_pmenu;
 }
 
 void MemoryTreeView::connectSlots()
