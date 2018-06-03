@@ -30,8 +30,6 @@ void CartographyMap::init()
 IMap *CartographyMap::createMapIntegration()
 {
   IMap *map = nullptr;
-  //QString appDirPath = QApplication::applicationDirPath();
-  //QString worldPath = appDirPath + "/../../Maps/World/world.map";
 
   // Чтобы загрузить, нужно добавить в переменную окружения PATH путь к DLL, реализующий интерфейс IMap
   QLibrary lib("mapintegration");

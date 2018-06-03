@@ -35,7 +35,7 @@ public:
 template<class TParrentClassDraw> class TClassDraw : public TBaseClassDraw
 {
     Q_DECLARE_TR_FUNCTIONS(TParrentClassDraw)
-    friend class myDMapView;
+    friend class MapView;
 private:
     TParrentClassDraw* ClassDraw;
     void (TParrentClassDraw :: *voidClassTask)(QPainter* );
@@ -55,7 +55,7 @@ public:
 class TDrawData
 {
     Q_DECLARE_TR_FUNCTIONS(TDrawData)
-    friend class myDMapView;
+    friend class MapView;
 
 private:
     TBaseClassDraw* _dataDraw;
@@ -82,15 +82,15 @@ public:
 };
 //--------------------------------------------------------------------------------------------
 
-// Класс для отображения и получения данных с карты
-class myDMapView : public QGraphicsView
+// Класс для отображения карты
+class MapView : public QGraphicsView
 {
   Q_OBJECT
 
 public:
 
-    explicit myDMapView(QWidget *parent = 0);
-    ~myDMapView();
+    explicit MapView(QWidget *parent = 0);
+    ~MapView();
 
 
     void setMapLogic(IMap* map);

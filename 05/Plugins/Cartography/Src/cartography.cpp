@@ -32,7 +32,7 @@ QWidget *Cartography::createMapView(QObject *map, QWidget *parent)
   auto cmap = qobject_cast<CartographyMap*>(map);
 
   if(cmap) {
-    myDMapView *mv = new myDMapView(parent);
+    MapView *mv = new MapView(parent);
     mv->setMap(cmap);
     return mv;
   }
