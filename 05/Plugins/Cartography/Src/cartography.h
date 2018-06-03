@@ -31,7 +31,6 @@ protected:
 
 private:
   QObject *map_ = nullptr;
-  QWidget *parentWidget_ = nullptr;
 };
 
 #endif // CARTOGRAPHY_H

@@ -6,15 +6,14 @@
 #include <QtDebug>
 
 
-Cartography::Cartography(QObject *parent) : QObject(parent),
-  parentWidget_(new QWidget())
+Cartography::Cartography(QObject *parent) : QObject(parent)
 {
   setObjectName("Cartography");
 }
 
 Cartography::~Cartography()
 {
-  delete parentWidget_;
+
 }
 
 QObject *Cartography::createMap()
@@ -31,9 +30,6 @@ QObject *Cartography::createMap()
 QWidget *Cartography::createMapView(QObject *map, QWidget *parent)
 {
   auto cmap = qobject_cast<CartographyMap*>(map);
-
-  //if(!parent)
-  //  parent = parentWidget_;
 
   if(cmap) {
     myDMapView *mv = new myDMapView(parent);

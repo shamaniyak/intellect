@@ -33,6 +33,7 @@ IMap *CartographyMap::createMapIntegration()
   //QString appDirPath = QApplication::applicationDirPath();
   //QString worldPath = appDirPath + "/../../Maps/World/world.map";
 
+  // Чтобы загрузить, нужно добавить в переменную окружения PATH путь к DLL SDK Panorama
   QLibrary lib("mapintegration");
   if(lib.load())
   {

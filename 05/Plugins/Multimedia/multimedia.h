@@ -7,6 +7,8 @@
 #include <QWidget>
 #include <QVideoWidget>
 
+const int FRAME_RATE = 24;
+
 class QMediaPlayer;
 
 class VideoPlayer : public QVideoWidget

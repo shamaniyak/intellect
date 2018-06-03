@@ -3,9 +3,9 @@
 
 #include <QGraphicsPixmapItem>
 
-const int MAXSCALE_40M = 40000000;
-const int MAX_ZOOM = 32;
-const double MIN_ZOOM = 0.03125;
+#define MAXSCALE_40M  40000000
+#define MAX_ZOOM      32
+#define MIN_ZOOM      0.03125
 
 class IMap;
 
