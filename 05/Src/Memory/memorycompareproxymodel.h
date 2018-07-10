@@ -24,7 +24,7 @@
 
 class MemoryWrapper;
 class MEWrapper;
-//class QMemoryModel;
+class QMemoryModel;
 
 class MemoryCompareProxyModel : public QAbstractProxyModel
 {
@@ -60,7 +60,7 @@ private:
   // Указатель на память, с которой сравнивать
   MemoryWrapper *srcMem_ = nullptr;
   // Результирующая память
-  MemoryWrapper *resultMem_ = nullptr;
+  QMemoryModel *resultMem_ = nullptr;
   //QMemoryModel *resultMemoryModel_ = nullptr;
   // Тип фильтрации
   FilterType filter_ = NoFilter;
