@@ -4,39 +4,32 @@
 #
 #-------------------------------------------------
 
-CONFIG += c++14
+contains(CONFIG,release) {
+  TARGET = intellect
+} else {
+  TARGET = intellectd
+}
+
+TEMPLATE = app
+
+include(common.pri)
+
 CONFIG += mobility
 CONFIG += precompile_header
-QT       += core gui
+QT += core gui
 QT += script scripttools
 QT += qml quick positioning
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-MOBILITY =
+#MOBILITY =
 
-TARGET = Intellect
-TEMPLATE = app
 
 win32 {
-  debug {
-    DESTDIR = ../win32/debug/exe/
-    UI_DIR = .ui/win32/debug
-    MOC_DIR = .moc/win32/debug
-    OBJECTS_DIR = .obj/win32/debug
-  }
-  release {
-    DESTDIR = ../win32/release/exe/
-    UI_DIR = .ui/win32/release
-    MOC_DIR = .moc/win32/release
-    OBJECTS_DIR = .obj/win32/release
-
-    #target.path = ../exe
-    //target.files = $$join(DESTDIR,,,"*.exe")
-    #INSTALLS += target
-  }
+  DESTDIR = $${DEST_BINS}
 }
 
+message("DESTDIR="$$DESTDIR)
 #message($$target.files)
 
 android {
@@ -48,119 +41,5 @@ android {
 #  OBJECTS_DIR = .obj
 }
 
-PRECOMPILED_HEADER = ../Src/qtincludes.h
-
-INCLUDEPATH += ../ \
-    GUI \
-
-SOURCES += \
-    Src/main.cpp \
-    Src/intellect.cpp \
-    GUI/intellectmainwindowex.cpp \
-    GUI/inputpassword.cpp \
-    ../Src/Memory/elementsmanager.cpp \
-    ../Src/Memory/memorymanager.cpp \
-    ../Src/Memory/memorywrapper.cpp \
-    ../Src/Memory/mewrapper.cpp \
-    ../Src/Memory/qmemorymodel.cpp \
-    ../Src/Memory/qmemoryselectionmodel.cpp \
-    ../Src/Memory/tme.cpp \
-    ../Src/Memory/tmemory.cpp \
-    ../Src/Memory/tmevalue.cpp \
-    ../Src/Memory/memorycompareproxymodel.cpp \
-    ../Src/Memory/memoryeditor.cpp \
-    ../Src/Plugins/intellectplugin.cpp \
-    ../Src/Plugins/memoryplugin.cpp \
-    ../Src/Plugins/qeventscriptplugin.cpp \
-    ../Src/Plugins/qtwidgetsplugin.cpp \
-    ../Src/commander.cpp \
-    ../Src/iobject.cpp \
-    ../Src/modelmanager.cpp \
-    ../Src/namemanager.cpp \
-    ../Src/objectmanager.cpp \
-    ../Src/pluginmanager.cpp \
-    ../Src/qqmlwrapper.cpp \
-    ../Src/scriptwrapper.cpp \
-    ../Src/swmrg.cpp \
-    ../Src/talgorithm.cpp \
-    ../Src/windowmanager.cpp \
-    ../Src/GUI/MainWindowEx/mainwindowex.cpp \
-    ../Src/GUI/MemoryView/memorytreeview.cpp \
-    ../Src/GUI/MemoryView/memorytableview.cpp \
-    ../Src/GUI/MemoryView/memoryeditordelegate.cpp \
-    ../Src/GUI/MemoryView/memorylistview.cpp \
-    ../Src/GUI/memorycontroller.cpp \
-    ../Src/GUI/statusbar.cpp \
-    ../Src/GUI/menu.cpp \
-    ../Src/GUI/toolbar.cpp \
-    ../Src/GUI/logview.cpp \
-    ../Src/GUI/graphicsview.cpp \
-    ../Src/GUI/filedialog.cpp \
-    ../Src/GUI/memoryeditorwgt.cpp \
-    ../Src/GUI/ScriptEditor/highlighter.cpp \
-    ../Src/GUI/ScriptEditor/scripteditor.cpp \
-    ../Third/qmlcreator/cpp/QMLHighlighter.cpp \
-    ../Third/qmlcreator/cpp/SyntaxHighlighter.cpp \
-    ../Src/QmlManager/qmlmanager.cpp \
-    ../Src/Plugins/qmlregistertypes.cpp
-
-HEADERS  += \
-    Src/intellect.h \
-    GUI/intellectmainwindowex.h \
-    GUI/inputpassword.h \
-    ../Src/Memory/elementsmanager.h \
-    ../Src/Memory/memorymanager.h \
-    ../Src/Memory/memorywrapper.h \
-    ../Src/Memory/mewrapper.h \
-    ../Src/Memory/qmemorymodel.h \
-    ../Src/Memory/qmemoryselectionmodel.h \
-    ../Src/Memory/tme.h \
-    ../Src/Memory/tmemory.h \
-    ../Src/Memory/tmevalue.h \
-    ../Src/Memory/memorycompareproxymodel.h \
-    ../Src/Memory/memoryeditor.h \
-    ../Src/Plugins/intellectplugin.h \
-    ../Src/Plugins/memoryplugin.h \
-    ../Src/Plugins/qeventscriptplugin.h \
-    ../Src/Plugins/qtwidgetsplugin.h \
-    ../Src/commander.h \
-    ../Src/imemory.h \
-    ../Src/iobject.h \
-    ../Src/modelmanager.h \
-    ../Src/namemanager.h \
-    ../Src/objectmanager.h \
-    ../Src/pluginmanager.h \
-    ../Src/qqmlwrapper.h \
-    ../Src/scriptwrapper.h \
-    ../Src/swmrg.h \
-    ../Src/talgorithm.h \
-    ../Src/windowmanager.h \
-    ../Src/GUI/MainWindowEx/mainwindowex.h \
-    ../Src/GUI/MemoryView/memorytreeview.h \
-    ../Src/GUI/MemoryView/memorytableview.h \
-    ../Src/GUI/MemoryView/memorylistview.h \
-    ../Src/GUI/MemoryView/memoryeditordelegate.h \
-    ../Src/GUI/memorycontroller.h \
-    ../Src/GUI/statusbar.h \
-    ../Src/GUI/menu.h \
-    ../Src/GUI/toolbar.h \
-    ../Src/GUI/logview.h \
-    ../Src/GUI/graphicsview.h \
-    ../Src/GUI/filedialog.h \
-    ../Src/GUI/memoryeditorwgt.h \
-    ../Src/GUI/ScriptEditor/highlighter.h \
-    ../Src/GUI/ScriptEditor/scripteditor.h \
-    ../Third/qmlcreator/cpp/QMLHighlighter.h \
-    ../Third/qmlcreator/cpp/SyntaxHighlighter.h \
-    ../Src/QmlManager/qmlmanager.h \
-    ../Src/Plugins/qmlregistertypes.h \
-    ../Src/qtincludes.h
-
-FORMS    += \
-    GUI/dialogmemoryeditor.ui \
-    ../Src/GUI/MainWindowEx/mainwindowex.ui
-
-RESOURCES += \
-    images.qrc \
-    ../resources/dictionaries.qrc
+include(intellect.pri)
 
