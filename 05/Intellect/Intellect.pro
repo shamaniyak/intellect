@@ -12,7 +12,7 @@ contains(CONFIG,release) {
 
 TEMPLATE = app
 
-include(common.pri)
+include(../common.pri)
 
 CONFIG += mobility
 CONFIG += precompile_header

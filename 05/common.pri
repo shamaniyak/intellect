@@ -9,7 +9,7 @@ CONFIG(release, debug|release){
     BUILD_TYPE = debug
 }
 
-BUILD_DIR = $$PWD/../bin
+BUILD_DIR = $$PWD/bin
 win32 {
     ARCH_DIR       = $${OUT_PWD}/../build/$${TARGET}
     ARCH_TYPE      = win32
