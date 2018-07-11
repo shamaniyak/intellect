@@ -224,7 +224,7 @@ QScriptValue MEWrapperToScriptValue(QScriptEngine *engine, MEWrapper const &in)
 
   QScriptValue obj = engine->newObject();
   if(in.isNull()) {
-    engine->currentContext()->throwError("MemoryElement is deleted.");
+    engine->currentContext()->throwError("MemoryElement is null.");
     return obj;
   }
   //QScriptValue val = engine->newVariant(in->val());
@@ -236,7 +236,7 @@ QScriptValue MEWrapperToScriptValue(QScriptEngine *engine, MEWrapper const &in)
   obj.setProperty("path", in.getPath());
   obj.setProperty("mem", engine->newQObject(in.getMem()),
                   QScriptValue::ReadOnly|QScriptValue::Undeletable);
-  obj.setProperty("id", (uint)in.getMe(),
+  obj.setProperty("id", in.getUid(),
                   QScriptValue::ReadOnly|QScriptValue::Undeletable);
   //auto parent = in->parent() ? (uint)in->parent()->getMe() : 0;
   auto parent = in.parent() ? engine->toScriptValue(in.parent()) : QScriptValue();

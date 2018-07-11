@@ -20,6 +20,8 @@
 #include "tme.h"
 #include "memorywrapper.h"
 
+#include <QDebug>
+
 MEWrapper::MEWrapper()
 {
 
@@ -30,30 +32,24 @@ MEWrapper::MEWrapper(MemoryWrapper *mem)
   setMem(mem);
 }
 
-MEWrapper::MEWrapper(Memory::TME *me, MemoryWrapper *mem) :
+MEWrapper::MEWrapper(const Memory::TME::shared_me &me, MemoryWrapper *mem) :
   me_(me)
 {
+  //if(me_) qDebug() << "MEWrapper" << me_.get() << me_.use_count();
   setMem(mem);
 }
 
 MEWrapper::MEWrapper(const MEWrapper &src)
 {
-  this->mem_ = src.mem_;
-  this->me_ = src.me_;
+  *this = src;
 }
 
 MEWrapper::~MEWrapper()
 {
-
+  //if(me_) qDebug() << "~MEWrapper" << me_.get() << me_.use_count()-1;
 }
 
-void MEWrapper::clear()
-{
-  if(!isNull())
-    mem_->clearMe(*this);
-}
-
-Memory::TME *MEWrapper::getMe() const
+Memory::TME::shared_me MEWrapper::getMe() const
 {
   return me_;
 }
@@ -68,7 +64,7 @@ void MEWrapper::setMem(MemoryWrapper *mem)
   mem_ = mem;
 }
 
-void MEWrapper::deleteMe(MEWrapper &me)
+void MEWrapper::deleteMe(const MEWrapper &me)
 {
   if(!isNull())
     mem_->deleteMe(me);
@@ -77,7 +73,7 @@ void MEWrapper::deleteMe(MEWrapper &me)
 QString MEWrapper::name() const
 {
   if(isNull())
-    return "";
+    return QString();
   return me_->name();
 }
 
@@ -103,8 +99,8 @@ void MEWrapper::setVal(const QVariant &val)
 QString MEWrapper::getPath() const
 {
   if(isNull())
-    return "";
-  return me_->getPath();
+    return QString();
+  return me_->path();
 }
 
 MEWrapper MEWrapper::add(const QString &name, bool checkExist)
@@ -124,7 +120,7 @@ bool MEWrapper::addFrom(MEWrapper &from, bool recurs)
 MEWrapper MEWrapper::get(const QString &name)
 {
   if(!isNull())
-    return mem_->CreateMEW(me_->Get(name));
+    return mem_->CreateMEW(me_->get(name));
   return MEWrapper();
 }
 
@@ -141,7 +137,7 @@ void MEWrapper::del(const QString &name)
 {
   if(isNull())
     return;
-  auto me = get(name); //me_->Get(name);
+  auto me = get(name);
   deleteMe(me);
 }
 
@@ -153,9 +149,15 @@ void MEWrapper::delByI(int i)
   deleteMe(me);
 }
 
-void MEWrapper::delByMe(MEWrapper &me)
+void MEWrapper::delByMe(const MEWrapper &me)
 {
   deleteMe(me);
+}
+
+void MEWrapper::clear()
+{
+  if(!isNull())
+    mem_->clearMe(*this);
 }
 
 MEWrapper MEWrapper::parent() const
@@ -176,13 +178,25 @@ int MEWrapper::getIndex() const
 {
   if(!me_)
     return -1;
-  return me_->get_index();
+  return me_->parent() ? me_->parent()->getElements().get_index(me_) : -1;
 }
 
 bool MEWrapper::isNull() const
 {
   if(me_ && mem_)
     return false;
-    //return(!mem_->getById(reinterpret_cast<uint>(me_)));
   return(true);
+}
+
+uint MEWrapper::getUid() const
+{
+  return reinterpret_cast<uint>(me_.get());
+}
+
+MEWrapper &MEWrapper::operator =(const MEWrapper &src)
+{
+    this->mem_ = src.mem_;
+    this->me_ = src.me_;
+    //qDebug() << "MEWrapper =" << me_.get() << me_.use_count();
+    return *this;
 }

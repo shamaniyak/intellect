@@ -32,7 +32,6 @@
 
 #include "tmemory.h"
 #include "mewrapper.h"
-//#include "qmemorymodel.h"
 
 namespace Memory
 {
@@ -48,9 +47,10 @@ struct ChangeEvent
 {
 private:
   Q_GADGET
-  Q_PROPERTY(int row MEMBER row)
   Q_PROPERTY(int type READ getType)
+  Q_PROPERTY(int row MEMBER row)
   Q_PROPERTY(QString path MEMBER path)
+  Q_PROPERTY(MEWrapper me MEMBER me)
 public:
   EMemoryChange type = mcNone;
   MEWrapper me;
@@ -63,15 +63,17 @@ public:
   QVariant prevVal;
   QString path;
 
+  Q_ENUM(EMemoryChange)
+
   int getType() {return type;}
 };
 
-class MemoryWrapper : public QAbstractItemModel
+class MEMORY_EXPORT MemoryWrapper : public QAbstractItemModel
 {
   Q_OBJECT
   Q_PROPERTY(MEWrapper me READ getME)
-  Q_PROPERTY(QString filePath READ getFilePath WRITE setFilePath)
-  Q_PROPERTY(MEWrapper selected READ getSelected WRITE setSelected)
+  Q_PROPERTY(QString filePath READ getFilePath WRITE setFilePath NOTIFY filePathChanged)
+  Q_PROPERTY(MEWrapper selected READ getSelected WRITE setSelected NOTIFY selectedChanged)
   Q_PROPERTY(bool canChange READ getCanChange WRITE setCanChange)
   Q_PROPERTY(bool autosave READ getAutosave WRITE setAutosave)
 
@@ -83,8 +85,8 @@ public:
   // Корневой элемент
   MEWrapper getME() const;
 
-  MEWrapper CreateMEW(Memory::TME *me);
-  void DeleteMEW(Memory::TME *me);
+  MEWrapper CreateMEW(const Memory::TME::shared_me &me);
+  void DeleteMEW(Memory::TME::shared_me me);
 
   void doChange(const ChangeEvent &ev);
 
@@ -105,11 +107,15 @@ public:
 
 signals:
   void change(const ChangeEvent &ev);
+  void selectedChanged();
+  void filePathChanged(QString filePath);
+  void valueChanged(const MEWrapper &me);
 
 public slots:
 
   void addCount(const MEWrapper &parent, int count = 1);
   MEWrapper add(const MEWrapper &parent, const QString &name, bool checkExist = true);
+  void add(const MEWrapper &parent, const MEWrapper &me);
   bool addFrom(const MEWrapper &parent, const MEWrapper &mefrom, bool recurs, bool checkExist = false);
   // Удалить элемент памяти
   void del(const QString &path);
@@ -155,8 +161,8 @@ protected:
   void clearDeleted();
   void clearMeWrappers();
 
-  void clearR(Memory::TME *me);
-  void clearME1(Memory::TME *me);
+  void clearR(Memory::TME::shared_me me);
+  void clearME1(Memory::TME::shared_me me);
 
 private:
   typedef QMap<Memory::TME*, MEWrapper> t_mapMeWrappers;
@@ -179,6 +185,7 @@ private:
   friend class MoveCommand;
   friend class EditNameCommand;
   friend class EditValCommand;
+  QString m_filePath;
 };
 //
 //Q_DECLARE_METATYPE(MemoryWrapper*)

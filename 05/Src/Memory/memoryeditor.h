@@ -27,29 +27,45 @@ class QUndoStack;
 class MemoryEditor : public QObject
 {
   Q_OBJECT
+  Q_PROPERTY(MemoryWrapper* mem READ getMem WRITE setMem NOTIFY memChanged)
+  Q_PROPERTY(QObject* stack READ getStack)
+  Q_PROPERTY(bool canRedo READ canRedo NOTIFY canRedoChanged)
+  Q_PROPERTY(bool canUndo READ canUndo NOTIFY canUndoChanged)
 public:
   explicit MemoryEditor(QObject *parent = nullptr);
 
   MemoryWrapper *getMem() const;
   void setMem(MemoryWrapper *mem);
 
+  QObject *getStack() const;
+
 signals:
 
+  void memChanged(MemoryWrapper* mem);
+
+  void canUndoChanged(bool canUndo);
+  void canRedoChanged(bool canRedo);
+
 public slots:
-  void add(MEWrapper &parent, const QString &name, bool checkExist = true);
-  void addFrom(MEWrapper &parent, MEWrapper &mefrom, bool recurs);
+  void add(const MEWrapper &parent, const QString &name, bool checkExist = true);
+  void addFrom(MEWrapper &parent, const MEWrapper &mefrom, bool recurs);
   void del(const QString &path);
-  void deleteMe(MEWrapper &me);
-  void setName(MEWrapper &me, const QString &name);
-  void setVal(MEWrapper &me, const QVariant &val);
+  void deleteMe(MEWrapper me);
+  void setName(const MEWrapper &me, const QString &name);
+  void setVal(const MEWrapper &me, const QVariant &val);
   void clear();
   void clearMe(const MEWrapper &me);
   void move(MEWrapper &me, MEWrapper &parent, int pos);
+  void undo();
+  void redo();
+  bool canUndo();
+  bool canRedo();
 
 private:
-  MemoryWrapper *mem_ = nullptr;
+  mutable MemoryWrapper *mem_ = nullptr;
   QUndoStack *stack_ = nullptr;
 
+  MemoryWrapper* m_mem;
 };
 
 #endif // MEMORYEDITOR_H

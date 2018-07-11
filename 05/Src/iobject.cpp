@@ -68,7 +68,7 @@ bool IObject::run(const QString &path, const QVariant &/*params*/)
     res = execute( me.val().toString() );
   }
   else {
-    msg_ = QString("Object ") + objectName() + ": Элемент памяти не найден.";
+    msg_ = QString("Object %1: Элемент памяти '%2' не найден.").arg(objectName()).arg(path);
     add_msg(msg_);
   }
 

@@ -19,9 +19,10 @@
 #ifndef QMEMORYMODEL_H
 #define QMEMORYMODEL_H
 
+#include "memoryglobal.h"
 #include "memorywrapper.h"
 
-class QMemoryModel : public MemoryWrapper
+class MEMORY_EXPORT QMemoryModel : public MemoryWrapper
 {
   Q_OBJECT
 
@@ -72,7 +73,7 @@ public:
 
 private:
   int columnCount_ = 1;
-  QStringList headers = {tr("Name"), tr("Value"), tr("Path"), tr("Type")};
+  QStringList headers;
   enum MyRoles
   {
     ValueRole = Qt::UserRole + 1

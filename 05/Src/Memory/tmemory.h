@@ -50,18 +50,18 @@ public:
 
   void clear() override;
 
-  TME* getTopME();
+  TME::shared_me getTopME() const;
 
-  TME *getSelected() const;
-  void setSelected(TME *getSelected);
+  TME::shared_me getSelected() const;
+  void setSelected(const TME::shared_me &getSelected);
 
   bool getChanged() const;
   void setChanged(bool getChanged);
 
-  TME * createNew(TME *parent=nullptr, int count = 1);
+  TME::shared_me createNew(TME::shared_me parent=nullptr, int count = 1);
 
 protected:
-  TME *top_me_ = nullptr;
+  TME::shared_me top_me_ = nullptr;
 
   //  TAbstractMemory(const TAbstractMemory& src);
 //  TAbstractMemory& operator=(const TAbstractMemory& src);
@@ -71,7 +71,7 @@ protected:
   void unlock(TME *me);
 
 private:
-  TME *selected_ = nullptr;
+  TME::weak_me selected_;// = nullptr;
   bool changed_ = false;
   QMutex mtx_;
   ElementsManager em_;
@@ -103,24 +103,22 @@ public:
 
   // Добавить элемент памяти.
   // Если успешно, то указатель
-  TME* add(TME *parent=nullptr, const QString &name="");
-  bool addFrom(TME *parent, TME *mefrom, bool recurs);
+  TME::shared_me add(TME::shared_me parent=nullptr, const QString &name="");
+  bool addFrom(TME::shared_me parent, TME::shared_me mefrom, bool recurs, bool checkExist=false);
   // Удалить элемент памяти
   bool del(const QString &path);
   //
-  bool edit(TME *me, const QString &new_name, QVariant new_val);
+  TME::shared_me get(const QString &path);
   //
-  TME* get(const QString &path);
+  TME::shared_me getSubelement(TME::shared_me mep, const QString &name);
   //
-  TME* getSubelement(TME *mep, const QString &name);
-  //
-  QString getElementPath(TME *getTopME) const;
+  QString getElementPath(TME::shared_me getTopME) const;
   // получить слово по индексу
   QString getWord(int idx) const;
   // Возвращает индекс слова в списке, если оно есть. Иначе индекс нового добавленного.
   int getWordIdx(const QString &w);
   //
-  bool moveElement(TME *parent, TME *me, int idx=-1);
+  bool moveElement(TME::shared_me parent, TME::shared_me me, int idx=-1);
 
   bool open(const QString &fileName);
 
@@ -128,7 +126,7 @@ public:
 
   bool saveTo(const QString &fileName);
 
-  TME* operator[](const QString &path);
+  TME::shared_me operator[](const QString &path);
 
   bool undo();
   bool redo();
@@ -144,13 +142,11 @@ protected:
 
   void CreateTopME();
 
-  TME* add(const QString &path);
+  TME::shared_me add(const QString &path);
 
   bool loadMemory();
 
   void saveBackup();
-
-  bool addFromRecurse(TME *parent, TME *mefrom);
 
   void createBackup();
 

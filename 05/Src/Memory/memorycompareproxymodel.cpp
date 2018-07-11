@@ -51,7 +51,6 @@ void MemoryCompareProxyModel::setSrcMem(MemoryWrapper *srcMem)
   resultMem_->clear();
   resultMem_->addFrom(resultMem_->getME(), curMem_->getME(), true);
   resultMem_->addFrom(resultMem_->getME(), srcMem_->getME(), true, true);
-  resultMem_->setColumnCount(2);
 
   setSourceModel(resultMem_);
 }
@@ -82,7 +81,7 @@ QModelIndex MemoryCompareProxyModel::mapFromSource(const QModelIndex &sourceInde
     return QModelIndex();
   auto me = getMeByIndex(sourceIndex);
   //auto meP = me.parent();
-  return createIndex(sourceIndex.row(), sourceIndex.column(), me.getMe());
+  return createIndex(sourceIndex.row(), sourceIndex.column(), me.getMe().get());
 }
 
 QModelIndex MemoryCompareProxyModel::index(int row, int column, const QModelIndex &parent) const

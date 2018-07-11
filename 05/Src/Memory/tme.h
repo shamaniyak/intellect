@@ -34,35 +34,40 @@ struct TMEData
   QVariant val_;
 };
 
+// Базовый элемент
+// Для создания элемента верхнего уровня используйте TopME
 class TME
 {
 public:
 
   typedef QMap<int,TME*> elements_map;
   typedef std::vector<TME*> elements_vec;
+  typedef std::shared_ptr<TME> shared_me;
+  typedef std::weak_ptr<TME> weak_me;
+  typedef std::vector<shared_me> vec_shared_me;
 
   struct Elements
   {
     Elements();
-    TME * add(int id, TME *parent);
-    void add(TME *me);
+    void add(const shared_me &me);
     int count() const;
-    TME *get(int i) const;
-    TME *get_by_id_name(int id) const;
-    bool remove(const TME *me);
+    shared_me get(int i) const;
+    shared_me get_by_id_name(int id) const;
+    bool remove(const shared_me me);
     void clear();
-    int get_index(const TME *me) const;
+    int get_index(const shared_me me) const;
+    int get_index(const TME* me) const;
     bool move(int from, int to);
 
-    void load(QDataStream &ds, TME *parent);
+    void load(QDataStream &ds, shared_me parent);
     void save(QDataStream &ds) const;
 
   private:
-    elements_vec items_;
+    vec_shared_me items_;
   };
 
   TME();
-  TME(TME *parent, int id_name=-1, QVariant val=0);
+  TME(shared_me parent, int id_name=-1, QVariant val=0);
   TME(const TME &me);
   ~TME();
 
@@ -75,27 +80,28 @@ public:
   void setVal(const TMEValue &val);
   void setVal(const QVariant &val);
 
-  TME *parent() const;
-  void setParent(TME *parent);
+  shared_me parent() const;
+  void setParent(shared_me parent);
 
-  QString getPath() const;
+  QString path() const;
 
-  TME *Add(const QString &name);
-  bool addFrom(TME *mefrom, bool recurs, bool checkExist = false);
-  TME *Get(const QString &name);
-  bool Del(const QString &name);
-  bool Del(TME *me);
+  void add(const shared_me &me);
+  bool addFrom(shared_me mefrom, shared_me me_to, bool recurs, bool checkExist = false);
+  shared_me get(const QString &name);
+  bool del(const QString &name);
+  bool del(const shared_me &me);
 
   void clear();
 
-  int get_index() const;
+  int getIndex() const;
 
-  bool move_to(TME *parent, int pos=-1);
+  bool move_to(int pos=-1);
 
   void load(QDataStream &ds);
   void save(QDataStream &ds) const;
 
   int id_name() const;
+  void setIdName(int id);
 
   Elements& getElements();
 
@@ -103,13 +109,16 @@ public:
 
   TMEData data() const;
 
+  static int size();
+
+  static shared_me create(shared_me parent, int id=-1, QVariant val=QVariant());
+
 protected:
-  void remove(const TME *me);
 
 private:
   int id_name_ = -1;// Любой айди или айди имени в общем массиве слов
   TMEValue val_;
-  TME *parent_ = nullptr;
+  weak_me parent_;// = nullptr;
   Elements childs_;
 };
 
@@ -120,6 +129,8 @@ private:
 class TopME : public TME
 {
 public:
+    typedef std::shared_ptr<TopME> shared_top_me;
+
   TopME() {}
   TopME(TMemory * mem) : mem_(mem)
   {

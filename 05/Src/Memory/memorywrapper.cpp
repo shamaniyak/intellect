@@ -20,12 +20,14 @@
 #include "tmemory.h"
 #include "memorymanager.h"
 
+#include <QDebug>
+
 //  MemoryWrapper
 
 MemoryWrapper::MemoryWrapper(QObject *parent) : QAbstractItemModel(parent),
   mem_(new Memory::TMemory())
 {
-
+  //qDebug() << Memory::TME::size();
 }
 
 MemoryWrapper::~MemoryWrapper()
@@ -36,6 +38,7 @@ MemoryWrapper::~MemoryWrapper()
 
 MEWrapper MemoryWrapper::add(const MEWrapper &parent, const QString &name, bool checkExist)
 {
+  //qDebug() << "MemoryWrapper::add begin";
   MEWrapper me;
   auto p = parent;
   // если парент не задан, то парентом будет корневой элемент
@@ -43,10 +46,6 @@ MEWrapper MemoryWrapper::add(const MEWrapper &parent, const QString &name, bool 
     p = this->getME();
   if(p)
   {
-    auto tmeP = p.getMe();
-    if(!tmeP)
-      return me;
-
     // проверка на существоваие с тем же именем
     if(!name.isEmpty() && checkExist)
       me = p.get(name);
@@ -55,10 +54,10 @@ MEWrapper MemoryWrapper::add(const MEWrapper &parent, const QString &name, bool 
     {
       // создаем, если не существует
       auto parentIndex = getIndexByMe(p);
-      int row = tmeP->getElements().count();
+      int row = p.count();
       beginInsertRows(parentIndex, row, row);
 
-      me = CreateMEW(tmeP->Add(name));
+      me = CreateMEW(mem_->add(p.getMe(), name));
 
       endInsertRows();
 
@@ -67,8 +66,30 @@ MEWrapper MemoryWrapper::add(const MEWrapper &parent, const QString &name, bool 
       }
     }
   }
-
+  //qDebug() << "MemoryWrapper::add end";
   return me;
+}
+
+void MemoryWrapper::add(const MEWrapper &parent, const MEWrapper &me)
+{
+  if(!me)
+    return;
+  auto p = parent;
+  if(!p)
+    p = getME();
+  if(p) {
+    auto parentIndex = getIndexByMe(p);
+    int row = p.count();
+    beginInsertRows(parentIndex, row, row);
+
+    p.getMe()->add(me.getMe());
+
+    endInsertRows();
+
+    if(me) {
+      doChange(me, EMemoryChange::mcAdd);
+    }
+  }
 }
 
 bool MemoryWrapper::addFrom(const MEWrapper &parent, const MEWrapper &mefrom, bool recurs, bool checkExist)
@@ -86,7 +107,7 @@ bool MemoryWrapper::addFrom(const MEWrapper &parent, const MEWrapper &mefrom, bo
     int last = first + mefrom.count() - 1;
     beginInsertRows(parentIndex, first, last);
 
-    bool res = p.getMe()->addFrom(mefrom.getMe(), recurs, checkExist);
+    bool res = mem_->addFrom(p.getMe(), mefrom.getMe(), recurs, checkExist);
 
     endInsertRows();
 
@@ -100,39 +121,34 @@ bool MemoryWrapper::addFrom(const MEWrapper &parent, const MEWrapper &mefrom, bo
 void MemoryWrapper::del(const QString &path)
 {
   auto me = get(path);
-
-  if(me.isNull() || me.parent().isNull())
-    return;
-
-  //me->parent()->del(me->name());
   deleteMe(me);
-
 }
 
 void MemoryWrapper::deleteMe(const MEWrapper &me)
 {
-  if(!me.isNull())
-  {
-    ChangeEvent ev;
-    ev.type = EMemoryChange::mcDel;
-    //ev.me = me;
-    //ev.me.me_ = nullptr;
-    ev.parent = me.parent();
-    ev.row = me.getIndex();
-    ev.path = me.getPath();
-    //ev.count = me->count();
+  //qDebug() << "MemoryWrapper::deleteMe begin";
+  if(me.isNull() || me.parent().isNull())
+    return;
 
-    auto parentIndex = getIndexByMe(ev.parent);
-    beginRemoveRows(parentIndex, ev.row, ev.row);
+  ChangeEvent ev;
+  ev.type = EMemoryChange::mcDel;
+  ev.me = me;
+  ev.parent = me.parent();
+  ev.row = me.getIndex();
+  ev.path = me.getPath();
+  //ev.count = me->count();
 
-    auto me1 = me.getMe();
-    clearR(me1);
-    ev.parent.getMe()->Del(me1);
+  auto parentIndex = getIndexByMe(ev.parent);
+  beginRemoveRows(parentIndex, ev.row, ev.row);
 
-    endRemoveRows();
+  auto me1 = me.getMe();
+  clearR(me1);
+  ev.parent.getMe()->del(me1);
 
-    doChange(ev);
-  }
+  endRemoveRows();
+
+  doChange(ev);
+  //qDebug() << "MemoryWrapper::deleteMe end";
 }
 
 MEWrapper MemoryWrapper::getME() const
@@ -216,6 +232,7 @@ QString MemoryWrapper::getFilePath() const
 void MemoryWrapper::setFilePath(const QString &file_path)
 {
   mem_->setFilePath(file_path);
+  emit filePathChanged(file_path);
 }
 
 QVariant MemoryWrapper::getVal(const QString &path)
@@ -248,6 +265,7 @@ void MemoryWrapper::setVal(const MEWrapper &me, const QVariant &val)
     dataChanged(index, index, {ValueColumn});
 
     doChange(ev);
+    emit valueChanged(me);
   }
 }
 
@@ -276,13 +294,14 @@ void MemoryWrapper::setName(const MEWrapper &me, const QString &name)
 
 void MemoryWrapper::setSelected(const MEWrapper &me)
 {
-  if(!me)
-    return;
+  MEWrapper me1;
+  if(me) me1 = me;
+  else me1 = getME();
+  if(mem_->getSelected() != me1.getMe()) {
+    mem_->setSelected(me1.getMe());
 
-  if(mem_->getSelected() != me.me_) {
-    mem_->setSelected(me.me_);
-
-    doChange(me, EMemoryChange::mcSelect);
+    doChange(me1, EMemoryChange::mcSelect);
+    emit selectedChanged();
   }
 }
 
@@ -299,17 +318,19 @@ QModelIndex MemoryWrapper::getIndexByMe(const MEWrapper &me)
   if(me == getME())
     return QModelIndex();
 
-  return createIndex(me.getIndex(), 0, me.getMe());
+  return createIndex(me.getIndex(), 0, me.getUid());
 }
 
 MEWrapper MemoryWrapper::getMeByIndex(const QModelIndex &index) const
 {
-  auto id = reinterpret_cast<Memory::TME*>(index.internalPointer());
-  return MEWrapper(id, const_cast<MemoryWrapper*>(this));
+  auto id = reinterpret_cast<uint>(index.internalPointer());
+  return const_cast<MemoryWrapper*>(this)->getById(id);
 }
 
 void MemoryWrapper::doChange(const MEWrapper &me, EMemoryChange idMsg)
 {
+  if(!me) return;
+
   bool changed = idMsg !=EMemoryChange::mcSelect && idMsg != EMemoryChange::mcUpdate;
   if(changed)
   {
@@ -352,6 +373,7 @@ void MemoryWrapper::doChange(const ChangeEvent &ev)
 
 void MemoryWrapper::clear()
 {
+  getME().setVal(QVariant());
   setSelected(getME());
   clearMe(getME());
 }
@@ -363,6 +385,7 @@ void MemoryWrapper::clearMe(const MEWrapper &me)
     beginRemoveRows(index, 0, me.count()-1);
 
     clearME1(me.getMe());
+    me.getMe()->clear();
 
     endRemoveRows();
 
@@ -377,13 +400,13 @@ void MemoryWrapper::clearMe(const MEWrapper &me)
   }
 }
 
-void MemoryWrapper::clearR(Memory::TME *me)
+void MemoryWrapper::clearR(Memory::TME::shared_me me)
 {
   clearME1(me);
   DeleteMEW(me);
 }
 
-void MemoryWrapper::clearME1(Memory::TME *me)
+void MemoryWrapper::clearME1(Memory::TME::shared_me me)
 {
   auto childs = me->getElements();
   int cnt = childs.count();
@@ -391,7 +414,7 @@ void MemoryWrapper::clearME1(Memory::TME *me)
   {
     clearR(childs.get(i));
   }
-  me->clear();
+  //me->clear();
 }
 
 bool MemoryWrapper::move(const MEWrapper &me, const MEWrapper &parent, int pos)
@@ -408,9 +431,11 @@ bool MemoryWrapper::move(const MEWrapper &me, const MEWrapper &parent, int pos)
 //      return false;
     int row = me.getIndex();
     int destRow = pos > row ? pos + 1: pos;
+    if(row==destRow)
+      return false;
     beginMoveRows(source, row, row, source, destRow);
 
-    bool ok = me.getMe()->move_to(parent.getMe(), pos);
+    bool ok = mem_->moveElement(parent.getMe(), me.getMe(), pos);
 
     endMoveRows();
 
@@ -488,25 +513,25 @@ void MemoryWrapper::clearMeWrappers()
   map_mew_.clear();
 }
 
-MEWrapper MemoryWrapper::CreateMEW(Memory::TME *me)
+MEWrapper MemoryWrapper::CreateMEW(const Memory::TME::shared_me &me)
 {
-  MEWrapper resMe;
+  //qDebug() << "MemoryWrapper::CreateMEW" << me.get() << me.use_count();
   if(!me)
-    return resMe;
+    return MEWrapper();
 
-  if(!map_mew_.contains(me))
-    map_mew_[me] = MEWrapper(me, this);
+  if(!map_mew_.contains(me.get()))
+    map_mew_[me.get()] = MEWrapper(me, this);
 
-  return map_mew_[me];
+  return map_mew_[me.get()];
 }
 
-void MemoryWrapper::DeleteMEW(Memory::TME *me)
+void MemoryWrapper::DeleteMEW(Memory::TME::shared_me me)
 {
   if(!me)
     return;
 
-  if(map_mew_.contains(me))
+  if(map_mew_.contains(me.get()))
   {
-    map_mew_.remove(me);
+    map_mew_.remove(me.get());
   }
 }
