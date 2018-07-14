@@ -48,14 +48,16 @@ QObject *ObjectManager::Add(const QString &name)
 
   QString upperName = name.toUpper();
 
-  if(!objects_.contains(upperName)) {
+  bool contains = objects_.contains(upperName);
+  if(!contains) {
     CreateObject(upperName);
   }
 
   auto obj = qobject_cast<IObject*>( objects_[upperName] );
   obj->incCountLinks();
 
-  emit signalAddObject(obj);
+  if(!contains)
+    emit signalAddObject(obj);
 
   return obj;
 }

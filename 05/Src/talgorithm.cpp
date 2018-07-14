@@ -51,7 +51,7 @@ IObject *TAlgorithm::getObject(const QString &name)
 
 QmlManager *TAlgorithm::getQml() const
 {
-    return qml_;
+  return qml_;
 }
 
 MemoryManager *TAlgorithm::getMM() const

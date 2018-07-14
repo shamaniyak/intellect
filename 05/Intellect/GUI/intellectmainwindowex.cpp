@@ -101,7 +101,7 @@ void IntellectMainWindowEx::createMemoryView()
 void IntellectMainWindowEx::createLogView()
 {
   auto log = new LogView();
-  connect(intellect_, &TAlgorithm::addResult, log, &LogView::addResult);
+  connect(intellect_, &Intellect::log, log, &LogView::addResult);
 
   logDockWidget_ = createNewDockWidget(log, false);
   auto wgt = static_cast<QDockWidget*>(logDockWidget_);

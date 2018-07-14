@@ -224,6 +224,9 @@ void Intellect::recreateMemory()
 void Intellect::on_addObject(QObject *obj)
 {
   IObject *iobj = qobject_cast<IObject*>(obj);
-  if(iobj)
+  if(iobj) {
     iobj->addObject(this, "II");
+    connect(iobj, &IObject::sendLog, this, &Intellect::log);
+    //connect(iobj, SIGNAL(sendLog(QString)), this, SIGNAL(log(QString)));
+  }
 }

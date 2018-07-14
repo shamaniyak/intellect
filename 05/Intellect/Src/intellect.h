@@ -60,6 +60,9 @@ protected slots:
   void on_addObject(QObject *obj);
   void on_start();
 
+signals:
+  void log(const QString &str);
+
 protected:
   bool keyEvent(QObject *obj, QEvent *ev);
 

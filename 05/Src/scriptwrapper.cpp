@@ -99,8 +99,7 @@ bool ScriptWrapper::evaluate(const QString &txt)
 
   if(m_script->hasUncaughtException()){
     m_msg = m_script->uncaughtException().toString();
-    m_msg = m_msg + QString("; Line: ")
-        + QString().setNum(m_script->uncaughtExceptionLineNumber());
+    m_msg = m_msg + QString("; Line: %1").arg(m_script->uncaughtExceptionLineNumber());
   }
   else{
     m_msg = _val.toString();

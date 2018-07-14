@@ -18,7 +18,6 @@
 
 #include "iobject.h"
 #include "objectmanager.h"
-#include "talgorithm.h"
 #include "windowmanager.h"
 
 #include <src/Memory/qmemorymodel.h>
@@ -114,9 +113,12 @@ QObject *IObject::getObject(const QString &name)
 
 void IObject::add_msg(const QString &msg)
 {
-  TAlgorithm *A = qobject_cast<TAlgorithm*>(parent()->parent());
-  if(A)
-    A->addResult(msg);
+  log(msg);
+}
+
+void IObject::log(const QString &msg)
+{
+  emit sendLog(msg);
 }
 
 WindowManager *IObject::getWM()

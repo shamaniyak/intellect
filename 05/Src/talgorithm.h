@@ -61,10 +61,11 @@ public:
   QmlManager *getQml() const;
 
 signals:
-  void addResult(const QString &str);
   void start();
 
 public slots:
+
+protected slots:
 
 private:
   MemoryManager *MM_ = 0;

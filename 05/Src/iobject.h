@@ -65,6 +65,9 @@ signals:
   // params - это параметры в формате командной страки (может быть скриптом)
   void signalQuery(const QString &path, const QString &params);
 
+  // Послать сигнал сообщения
+  void sendLog(const QString &msg);
+
 public slots:
   void release();
 
@@ -93,6 +96,7 @@ public slots:
 
   // Добавить сообщение
   void add_msg(const QString &msg);
+  void log(const QString &msg);
 
   // Оконный мэнеджер
   // Если объект не создан, то создать. Вернуть объект
