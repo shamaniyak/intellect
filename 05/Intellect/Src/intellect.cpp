@@ -30,8 +30,8 @@ Intellect::Intellect(QObject *parent):
   getMM()->globalMemory()->open(fname);
 
   obj_ = getObject("Intellect");
+  connect(obj_, &IObject::sendLog, this, &Intellect::log);
   //obj_->mem()->setAutosave(true);
-
   obj_->addObject(this, "II");
 
   // Открыть файл памяти
