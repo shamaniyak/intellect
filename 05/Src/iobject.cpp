@@ -57,8 +57,12 @@ MemoryWrapper *IObject::mem()
 
 bool IObject::run(const QString &path, const QVariant &/*params*/)
 {
-  msg_ = "Object " + objectName() + " run " + path;
-  add_msg(msg_);
+  msg_ = "";
+  QString msg1 = QString("Object %1 run: %2").arg(objectName()).arg(path);
+  log(msg1);
+
+  if(objectName()=="INTELLECT")
+    log(msg1);
 
   bool res = false;
   MEWrapper me = mem()->get(path);
@@ -67,8 +71,8 @@ bool IObject::run(const QString &path, const QVariant &/*params*/)
     res = execute( me.val().toString() );
   }
   else {
-    msg_ = QString("Object %1: Элемент памяти '%2' не найден.").arg(objectName()).arg(path);
-    add_msg(msg_);
+    msg_ = QString("Object %1 run %2: элемент памяти не найден.").arg(objectName()).arg(path);
+    log(msg_);
   }
 
   return res;
@@ -82,15 +86,17 @@ void IObject::reset()
 bool IObject::execute(const QString &text)
 {
   bool res = false;
+  msg_ = QString("Object %1 execute: ").arg(objectName());
 
   if(!text.isEmpty()) {
     res = scr_->evaluate(text);
 
-    add_msg("execute = " + scr_->msg());
+    msg_.append(scr_->msg()).append("; ");
   }
   else
-    add_msg("Скрипт не задан.");
+    msg_.append("Скрипт не задан.");
 
+  log(msg_);
   return res;
 }
 
@@ -179,17 +185,16 @@ void IObject::incCountLinks()
 
 bool IObject::runQML(const QString &text)
 {
-  msg_ = "Object " + objectName() + " runQML:";
-  add_msg(msg_);
-
+  msg_ = "";
+  bool result = false;
   if(qml_)
   {
-    bool is_exec = qml_->evaluate(text);
-    add_msg(qml_->msg());
-
-    return is_exec;
+    result = qml_->evaluate(text);
+    msg_ = QString("Object %1 runQML: %2").arg(objectName()).arg(qml_->msg());
+    log(msg_);
   }
-  return false;
+
+  return result;
 }
 
 bool IObject::addObject(QObject *obj, const QString &name)
