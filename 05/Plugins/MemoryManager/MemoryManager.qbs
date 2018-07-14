@@ -5,7 +5,7 @@ DynamicLibrary {
 	name: "MemoryManager"
 	property string uri: "MemoryManager"
 	property string globalPath: FileInfo.path(FileInfo.path(sourceDirectory))
-	property string globalBinPath: globalPath + "/bin/win32/debug"
+	property string globalBinPath: FileInfo.joinPaths(globalPath,"bin/win32",qbs.buildVariant)
 	property string globalModulesPath: globalBinPath + "/qml"
 	property string globalIncludePath: globalPath + "/Src"
 
