@@ -25,11 +25,14 @@ public:
 
   Q_INVOKABLE void reset();
   Q_INVOKABLE void addImportPath(const QString &path);
+  Q_INVOKABLE void load(const QString &path);
 
 protected:
   void insertObjectsInQml();
 
 private:
+  void createQmlEngine();
+
   QQmlEngine *m_qml = nullptr;
   QObject *m_tempObject = nullptr;
   QString m_msg;

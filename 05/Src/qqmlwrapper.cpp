@@ -47,8 +47,7 @@ bool QQmlEngineWrapper::evaluate(const QString &txt)
   m_msg = "";
   //engine->loadData(text().toLocal8Bit());
   //m_qml.collectGarbage();
-  if(!m_qml)
-    m_qml = new QQmlEngine();
+  createQmlEngine();
   insertObjectsInQml();
 
   QQmlComponent component(m_qml);
@@ -119,10 +118,22 @@ void QQmlEngineWrapper::reset()
 
 void QQmlEngineWrapper::addImportPath(const QString &path)
 {
-  if(!m_qml)
-    m_qml = new QQmlEngine();
+  createQmlEngine();
   if(m_qml) {
     m_qml->addImportPath(path);
+  }
+}
+
+void QQmlEngineWrapper::load(const QString &path)
+{
+  createQmlEngine();
+  QQmlComponent component(m_qml);
+  component.loadUrl(path);
+  if(component.isError())
+    m_msg = component.errorString();
+  else {
+    m_tempObject = component.create();
+    QObject::connect(m_tempObject, &QObject::destroyed, &dbgObj, &DebugObject::onObjectDestroyed);
   }
 }
 
@@ -134,4 +145,10 @@ void QQmlEngineWrapper::insertObjectsInQml()
 
     ++it;
   }
+}
+
+void QQmlEngineWrapper::createQmlEngine()
+{
+  if(!m_qml)
+    m_qml = new QQmlEngine();
 }
