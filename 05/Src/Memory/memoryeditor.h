@@ -20,7 +20,7 @@
 #define MEMORYEDITOR_H
 
 #include <QObject>
-#include "memorywrapper.h"
+#include "qmemorymodel.h"
 
 class QUndoStack;
 
@@ -64,8 +64,6 @@ public slots:
 private:
   mutable MemoryWrapper *mem_ = nullptr;
   QUndoStack *stack_ = nullptr;
-
-  MemoryWrapper* m_mem;
 };
 
 #endif // MEMORYEDITOR_H

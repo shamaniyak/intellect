@@ -1,6 +1,4 @@
 #include "memorymanager_plugin.h"
-#include "memorymanager.h"
-#include "Memory/memorywrapper.h"
 #include "Memory/qmemorymodel.h"
 #include "Memory/memoryeditor.h"
 
@@ -9,7 +7,6 @@
 void MemoryManagerPlugin::registerTypes(const char *uri)
 {
     // @uri memorymanagerplugins
-    qmlRegisterType<MemoryManager>(uri, 1, 0, "MemoryManager");
     qmlRegisterType<QMemoryModel>(uri, 1, 0, "MemoryModel");
 
     qRegisterMetaType<MEWrapper>("MEWrapper");

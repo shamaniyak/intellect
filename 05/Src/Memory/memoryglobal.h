@@ -4,7 +4,7 @@
 #if defined(BUILD_MEMORY_LIB)
     #define MEMORY_EXPORT Q_DECL_EXPORT
 #else
-    #define MEMORY_EXPORT
+    #define MEMORY_EXPORT Q_DECL_IMPORT
 #endif
 
 #endif // MEMORYGLOBAL_H

@@ -22,11 +22,13 @@
 #include <QObject>
 #include <QAbstractProxyModel>
 
+#include "memoryglobal.h"
+
 class MemoryWrapper;
 class MEWrapper;
 class QMemoryModel;
 
-class MemoryCompareProxyModel : public QAbstractProxyModel
+class MEMORY_EXPORT MemoryCompareProxyModel : public QAbstractProxyModel
 {
   Q_OBJECT
   Q_PROPERTY(FilterType filter READ filter WRITE setFilter)

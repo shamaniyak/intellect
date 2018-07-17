@@ -42,8 +42,9 @@ namespace Memory
 enum EMemoryChange {
   mcNone, mcAdd, mcAddFrom, mcDel, mcEditName, mcEditVal, mcUpdate, mcSelect, mcClear, mcMove
 };
+Q_DECLARE_METATYPE(EMemoryChange)
 
-struct ChangeEvent
+struct MEMORY_EXPORT ChangeEvent
 {
 private:
   Q_GADGET

@@ -353,5 +353,8 @@ MemoryWrapper *MemoryEditor::getMem() const
 
 void MemoryEditor::setMem(MemoryWrapper *mem)
 {
+  if(mem_ == mem)
+    return;
   mem_ = mem;
+  emit memChanged(mem_);
 }

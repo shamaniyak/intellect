@@ -23,7 +23,7 @@
 #include <QMap>
 #include "memorywrapper.h"
 
-class MemoryManager : public QObject
+class MEMORY_EXPORT MemoryManager : public QObject
 {
   Q_OBJECT
 public:

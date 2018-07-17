@@ -25,7 +25,7 @@
 
 class QAbstractItemModel;
 
-class QMemorySelectionModel : public QItemSelectionModel
+class MEMORY_EXPORT QMemorySelectionModel : public QItemSelectionModel
 {
   Q_OBJECT
 

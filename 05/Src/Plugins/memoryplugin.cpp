@@ -270,7 +270,7 @@ void MEWrapperFromScriptValue(const QScriptValue &object, MEWrapper &out)
 }
 
 // EMemoryChange
-Q_DECLARE_METATYPE(EMemoryChange)
+//Q_DECLARE_METATYPE(EMemoryChange)
 
 QScriptValue EMemoryChangeToScriptValue(QScriptEngine *engine, EMemoryChange const &in)
 { return engine->newVariant(QVariant(int(in))); }

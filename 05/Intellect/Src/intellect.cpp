@@ -190,35 +190,35 @@ QObject *Intellect::getMainWindowQObject() const
 
 void Intellect::recreateMemory()
 {
-  Memory::TMemory tempMemory, tempMemory1;
-  QDir dir(QApplication::applicationDirPath()+"/bkp");
-  if(dir.exists())
-  {
-    auto dirsInfoList = dir.entryInfoList(QDir::Dirs);
-    for(auto &&dirInfo: dirsInfoList)
-    {
-      if(!dirInfo.isDir())
-        continue;
-      if(dirInfo.fileName() == "." || dirInfo.fileName() == "..")
-        continue;
-      QDir dir1(dirInfo.filePath());
-      auto filesInfoList = dir1.entryInfoList(QDir::Files);
-      for(auto &&fileInfo: filesInfoList)
-      {
-        tempMemory1.clear();
-        if(tempMemory.open(fileInfo.filePath()))
-        {
-          tempMemory1.getTopME()->setVal(tempMemory.getTopME()->val());
-          tempMemory1.addFrom(0, tempMemory.getTopME(), true);
-          tempMemory1.setFilePath(fileInfo.filePath());
-          if(!tempMemory1.save())
-          {
-            qDebug() << fileInfo.filePath() << " not save." << "\n";
-          }
-        }
-      }
-    }
-  }
+//  Memory::TMemory tempMemory, tempMemory1;
+//  QDir dir(QApplication::applicationDirPath()+"/bkp");
+//  if(dir.exists())
+//  {
+//    auto dirsInfoList = dir.entryInfoList(QDir::Dirs);
+//    for(auto &&dirInfo: dirsInfoList)
+//    {
+//      if(!dirInfo.isDir())
+//        continue;
+//      if(dirInfo.fileName() == "." || dirInfo.fileName() == "..")
+//        continue;
+//      QDir dir1(dirInfo.filePath());
+//      auto filesInfoList = dir1.entryInfoList(QDir::Files);
+//      for(auto &&fileInfo: filesInfoList)
+//      {
+//        tempMemory1.clear();
+//        if(tempMemory.open(fileInfo.filePath()))
+//        {
+//          tempMemory1.getTopME()->setVal(tempMemory.getTopME()->val());
+//          tempMemory1.addFrom(0, tempMemory.getTopME(), true);
+//          tempMemory1.setFilePath(fileInfo.filePath());
+//          if(!tempMemory1.save())
+//          {
+//            qDebug() << fileInfo.filePath() << " not save." << "\n";
+//          }
+//        }
+//      }
+//    }
+//  }
 }
 
 void Intellect::on_addObject(QObject *obj)

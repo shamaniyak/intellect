@@ -58,7 +58,6 @@ DynamicLibrary {
 			"../../Src/Memory/*.cpp",
 			"../../Src/Memory/*.h",
 		]
-		excludeFiles: "../../Src/Memory/MemoryManager.*"
 	}
 
 }

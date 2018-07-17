@@ -8,17 +8,6 @@ SOURCES += \
     Src/intellect.cpp \
     GUI/intellectmainwindowex.cpp \
     GUI/inputpassword.cpp \
-    ../Src/Memory/elementsmanager.cpp \
-    ../Src/Memory/memorymanager.cpp \
-    ../Src/Memory/memorywrapper.cpp \
-    ../Src/Memory/mewrapper.cpp \
-    ../Src/Memory/qmemorymodel.cpp \
-    ../Src/Memory/qmemoryselectionmodel.cpp \
-    ../Src/Memory/tme.cpp \
-    ../Src/Memory/tmemory.cpp \
-    ../Src/Memory/tmevalue.cpp \
-    ../Src/Memory/memorycompareproxymodel.cpp \
-    ../Src/Memory/memoryeditor.cpp \
     ../Src/Plugins/intellectplugin.cpp \
     ../Src/Plugins/memoryplugin.cpp \
     ../Src/Plugins/qeventscriptplugin.cpp \
@@ -52,23 +41,12 @@ SOURCES += \
     ../Third/qmlcreator/cpp/QMLHighlighter.cpp \
     ../Third/qmlcreator/cpp/SyntaxHighlighter.cpp \
     ../Src/QmlManager/qmlmanager.cpp \
-    ../Src/Plugins/qmlregistertypes.cpp
+    #../Src/Plugins/qmlregistertypes.cpp
 
 HEADERS  += \
     Src/intellect.h \
     GUI/intellectmainwindowex.h \
     GUI/inputpassword.h \
-    ../Src/Memory/elementsmanager.h \
-    ../Src/Memory/memorymanager.h \
-    ../Src/Memory/memorywrapper.h \
-    ../Src/Memory/mewrapper.h \
-    ../Src/Memory/qmemorymodel.h \
-    ../Src/Memory/qmemoryselectionmodel.h \
-    ../Src/Memory/tme.h \
-    ../Src/Memory/tmemory.h \
-    ../Src/Memory/tmevalue.h \
-    ../Src/Memory/memorycompareproxymodel.h \
-    ../Src/Memory/memoryeditor.h \
     ../Src/Plugins/intellectplugin.h \
     ../Src/Plugins/memoryplugin.h \
     ../Src/Plugins/qeventscriptplugin.h \
@@ -103,7 +81,7 @@ HEADERS  += \
     ../Third/qmlcreator/cpp/QMLHighlighter.h \
     ../Third/qmlcreator/cpp/SyntaxHighlighter.h \
     ../Src/QmlManager/qmlmanager.h \
-    ../Src/Plugins/qmlregistertypes.h \
+    #../Src/Plugins/qmlregistertypes.h \
     ../Src/qtincludes.h
 
 FORMS    += \
@@ -113,3 +91,6 @@ FORMS    += \
 RESOURCES += \
     images.qrc \
     ../resources/dictionaries.qrc
+
+LIBS += -L$${DEST_BINS}
+LIBS += -lmemorymanager
