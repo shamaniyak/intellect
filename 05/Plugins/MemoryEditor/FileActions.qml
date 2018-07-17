@@ -76,7 +76,7 @@ Item {
 		}
 
 		function quitCommand() {
-			Qt.quit()
+			//Qt.quit()
 		}
 	}
 

@@ -1,3 +1,4 @@
 //module MemoryEditor
 //plugin MemoryEditor
 MainMemoryEditor 1.0 main.qml
+MemoryEditorDialog 1.0 MemoryEditorDialog.qml

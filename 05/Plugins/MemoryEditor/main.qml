@@ -14,13 +14,13 @@ ApplicationWindow {
 
 	Component.onCompleted: {
 		//console.log()
-		appDirPath = app.applicationDirPath()
+		appDirPath = II.applicationDirPath()
 		//memModel.open(appDirPath + "/memory.moi")
 	}
 
 	onClosing: {
-		close.accepted = false
-		fileActions.actionQuit.trigger(mainWindow)
+		//close.accepted = false
+		//fileActions.actionQuit.trigger(mainWindow)
 	}
 
 	menuBar: MainMenu {
