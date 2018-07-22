@@ -320,7 +320,7 @@ void ChangeEventFromScriptValue(const QScriptValue &object, ChangeEvent &out)
 MemoryPlugin::MemoryPlugin(QScriptEngine *engine)
 {
   if(engine){
-    qScriptRegisterMetaType(engine, MemoryWrapperToScriptValue, MemoryWrapperFromScriptValue);
+    //qScriptRegisterMetaType(engine, MemoryWrapperToScriptValue, MemoryWrapperFromScriptValue);
     qScriptRegisterMetaType(engine, MEWrapperToScriptValue, MEWrapperFromScriptValue);
     qScriptRegisterMetaType(engine, EMemoryChangeToScriptValue, EMemoryChangeFromScriptValue);
     qScriptRegisterMetaType(engine, ChangeEventToScriptValue, ChangeEventFromScriptValue);

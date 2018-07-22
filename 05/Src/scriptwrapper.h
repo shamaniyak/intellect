@@ -10,18 +10,6 @@ class QScriptEngineDebugger;
 
 class ScriptWrapper : public QObject
 {
-  struct Exec
-  {
-    Exec(ScriptWrapper *scr) : scr_(scr)
-    {
-
-    }
-
-
-
-  private:
-    ScriptWrapper *scr_ = 0;
-  };
 
 public:
   explicit ScriptWrapper(QObject *parent=nullptr);

@@ -346,12 +346,12 @@ QObject *MemoryEditor::getStack() const
   return stack_;
 }
 
-MemoryWrapper *MemoryEditor::getMem() const
+QMemoryModel *MemoryEditor::getMem() const
 {
   return mem_;
 }
 
-void MemoryEditor::setMem(MemoryWrapper *mem)
+void MemoryEditor::setMem(QMemoryModel *mem)
 {
   if(mem_ == mem)
     return;

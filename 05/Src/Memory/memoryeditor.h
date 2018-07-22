@@ -27,21 +27,21 @@ class QUndoStack;
 class MemoryEditor : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY(MemoryWrapper* mem READ getMem WRITE setMem NOTIFY memChanged)
+  Q_PROPERTY(QMemoryModel* mem READ getMem WRITE setMem NOTIFY memChanged)
   Q_PROPERTY(QObject* stack READ getStack)
   Q_PROPERTY(bool canRedo READ canRedo NOTIFY canRedoChanged)
   Q_PROPERTY(bool canUndo READ canUndo NOTIFY canUndoChanged)
 public:
   explicit MemoryEditor(QObject *parent = nullptr);
 
-  MemoryWrapper *getMem() const;
-  void setMem(MemoryWrapper *mem);
+  QMemoryModel *getMem() const;
+  void setMem(QMemoryModel *mem);
 
   QObject *getStack() const;
 
 signals:
 
-  void memChanged(MemoryWrapper* mem);
+  void memChanged(QMemoryModel* mem);
 
   void canUndoChanged(bool canUndo);
   void canRedoChanged(bool canRedo);
@@ -62,7 +62,7 @@ public slots:
   bool canRedo();
 
 private:
-  mutable MemoryWrapper *mem_ = nullptr;
+  mutable QMemoryModel *mem_ = nullptr;
   QUndoStack *stack_ = nullptr;
 };
 
