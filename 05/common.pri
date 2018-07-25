@@ -9,7 +9,6 @@ CONFIG(release, debug|release){
     BUILD_TYPE = debug
 }
 
-BUILD_DIR = $$PWD/bin
 win32 {
     ARCH_DIR       = $${OUT_PWD}/../build/$${TARGET}
     ARCH_TYPE      = win32
@@ -18,15 +17,17 @@ win32 {
 #message("BUILD_DIR="$$BUILD_DIR)
 #message("ARCH_DIR="$$ARCH_DIR)
 
-DEST_BINS = $${BUILD_DIR}/$${ARCH_TYPE}/$${BUILD_TYPE}
+BIN_DIR = $$PWD/bin
+DEST_BINS = $${BIN_DIR}/$${ARCH_TYPE}/$${BUILD_TYPE}
+BUILD_DIR = $${ARCH_DIR}/$${BUILD_TYPE}
 
-#message("DEST_BINS="$$DEST_BINS)
+message("BUILD_DIR="$$BUILD_DIR)
 
-MOC_DIR        = $${ARCH_DIR}/$${BUILD_TYPE}/moc
-UI_DIR         = $${ARCH_DIR}/$${BUILD_TYPE}/ui
-UI_HEADERS_DIR = $${ARCH_DIR}/$${BUILD_TYPE}/ui
-UI_SOURCES_DIR = $${ARCH_DIR}/$${BUILD_TYPE}/ui
-OBJECTS_DIR    = $${ARCH_DIR}/$${BUILD_TYPE}/obj
-RCC_DIR        = $${ARCH_DIR}/$${BUILD_TYPE}/rcc
+MOC_DIR        = $${BUILD_DIR}/moc
+UI_DIR         = $${BUILD_DIR}/ui
+UI_HEADERS_DIR = $${BUILD_DIR}/ui
+UI_SOURCES_DIR = $${BUILD_DIR}/ui
+OBJECTS_DIR    = $${BUILD_DIR}/obj
+RCC_DIR        = $${BUILD_DIR}/rcc
 
 #TRANSLATIONS_PATH = $$PWD/translations
