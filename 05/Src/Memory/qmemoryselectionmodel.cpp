@@ -77,6 +77,7 @@ void QMemorySelectionModel::on_currentChanged(const QModelIndex &current, const 
 
 void QMemorySelectionModel::on_selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
+  Q_UNUSED(deselected)
   if(mem_)
   {
     int cnt = selected.size();

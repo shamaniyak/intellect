@@ -8,8 +8,8 @@ SOURCES += \
     Src/intellect.cpp \
     GUI/intellectmainwindowex.cpp \
     GUI/inputpassword.cpp \
-    ../Src/Plugins/intellectplugin.cpp \
-    ../Src/Plugins/qtwidgetsplugin.cpp \
+    #../Src/Plugins/intellectplugin.cpp \
+    #../Src/Plugins/qtwidgetsplugin.cpp \
     ../Src/commander.cpp \
     ../Src/iobject.cpp \
     ../Src/modelmanager.cpp \
@@ -45,8 +45,8 @@ HEADERS  += \
     Src/intellect.h \
     GUI/intellectmainwindowex.h \
     GUI/inputpassword.h \
-    ../Src/Plugins/intellectplugin.h \
-    ../Src/Plugins/qtwidgetsplugin.h \
+    #../Src/Plugins/intellectplugin.h \
+    #../Src/Plugins/qtwidgetsplugin.h \
     ../Src/commander.h \
     ../Src/imemory.h \
     ../Src/iobject.h \

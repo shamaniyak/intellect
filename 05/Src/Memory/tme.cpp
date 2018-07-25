@@ -118,7 +118,7 @@ bool TME::addFrom(shared_me mefrom, shared_me me_to, bool recurs, bool checkExis
 {
   if(!mefrom || !me_to)
     return false;
-  bool res = false;
+  //bool res = false;
 
   auto elements = mefrom->getElements();
   for(int i =0; i <elements.count(); ++i)
@@ -134,7 +134,8 @@ bool TME::addFrom(shared_me mefrom, shared_me me_to, bool recurs, bool checkExis
     }
     if(recurs)
     {
-      res = addFrom(me1, me2, recurs, checkExist);
+      if(addFrom(me1, me2, recurs, checkExist) == false)
+        return false;
     }
   }
 
