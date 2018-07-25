@@ -56,6 +56,8 @@ public slots:
   bool putEnv(const QString &name, const QVariant &val);
   QVariant getEnv(const QString &name);
 
+  QString urlToNativeFilePath(const QUrl &filePath);
+
 protected slots:
   void on_addObject(QObject *obj);
   void on_start();

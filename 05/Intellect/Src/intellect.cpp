@@ -140,6 +140,16 @@ QVariant Intellect::getEnv(const QString &name)
   return QVariant(barr);
 }
 
+QString Intellect::urlToNativeFilePath(const QUrl &filePath)
+{
+    auto fName = filePath.toLocalFile();
+    if(filePath.isLocalFile()) {
+      fName = QDir::toNativeSeparators(fName);
+      //qDebug() << fName;
+    }
+    return fName;
+}
+
 void Intellect::on_start()
 {
   disconnect(this, &TAlgorithm::start, this, &Intellect::on_start);
