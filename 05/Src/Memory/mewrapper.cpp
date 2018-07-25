@@ -157,7 +157,13 @@ void MEWrapper::delByMe(const MEWrapper &me)
 void MEWrapper::clear()
 {
   if(!isNull())
-    mem_->clearMe(*this);
+      mem_->clearMe(*this);
+}
+
+void MEWrapper::move(const MEWrapper &parent, int pos)
+{
+    if(isValid())
+        mem_->move(*this, parent, pos);
 }
 
 MEWrapper MEWrapper::parent() const
@@ -186,6 +192,11 @@ bool MEWrapper::isNull() const
   if(me_ && mem_)
     return false;
   return(true);
+}
+
+bool MEWrapper::isValid() const
+{
+    return !isNull();
 }
 
 uint MEWrapper::getUid() const

@@ -72,6 +72,7 @@ public:
   Q_INVOKABLE void delByI(int i);
   Q_INVOKABLE void delByMe(const MEWrapper &me);
   Q_INVOKABLE void clear();
+  Q_INVOKABLE void move(const MEWrapper &parent, int pos);
 
   MEWrapper parent() const;
 
@@ -80,6 +81,7 @@ public:
   int getIndex() const;
 
   Q_INVOKABLE bool isNull() const;
+  Q_INVOKABLE bool isValid() const;
 
   uint getUid() const;
 
