@@ -10,7 +10,7 @@ FileDialog {
 	signal saved()
 	onAccepted: {
 		//console.log("You chose: " + fileSaveDialog.fileUrl)
-		var filePath = app.urlToNativeFilePath(fileSaveDialog.fileUrl)
+		var filePath = II.urlToNativeFilePath(fileSaveDialog.fileUrl)
 		console.log("You chose: " + filePath)
 		saveCommand(filePath)
 		saved()

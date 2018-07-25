@@ -8,7 +8,7 @@ FileDialog {
 	property var memModel
 	onAccepted: {
 		//console.log("You chose: " + fileDialog.fileUrls)
-		var filePath = app.urlToNativeFilePath(fileDialog.fileUrl)
+		var filePath = II.urlToNativeFilePath(fileDialog.fileUrl)
 		console.log("You chose: " + filePath)
 		memModel.open(filePath)
 	}
