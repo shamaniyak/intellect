@@ -34,15 +34,17 @@ public:
   QObject* getObject(const QString &name) const;
 
 protected:
+
   void add_objects(const ScriptWrapper* parent);
 
   void insertObjectsInScript();
 
+  QMap<QString, QObject*> m_objects;
+
 private:
   ScriptWrapper *m_parent = nullptr;
-  QScriptEngine *m_script = nullptr;
-  QScriptEngineDebugger *m_debugger = nullptr;
-  QMap<QString, QObject*> m_objects;
+  //QScriptEngine *m_script = nullptr;
+  //QScriptEngineDebugger *m_debugger = nullptr;
 
   QString m_msg;
 
@@ -73,6 +75,7 @@ private:
 
   void deleteJSengine();
   void initPlugins();
+  void insertObjectsInScript();
 };
 
 

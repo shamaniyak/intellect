@@ -6,15 +6,14 @@
 #include "Plugins/memoryplugin.h"
 #include "Plugins/intellectplugin.h"
 
-ScriptWrapper::ScriptWrapper(QObject *parent) : QObject(parent),
-  m_debugger(new QScriptEngineDebugger())
+ScriptWrapper::ScriptWrapper(QObject *parent) : QObject(parent)
 {
 
 }
 
 ScriptWrapper::~ScriptWrapper()
 {
-  deleteScript();
+  //deleteScript();
   //delete m_debugger;
 }
 
@@ -31,81 +30,53 @@ ScriptWrapper &ScriptWrapper::operator =(const ScriptWrapper &)
 
 void ScriptWrapper::clear()
 {
-  deleteScript();
+  //deleteScript();
 }
 
 void ScriptWrapper::initPlugins()
 {
-  QtWidgetsPlugin plug(script());
-  MemoryPlugin plug1(m_script);
-  IntellectPlugin ip(m_script);
+  //QtWidgetsPlugin plug(script());
+//  MemoryPlugin plug1(m_script);
+  //IntellectPlugin ip(m_script);
 }
 
 QScriptEngine *ScriptWrapper::script()
 {
-  if(!m_script)
-  {
-    m_script = new QScriptEngine();
-    insertObjectsInScript();
-    initPlugins();
-    add_objects(m_parent);
-
-    if(m_debug) {
-      m_debugger->attachTo(script());
-      m_debugger->standardWindow()->setWindowModality(Qt::ApplicationModal);
-    }
-  }
-  return m_script;
+    return nullptr;
 }
 
 void ScriptWrapper::abort()
 {
-  if(m_script)
-    m_script->abortEvaluation();
+//  if(m_script)
+//    m_script->abortEvaluation();
 }
 
 void ScriptWrapper::deleteScript()
 {
-  m_debugger->detach();
-  if(m_script)
-  {
-    m_script->abortEvaluation();
-    delete m_script;
-    m_script = nullptr;
-  }
+//  m_debugger->detach();
+//  if(m_script)
+//  {
+//    m_script->abortEvaluation();
+//    delete m_script;
+//    m_script = nullptr;
+//  }
 }
 
 void ScriptWrapper::insertObjectsInScript()
 {
-  auto it = m_objects.begin();
-  while(it != m_objects.end()) {
-    //ScriptWrapper::addObject(it.value(), it.key());
-    QScriptValue scriptObj = m_script->newQObject(it.value());
-    m_script->globalObject().setProperty(it.key(), scriptObj);
+//  auto it = m_objects.begin();
+//  while(it != m_objects.end()) {
+//    //ScriptWrapper::addObject(it.value(), it.key());
+//    QScriptValue scriptObj = m_script->newQObject(it.value());
+//    m_script->globalObject().setProperty(it.key(), scriptObj);
 
-    ++it;
-  }
+//    ++it;
+//  }
 }
 
 bool ScriptWrapper::evaluate(const QString &txt)
 {
-  // вызов в контексте вызывающего.
-  // это нужно для того, чтобы можно было поставить точку останова.
-  auto parentContext = script()->currentContext()->parentContext();
-  if(parentContext)
-    m_script->currentContext()->setActivationObject(parentContext->activationObject());
-
-  QScriptValue _val = script()->evaluate(txt);
-
-  if(m_script->hasUncaughtException()){
-    m_msg = m_script->uncaughtException().toString();
-    m_msg = m_msg + QString("; Line: %1").arg(m_script->uncaughtExceptionLineNumber());
-  }
-  else{
-    m_msg = _val.toString();
-  }
-
-  return !_val.isError();
+    return false;
 }
 
 QString ScriptWrapper::msg() const
@@ -126,9 +97,6 @@ bool ScriptWrapper::addObject(QObject *_o, const QString &_name)
     return false;
 
   m_objects.insert(nm, _o);
-
-  QScriptValue scriptObj = script()->newQObject(_o);
-  m_script->globalObject().setProperty(nm, scriptObj);
 
   return true;
 }
@@ -184,7 +152,7 @@ JSEngineWrapper &JSEngineWrapper::operator =(const JSEngineWrapper &)
 bool JSEngineWrapper::evaluate(const QString &txt)
 {
   //if(m_debug)
-    return ScriptWrapper::evaluate(txt);
+    //return ScriptWrapper::evaluate(txt);
 
   m_jsengine.collectGarbage();
 
@@ -228,6 +196,17 @@ void JSEngineWrapper::deleteJSengine()
 
 void JSEngineWrapper::initPlugins()
 {
-  QJSEngineMemoryPlugin p1(m_jsengine);
+    //QJSEngineMemoryPlugin p1(m_jsengine);
+}
+
+void JSEngineWrapper::insertObjectsInScript()
+{
+  auto it = m_objects.begin();
+  while(it != m_objects.end()) {
+    QJSValue scriptObj = m_jsengine.newQObject(it.value());
+    m_jsengine.globalObject().setProperty(it.key(), scriptObj);
+
+    ++it;
+  }
 }
 

@@ -23,7 +23,7 @@
 #include <src/Memory/qmemorymodel.h>
 
 IObject::IObject(QObject *parent) : QObject(parent)
-  ,scr_(new JSEngineWrapper)
+  ,scr_(std::make_shared<JSEngineWrapper>())
   ,qml_(new QQmlEngineWrapper(this))
 {
   scr_->addObject(this, "IObj");
@@ -59,6 +59,7 @@ bool IObject::run(const QString &path, const QVariant &/*params*/)
 {
   msg_ = "";
   QString msg1 = QString("Object %1 run: %2").arg(objectName()).arg(path);
+  qDebug() << msg1;
   log(msg1);
 
   if(objectName()=="INTELLECT")
