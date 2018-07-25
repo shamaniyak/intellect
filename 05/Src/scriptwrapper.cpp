@@ -1,6 +1,5 @@
 #include "scriptwrapper.h"
 #include "Plugins/qtwidgetsplugin.h"
-#include <QScriptEngineDebugger>
 #include <QMainWindow>
 
 #include "Plugins/memoryplugin.h"

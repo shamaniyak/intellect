@@ -1,12 +1,8 @@
 #ifndef SCRIPTWRAPPER_H
 #define SCRIPTWRAPPER_H
 
-#include <QtCore>
-#include <QtScript>
+#include <QObject>
 #include <QJSEngine>
-#include <thread>
-
-class QScriptEngineDebugger;
 
 class ScriptWrapper : public QObject
 {

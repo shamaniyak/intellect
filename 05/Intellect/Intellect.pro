@@ -17,7 +17,7 @@ include(../common.pri)
 CONFIG += mobility
 CONFIG += precompile_header
 QT += core gui
-QT += script scripttools
+//QT += script scripttools
 QT += qml quick positioning
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
