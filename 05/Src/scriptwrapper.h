@@ -16,8 +16,6 @@ public:
 
   void clear();
 
-  QScriptEngine *script();
-
   virtual void abort();
 
   virtual bool evaluate(const QString &txt);

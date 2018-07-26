@@ -82,6 +82,7 @@ int QMemoryModel::rowCount(const QModelIndex &parent) const
 
 int QMemoryModel::columnCount(const QModelIndex &parent) const
 {
+  Q_UNUSED(parent)
   return columnCount_;
 }
 
@@ -117,7 +118,7 @@ QVariant QMemoryModel::data(const QModelIndex &index, int role) const
     case ValueColumn: {
       var = me.val();
       const auto type = var.type();
-      if(type == QMetaType::QVariantList) {
+      if(type == QVariant::List) {
         QStringList list = var.toStringList();
         var = list.join(",");
       }

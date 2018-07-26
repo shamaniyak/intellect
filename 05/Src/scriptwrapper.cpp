@@ -1,9 +1,5 @@
 #include "scriptwrapper.h"
-#include "Plugins/qtwidgetsplugin.h"
 #include <QMainWindow>
-
-#include "Plugins/memoryplugin.h"
-#include "Plugins/intellectplugin.h"
 
 ScriptWrapper::ScriptWrapper(QObject *parent) : QObject(parent)
 {
@@ -12,11 +8,10 @@ ScriptWrapper::ScriptWrapper(QObject *parent) : QObject(parent)
 
 ScriptWrapper::~ScriptWrapper()
 {
-  //deleteScript();
-  //delete m_debugger;
 }
 
-ScriptWrapper::ScriptWrapper(const ScriptWrapper &val)
+ScriptWrapper::ScriptWrapper(const ScriptWrapper &val) :
+  ScriptWrapper()
 {
   *this = val;
 }
@@ -29,48 +24,22 @@ ScriptWrapper &ScriptWrapper::operator =(const ScriptWrapper &)
 
 void ScriptWrapper::clear()
 {
-  //deleteScript();
 }
 
 void ScriptWrapper::initPlugins()
 {
-  //QtWidgetsPlugin plug(script());
-//  MemoryPlugin plug1(m_script);
-  //IntellectPlugin ip(m_script);
-}
-
-QScriptEngine *ScriptWrapper::script()
-{
-    return nullptr;
 }
 
 void ScriptWrapper::abort()
 {
-//  if(m_script)
-//    m_script->abortEvaluation();
 }
 
 void ScriptWrapper::deleteScript()
 {
-//  m_debugger->detach();
-//  if(m_script)
-//  {
-//    m_script->abortEvaluation();
-//    delete m_script;
-//    m_script = nullptr;
-//  }
 }
 
 void ScriptWrapper::insertObjectsInScript()
 {
-//  auto it = m_objects.begin();
-//  while(it != m_objects.end()) {
-//    //ScriptWrapper::addObject(it.value(), it.key());
-//    QScriptValue scriptObj = m_script->newQObject(it.value());
-//    m_script->globalObject().setProperty(it.key(), scriptObj);
-
-//    ++it;
-//  }
 }
 
 bool ScriptWrapper::evaluate(const QString &txt)
@@ -111,7 +80,6 @@ QObject *ScriptWrapper::getObject(const QString &name) const
 void ScriptWrapper::add_objects(const ScriptWrapper *parent)
 {
   if(parent!=nullptr) {
-    //m_script.setGlobalObject(parent->m_script.globalObject());
     auto it = parent->m_objects.begin();
     while(it != parent->m_objects.end()) {
       addObject(it.value(), it.key());
@@ -150,9 +118,6 @@ JSEngineWrapper &JSEngineWrapper::operator =(const JSEngineWrapper &)
 
 bool JSEngineWrapper::evaluate(const QString &txt)
 {
-  //if(m_debug)
-    //return ScriptWrapper::evaluate(txt);
-
   m_jsengine.collectGarbage();
 
   QJSValue result = m_jsengine.evaluate(txt);

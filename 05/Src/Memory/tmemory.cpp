@@ -236,7 +236,7 @@ void TMemory::setAutosave(bool val)
 
 TME::shared_me TMemory::add(const QString &path)
 {
-  TME *me = nullptr;
+  //TME *me = nullptr;
 
   if(path.isEmpty())
     return add();
