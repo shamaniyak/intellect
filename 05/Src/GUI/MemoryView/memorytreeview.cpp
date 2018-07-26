@@ -206,8 +206,10 @@ void MemoryTreeView::compareWith(MemoryWrapper *srcMem)
   if(!mem_) return;
   if(!memoryCompare_)
     memoryCompare_ = new MemoryCompareProxyModel(this);
-  memoryCompare_->setSourceModel(mem_);
-  memoryCompare_->setSrcMem(srcMem);
+  memoryCompare_->setSourceMemory(static_cast<QMemoryModel*>(mem_));
+  memoryCompare_->setCompareMemory(static_cast<QMemoryModel*>(srcMem));
+  if(!memoryCompare_->compare())
+      return;
 
   if(selectionModel_)
   {

@@ -16,7 +16,13 @@ ApplicationWindow {
 	}
 
 	MemoryModel {
-		id: dstMem
+		id: compareMem
+	}
+
+	MemoryCompareProxyModel {
+		id: compareModel
+		sourceMemory: srcMem
+		compareMemory: compareMem
 	}
 
 	Column {
@@ -44,6 +50,16 @@ ApplicationWindow {
 					anchors.fill: parent
 					font.pixelSize: 16
 					text: qsTr("Dest")
+				}
+				Button {
+					anchors.top: parent.top
+					anchors.right: parent.right
+					width: 40
+					height: 25
+					text: qsTr("Refresh")
+					onClicked: {
+						compareModel.compare()
+					}
 				}
 			}
 		}
@@ -75,7 +91,7 @@ ApplicationWindow {
 				id: dstMemoryTreeView
 				width: parent.width / 2
 				height: parent.height
-				model: dstMem
+				model: compareModel
 
 				// Контекстное меню для дерева
 				treeMenu: Menu {
@@ -83,7 +99,7 @@ ApplicationWindow {
 						text: qsTr("Open")
 						implicitHeight: 25
 						onTriggered: {
-							openDlg.memModel = dstMem
+							openDlg.memModel = compareMem
 							openDlg.open()
 						}
 					}

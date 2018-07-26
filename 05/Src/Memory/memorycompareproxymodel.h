@@ -20,7 +20,7 @@
 #define MEMORYCOMPAREPROXYMODEL_H
 
 #include <QObject>
-#include <QAbstractProxyModel>
+#include <QSortFilterProxyModel>
 
 #include "memoryglobal.h"
 
@@ -28,10 +28,12 @@ class MemoryWrapper;
 class MEWrapper;
 class QMemoryModel;
 
-class MEMORY_EXPORT MemoryCompareProxyModel : public QAbstractProxyModel
+class MEMORY_EXPORT MemoryCompareProxyModel : public QSortFilterProxyModel
 {
   Q_OBJECT
   Q_PROPERTY(FilterType filter READ filter WRITE setFilter)
+    Q_PROPERTY(QMemoryModel* sourceMemory READ sourceMemory WRITE setSourceMemory NOTIFY sourceMemoryChanged)
+    Q_PROPERTY(QMemoryModel* compareMemory READ compareMemory WRITE setCompareMemory NOTIFY compareMemoryChanged)
 public:
 
   // Тип фильтрации элементов
@@ -46,45 +48,58 @@ public:
 
   explicit MemoryCompareProxyModel(QObject *parent = nullptr);
 
-  MemoryWrapper *srcMem() const;
-  void setSrcMem(MemoryWrapper *srcMem);
+  QMemoryModel *sourceMemory() const;
+  void setSourceMemory(QMemoryModel *mem);
+
+  QMemoryModel *compareMemory() const;
+  void setCompareMemory(QMemoryModel *mem);
 
   FilterType filter() const;
   void setFilter(const FilterType &filter);
 
+  // QAbstractProxyModel interface
+public:
+//  QModelIndex mapToSource(const QModelIndex &proxyIndex) const override;
+//  QModelIndex mapFromSource(const QModelIndex &sourceIndex) const override;
+
+  // QAbstractItemModel interface
+public:
+//  QModelIndex index(int row, int column, const QModelIndex &parent) const override;
+//  QModelIndex parent(const QModelIndex &child) const override;
+//  int rowCount(const QModelIndex &parent) const override;
+//  int columnCount(const QModelIndex &parent) const override;
+  Q_INVOKABLE QVariant data(const QModelIndex &index, int role) const override;
+  QHash<int, QByteArray> roleNames() const override;
+
 signals:
+  void sourceMemoryChanged();
+  void compareMemoryChanged();
 
 public slots:
+  bool compare();
 
 private:
+  enum RoleEx {
+      VisibleRole = Qt::UserRole + 1
+  };
+
+  bool checkChanges(MEWrapper &me) const;
+  bool checkChangesRecurs(MEWrapper &me) const;
+  MEWrapper getMeByIndex(const QModelIndex &index) const;
+  void addFrom(MEWrapper &meFrom, MEWrapper &meTo);
   // Указатель на текущую память, которую сравнивать
-  MemoryWrapper *curMem_ = nullptr;
+  QMemoryModel *curMem_ = nullptr;
   // Указатель на память, с которой сравнивать
-  MemoryWrapper *srcMem_ = nullptr;
+  QMemoryModel *compareMem_ = nullptr;
   // Результирующая память
   QMemoryModel *resultMem_ = nullptr;
   //QMemoryModel *resultMemoryModel_ = nullptr;
   // Тип фильтрации
   FilterType filter_ = NoFilter;
 
-  // QAbstractProxyModel interface
-public:
-  QModelIndex mapToSource(const QModelIndex &proxyIndex) const override;
-  QModelIndex mapFromSource(const QModelIndex &sourceIndex) const override;
-
-  // QAbstractItemModel interface
-public:
-  QModelIndex index(int row, int column, const QModelIndex &parent) const override;
-  QModelIndex parent(const QModelIndex &child) const override;
-  int rowCount(const QModelIndex &parent) const override;
-  int columnCount(const QModelIndex &parent) const override;
-  QVariant data(const QModelIndex &index, int role) const override;
-
-private:
-  bool checkChanges(MEWrapper &me) const;
-  bool checkChangesRecurs(MEWrapper &me) const;
-  MEWrapper getMeByIndex(const QModelIndex &index) const;
-  void addFrom(MEWrapper &meFrom, MEWrapper &meTo);
+  // QSortFilterProxyModel interface
+protected:
+  bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 };
 
 #endif // MEMORYCOMPAREPROXYMODEL_H

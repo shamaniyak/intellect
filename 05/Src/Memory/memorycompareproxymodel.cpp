@@ -22,38 +22,32 @@
 
 #include <QBrush>
 
-MemoryCompareProxyModel::MemoryCompareProxyModel(QObject *parent) : QAbstractProxyModel(parent)
+MemoryCompareProxyModel::MemoryCompareProxyModel(QObject *parent) : QSortFilterProxyModel(parent)
 {
-
+    setRecursiveFilteringEnabled(true);
 }
 
-MemoryWrapper *MemoryCompareProxyModel::srcMem() const
+QMemoryModel *MemoryCompareProxyModel::sourceMemory() const
 {
-  return srcMem_;
+    return curMem_;
 }
 
-void MemoryCompareProxyModel::setSrcMem(MemoryWrapper *srcMem)
+void MemoryCompareProxyModel::setSourceMemory(QMemoryModel *mem)
 {
-  srcMem_ = srcMem;
-  Q_ASSERT(srcMem_);
+    curMem_ = mem;
+}
 
-  if(!curMem_)
-  {
-    auto model = qobject_cast<MemoryWrapper*>(sourceModel());
-    Q_ASSERT(model);
-    curMem_ = model;
-  }
+QMemoryModel *MemoryCompareProxyModel::compareMemory() const
+{
+  return compareMem_;
+}
 
-  if(!resultMem_) {
-    resultMem_ = new QMemoryModel(this);
-    resultMem_->setColumnCount(2);
-  }
-
-  resultMem_->clear();
-  resultMem_->addFrom(resultMem_->getME(), curMem_->getME(), true);
-  resultMem_->addFrom(resultMem_->getME(), srcMem_->getME(), true, true);
-
-  setSourceModel(resultMem_);
+void MemoryCompareProxyModel::setCompareMemory(QMemoryModel *mem)
+{
+    if(compareMem_ == mem)
+        return;
+  compareMem_ = mem;
+  emit compareMemoryChanged();
 }
 
 MemoryCompareProxyModel::FilterType MemoryCompareProxyModel::filter() const
@@ -63,76 +57,106 @@ MemoryCompareProxyModel::FilterType MemoryCompareProxyModel::filter() const
 
 void MemoryCompareProxyModel::setFilter(const FilterType &filter)
 {
-  filter_ = filter;
+    filter_ = filter;
 }
 
-QModelIndex MemoryCompareProxyModel::mapToSource(const QModelIndex &proxyIndex) const
+bool MemoryCompareProxyModel::compare()
 {
-  if(!proxyIndex.isValid())
-    return QModelIndex();
-  //auto me = getMeByIndex(proxyIndex);
-  //auto meP = me.parent();
-  return sourceModel()->index(proxyIndex.row(), proxyIndex.column(),
-                              mapToSource(proxyIndex.parent()));
+    if(!compareMem_ || ! curMem_)
+        return false;
+
+    if(!resultMem_) {
+      resultMem_ = new QMemoryModel(this);
+      resultMem_->setColumnCount(2);
+    }
+
+    resultMem_->clear();
+    resultMem_->addFrom(resultMem_->getME(), curMem_->getME(), true);
+    resultMem_->addFrom(resultMem_->getME(), compareMem_->getME(), true, true);
+
+    setSourceModel(resultMem_);
+
+    beginResetModel();
+    endResetModel();
+
+    return true;
 }
 
-QModelIndex MemoryCompareProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
-{
-  if(!sourceIndex.isValid())
-    return QModelIndex();
-  auto me = getMeByIndex(sourceIndex);
-  if(!checkChangesRecurs(me))
-    return QModelIndex();
-  //auto meP = me.parent();
-  return createIndex(sourceIndex.row(), sourceIndex.column(), me.getMe().get());
-}
+//QModelIndex MemoryCompareProxyModel::mapToSource(const QModelIndex &proxyIndex) const
+//{
+//  if(!proxyIndex.isValid())
+//    return QModelIndex();
+//  //auto me = getMeByIndex(proxyIndex);
+//  //auto meP = me.parent();
+//  return sourceModel()->index(proxyIndex.row(), proxyIndex.column(),
+//                              mapToSource(proxyIndex.parent()));
+//}
 
-QModelIndex MemoryCompareProxyModel::index(int row, int column, const QModelIndex &parent) const
-{
-  return mapFromSource(sourceModel()->index(row, column, parent));
-}
+//QModelIndex MemoryCompareProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
+//{
+//  if(!sourceIndex.isValid())
+//    return QModelIndex();
+//  auto me = getMeByIndex(sourceIndex);
+//  if(!checkChangesRecurs(me))
+//    return QModelIndex();
+//  //auto meP = me.parent();
+//  return createIndex(sourceIndex.row(), sourceIndex.column(), me.getUid());
+//  //return sourceIndex;
+//}
 
-QModelIndex MemoryCompareProxyModel::parent(const QModelIndex &child) const
-{
-  return mapFromSource(sourceModel()->parent(child));
-}
+//QModelIndex MemoryCompareProxyModel::index(int row, int column, const QModelIndex &parent) const
+//{
+//  return mapFromSource(sourceModel()->index(row, column, parent));
+//}
 
-int MemoryCompareProxyModel::rowCount(const QModelIndex &parent) const
-{
-  // ѕодсчитать количество элементов с учетом удаленных
-  auto count = sourceModel()->rowCount(mapToSource(parent));
+//QModelIndex MemoryCompareProxyModel::parent(const QModelIndex &child) const
+//{
+//  return mapFromSource(sourceModel()->parent(child));
+//}
 
-  return count;
-}
+//int MemoryCompareProxyModel::rowCount(const QModelIndex &parent) const
+//{
+//    if(!sourceModel())
+//        return 0;
+//  // ѕодсчитать количество элементов с учетом удаленных
+//  auto count = sourceModel()->rowCount(mapToSource(parent));
 
-int MemoryCompareProxyModel::columnCount(const QModelIndex &parent) const
-{
-  return sourceModel()->columnCount(mapToSource(parent));
-}
+//  return count;
+//}
+
+//int MemoryCompareProxyModel::columnCount(const QModelIndex &parent) const
+//{
+//    if(!sourceModel())
+//        return 0;
+//  return sourceModel()->columnCount(mapToSource(parent));
+//}
 
 QVariant MemoryCompareProxyModel::data(const QModelIndex &index, int role) const
 {
-  if(role == Qt::BackgroundRole && index.isValid())
+    if(!index.isValid())
+        return QVariant();
+    qDebug() << role;
+  if(role == Qt::DecorationRole)
   {
     auto me = getMeByIndex(index);
     auto path = me.getPath();
     auto me1 = curMem_->get(path);
-    auto me2 = srcMem_->get(path);
+    auto me2 = compareMem_->get(path);
     // ≈сли такого элемента не было, значит добавлен
     if(!me1) {
-      QBrush brush(Qt::green);
+      QColor brush(Qt::green);
       return QVariant(brush);
     }
     // если был, а теперь нету, значит удален
     else if(!me2)
     {
-      QBrush brush(Qt::red);
+      QColor brush(Qt::red);
       return QVariant(brush);
     }
     // если изменилось значение
     else if(me2.val() != me1.val())
     {
-      QBrush brush(Qt::cyan);
+      QColor brush(Qt::cyan);
       return QVariant(brush);
     }
     else {
@@ -143,14 +167,22 @@ QVariant MemoryCompareProxyModel::data(const QModelIndex &index, int role) const
     }
   }
 
-  return QAbstractProxyModel::data(index, role);
+  return QSortFilterProxyModel::data(index, role);
+}
+
+QHash<int, QByteArray> MemoryCompareProxyModel::roleNames() const
+{
+    QHash<int, QByteArray> roles = QAbstractProxyModel::roleNames();
+    roles[Qt::BackgroundRole] = "background";
+    roles[VisibleRole] = "visible";
+    return roles;
 }
 
 bool MemoryCompareProxyModel::checkChanges(MEWrapper &me) const
 {
   // ≈сли добавлен, удален или изменилось значение, вернуть true, иначе false
   auto path = me.getPath();
-  auto me2 = srcMem_->get(path);
+  auto me2 = compareMem_->get(path);
   auto me3 = curMem_->get(path);
   // ≈сли добавлен, удален или изменилось значение, вернуть true, иначе заходим внутрь
   if(!me2 || !me3)
@@ -198,4 +230,17 @@ void MemoryCompareProxyModel::addFrom(MEWrapper &meFrom, MEWrapper &meTo)
 
     }
   }
+}
+
+bool MemoryCompareProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+    QAbstractItemModel *model = sourceModel();
+    QModelIndex sourceIndex = model->index(sourceRow, 0, sourceParent);
+    if (!sourceIndex.isValid())
+      return true;
+    auto me = getMeByIndex(sourceIndex);
+    bool result = checkChangesRecurs(me);
+    //QString name = me.name();
+    //qDebug() << name << result;
+    return result;
 }
