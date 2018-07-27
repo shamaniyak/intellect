@@ -11,6 +11,14 @@ ApplicationWindow {
 	height: 480
 	title: qsTr("Memory Compare")
 
+//	header: ToolBar {
+//		height: menuBar.height
+//		Material.background: Theme.primaryColor()
+//		MainMenu {
+//			id: menuBar
+//		}
+//	}
+
 	MemoryModel {
 		id: srcMem
 	}
@@ -25,89 +33,42 @@ ApplicationWindow {
 		compareMemory: compareMem
 	}
 
-	Column {
-		anchors.fill: parent
+	function compare() {
+		compareModel.compare()
+	}
 
-		Row {
-			id: headerRow
-			width: parent.width
-			height: 32
-			Rectangle {
-				height: parent.height
-				width: parent.width / 2
-				color: "steelblue"
-				Text {
-					anchors.fill: parent
-					font.pixelSize: 16
-					text: qsTr("Source")
+	Row {
+		width: parent.width
+		height: parent.height
+
+		MemoryTreeView {
+			id: dstMemoryTreeView
+			width: parent.width / 2
+			height: parent.height
+			model: compareModel
+
+			// Контекстное меню для дерева
+			treeMenu: Menu {
+				MenuItem {
+					text: qsTr("Open source")
+					implicitHeight: 25
+					onTriggered: {
+						openDlg.memModel = srcMem
+						openDlg.open()
+					}
 				}
-			}
-			Rectangle {
-				height: parent.height
-				width: parent.width / 2
-				color: "steelblue"
-				Text {
-					anchors.fill: parent
-					font.pixelSize: 16
-					text: qsTr("Dest")
-				}
-				Button {
-					anchors.top: parent.top
-					anchors.right: parent.right
-					width: 40
-					height: 25
-					text: qsTr("Refresh")
-					onClicked: {
+				MenuItem {
+					text: qsTr("Open dest")
+					implicitHeight: 25
+					onTriggered: {
+						openDlg.memModel = compareMem
+						//openDlg.accepted.connect(onAccepted)
+						openDlg.open()
+					}
+
+					function onAccepted() {
+						openDlg.accepted.disconnect(onAccepted)
 						compareModel.compare()
-					}
-				}
-			}
-		}
-
-		Row {
-			width: parent.width
-			height: parent.height - headerRow.height
-
-			MemoryTreeView {
-				id: srcMemoryTreeView
-				width: parent.width / 2
-				height: parent.height
-				model: srcMem
-
-				// Контекстное меню для дерева
-				treeMenu: Menu {
-					MenuItem {
-						text: qsTr("Open")
-						implicitHeight: 25
-						onTriggered: {
-							openDlg.memModel = srcMem
-							openDlg.open()
-						}
-					}
-				}
-			}
-
-			MemoryTreeView {
-				id: dstMemoryTreeView
-				width: parent.width / 2
-				height: parent.height
-				model: compareModel
-
-				// Контекстное меню для дерева
-				treeMenu: Menu {
-					MenuItem {
-						text: qsTr("Open")
-						implicitHeight: 25
-						onTriggered: {
-							openDlg.memModel = compareMem
-							openDlg.accepted.connect(onAccepted)
-							openDlg.open()
-						}
-
-						function onAccepted() {
-							openDlg.accepted.disconnect(onAccepted)
-							compareModel.compare()
-						}
 					}
 				}
 			}
@@ -116,9 +77,9 @@ ApplicationWindow {
 
 	OpenMemoryDialog {
 		id: openDlg
-	}
 
-	function compare() {
-		//
+		onAccepted: {
+			compare()
+		}
 	}
 }

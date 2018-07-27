@@ -3,6 +3,7 @@ import QtQuick.Controls 1.4
 
 TreeView {
 	id: tree
+	alternatingRowColors: false
 	//anchors.fill: parent
 	property var treeMenu
 
@@ -48,8 +49,11 @@ TreeView {
 
 	Component {
 		id: itemDelegate
-		Item {
+		Rectangle {
 			property var editor
+			color: {
+				return model ? model.decoration || "white" : "white"
+			}
 
 			Text {
 				anchors { verticalCenter: parent.verticalCenter; left: parent.left }
