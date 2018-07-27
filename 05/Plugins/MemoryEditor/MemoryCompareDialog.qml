@@ -37,6 +37,17 @@ ApplicationWindow {
 		compareModel.compare()
 	}
 
+	function findPos(_text1, _text2) {
+		var i = 0
+		var l1 = _text1.length
+		var l2 = _text2.length
+		for(i = 0; i < l1; ++i) {
+			if(i >= l2 || _text1[i] !== _text2[i])
+				return i
+		}
+		return -1
+	}
+
 	Row {
 		width: parent.width
 		height: parent.height
@@ -79,6 +90,12 @@ ApplicationWindow {
 				var me2 = compareMem.get(me.path)
 				editSrc.me = me1
 				editCompare.me = me2
+				var pos = findPos(editSrc.editor.text, editCompare.editor.text)
+				console.debug("MemoryCompareDialog.qml:94",pos)
+				if(pos >= 0)
+					editSrc.editor.cursorPosition = pos
+				//editSrc.editor.selectedTextColor = "red"
+				//editSrc.editor.selectAll()
 				//editSrc.text = me1.isValid() ? me1.val : ""
 				//editCompare.text = me2.isValid() ? me2.val : ""
 			}

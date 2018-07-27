@@ -9,6 +9,7 @@ Item {
 	//property var memEditor
 	property real vPosition: scrollView.ScrollBar.vertical.position
 	property real hPosition: scrollView.ScrollBar.horizontal.position
+	property TextArea editor: edit
 
 	onMemModelChanged: {
 		if(memModel)
