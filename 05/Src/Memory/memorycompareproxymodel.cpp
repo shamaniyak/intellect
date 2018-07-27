@@ -88,8 +88,7 @@ QVariant MemoryCompareProxyModel::data(const QModelIndex &index, int role) const
         return QVariant();
   if(role == Qt::DecorationRole)
   {
-    QModelIndex srcIndex = mapToSource(index);
-    auto me = getMeByIndex(srcIndex);
+    auto me = getMeByIndex(index);
     auto path = me.getPath();
     auto me1 = curMem_->get(path);
     auto me2 = compareMem_->get(path);
@@ -166,7 +165,8 @@ bool MemoryCompareProxyModel::checkChangesRecurs(MEWrapper &me) const
 
 MEWrapper MemoryCompareProxyModel::getMeByIndex(const QModelIndex &index) const
 {
-  uint id = reinterpret_cast<uint>(index.internalPointer());
+  QModelIndex srcIndex = mapToSource(index);
+  uint id = reinterpret_cast<uint>(srcIndex.internalPointer());
   return resultMem_->getById(id);
 }
 
@@ -186,11 +186,11 @@ void MemoryCompareProxyModel::addFrom(MEWrapper &meFrom, MEWrapper &meTo)
 
 bool MemoryCompareProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    QAbstractItemModel *model = sourceModel();
-    QModelIndex sourceIndex = model->index(sourceRow, 0, sourceParent);
+    //QAbstractItemModel *model = sourceModel();
+    QModelIndex sourceIndex = resultMem_->index(sourceRow, 0, sourceParent);
     if (!sourceIndex.isValid())
       return true;
-    auto me = getMeByIndex(sourceIndex);
+    auto me = resultMem_->getMeByIndex(sourceIndex);
     bool result = checkChangesRecurs(me);
     return result;
 }

@@ -23,10 +23,7 @@
 #include <QSortFilterProxyModel>
 
 #include "memoryglobal.h"
-
-class MemoryWrapper;
-class MEWrapper;
-class QMemoryModel;
+#include "qmemorymodel.h"
 
 class MEMORY_EXPORT MemoryCompareProxyModel : public QSortFilterProxyModel
 {
@@ -68,6 +65,7 @@ signals:
 
 public slots:
   bool compare();
+  MEWrapper getMeByIndex(const QModelIndex &index) const;
 
 private:
   enum RoleEx {
@@ -76,7 +74,6 @@ private:
 
   bool checkChanges(MEWrapper &me) const;
   bool checkChangesRecurs(MEWrapper &me) const;
-  MEWrapper getMeByIndex(const QModelIndex &index) const;
   void addFrom(MEWrapper &meFrom, MEWrapper &meTo);
   // ”казатель на текущую пам€ть, которую сравнивать
   QMemoryModel *curMem_ = nullptr;

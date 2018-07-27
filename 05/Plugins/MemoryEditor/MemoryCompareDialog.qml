@@ -43,10 +43,16 @@ ApplicationWindow {
 
 		MemoryTreeView {
 			id: dstMemoryTreeView
-			width: parent.width / 2
+			property int minWidth: 200
+			property int maxWidth: 350
+			width: {
+				var w = parent.width / 3;
+				if(w < minWidth) w = minWidth
+				if(w > maxWidth) w = maxWidth
+				return w
+			}
 			height: parent.height
 			model: compareModel
-
 			// Контекстное меню для дерева
 			treeMenu: Menu {
 				MenuItem {
@@ -62,14 +68,46 @@ ApplicationWindow {
 					implicitHeight: 25
 					onTriggered: {
 						openDlg.memModel = compareMem
-						//openDlg.accepted.connect(onAccepted)
 						openDlg.open()
 					}
+				}
+			}
 
-					function onAccepted() {
-						openDlg.accepted.disconnect(onAccepted)
-						compareModel.compare()
-					}
+			onClicked: {
+				var me = compareModel.getMeByIndex(index)
+				var me1 = srcMem.get(me.path)
+				var me2 = compareMem.get(me.path)
+				editSrc.me = me1
+				editCompare.me = me2
+				//editSrc.text = me1.isValid() ? me1.val : ""
+				//editCompare.text = me2.isValid() ? me2.val : ""
+			}
+		}
+
+		Row {
+			width: parent.width - dstMemoryTreeView.width
+			height: parent.height
+
+			MemoryElementEditor {
+				id: editSrc
+				width: parent.width / 2
+				height: parent.height
+				onVPositionChanged: {
+					editCompare.setVPosition(vPosition)
+				}
+				onHPositionChanged: {
+					editCompare.setHPosition(hPosition)
+				}
+			}
+			MemoryElementEditor {
+				id: editCompare
+				width: parent.width / 2
+				height: parent.height
+				onVPositionChanged: {
+					editSrc.setVPosition(vPosition)
+				}
+				onHPositionChanged: {
+					editSrc.setHPosition(hPosition)
 				}
 			}
 		}
