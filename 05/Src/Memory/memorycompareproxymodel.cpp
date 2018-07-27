@@ -82,63 +82,14 @@ bool MemoryCompareProxyModel::compare()
     return true;
 }
 
-//QModelIndex MemoryCompareProxyModel::mapToSource(const QModelIndex &proxyIndex) const
-//{
-//  if(!proxyIndex.isValid())
-//    return QModelIndex();
-//  //auto me = getMeByIndex(proxyIndex);
-//  //auto meP = me.parent();
-//  return sourceModel()->index(proxyIndex.row(), proxyIndex.column(),
-//                              mapToSource(proxyIndex.parent()));
-//}
-
-//QModelIndex MemoryCompareProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
-//{
-//  if(!sourceIndex.isValid())
-//    return QModelIndex();
-//  auto me = getMeByIndex(sourceIndex);
-//  if(!checkChangesRecurs(me))
-//    return QModelIndex();
-//  //auto meP = me.parent();
-//  return createIndex(sourceIndex.row(), sourceIndex.column(), me.getUid());
-//  //return sourceIndex;
-//}
-
-//QModelIndex MemoryCompareProxyModel::index(int row, int column, const QModelIndex &parent) const
-//{
-//  return mapFromSource(sourceModel()->index(row, column, parent));
-//}
-
-//QModelIndex MemoryCompareProxyModel::parent(const QModelIndex &child) const
-//{
-//  return mapFromSource(sourceModel()->parent(child));
-//}
-
-//int MemoryCompareProxyModel::rowCount(const QModelIndex &parent) const
-//{
-//    if(!sourceModel())
-//        return 0;
-//  // Подсчитать количество элементов с учетом удаленных
-//  auto count = sourceModel()->rowCount(mapToSource(parent));
-
-//  return count;
-//}
-
-//int MemoryCompareProxyModel::columnCount(const QModelIndex &parent) const
-//{
-//    if(!sourceModel())
-//        return 0;
-//  return sourceModel()->columnCount(mapToSource(parent));
-//}
-
 QVariant MemoryCompareProxyModel::data(const QModelIndex &index, int role) const
 {
     if(!index.isValid())
         return QVariant();
-    qDebug() << role;
   if(role == Qt::DecorationRole)
   {
-    auto me = getMeByIndex(index);
+    QModelIndex srcIndex = mapToSource(index);
+    auto me = getMeByIndex(srcIndex);
     auto path = me.getPath();
     auto me1 = curMem_->get(path);
     auto me2 = compareMem_->get(path);
@@ -161,7 +112,8 @@ QVariant MemoryCompareProxyModel::data(const QModelIndex &index, int role) const
     }
     else {
       if(checkChangesRecurs(me)) {
-        QBrush brush(Qt::yellow, Qt::FDiagPattern);
+        //QBrush brush(Qt::yellow, Qt::FDiagPattern);
+        QColor brush(Qt::yellow);
         return QVariant(brush);
       }
     }
@@ -240,7 +192,5 @@ bool MemoryCompareProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex 
       return true;
     auto me = getMeByIndex(sourceIndex);
     bool result = checkChangesRecurs(me);
-    //QString name = me.name();
-    //qDebug() << name << result;
     return result;
 }

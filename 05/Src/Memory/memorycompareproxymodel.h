@@ -57,17 +57,8 @@ public:
   FilterType filter() const;
   void setFilter(const FilterType &filter);
 
-  // QAbstractProxyModel interface
-public:
-//  QModelIndex mapToSource(const QModelIndex &proxyIndex) const override;
-//  QModelIndex mapFromSource(const QModelIndex &sourceIndex) const override;
-
   // QAbstractItemModel interface
 public:
-//  QModelIndex index(int row, int column, const QModelIndex &parent) const override;
-//  QModelIndex parent(const QModelIndex &child) const override;
-//  int rowCount(const QModelIndex &parent) const override;
-//  int columnCount(const QModelIndex &parent) const override;
   Q_INVOKABLE QVariant data(const QModelIndex &index, int role) const override;
   QHash<int, QByteArray> roleNames() const override;
 

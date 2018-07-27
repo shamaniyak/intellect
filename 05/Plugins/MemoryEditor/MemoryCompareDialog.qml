@@ -100,7 +100,13 @@ ApplicationWindow {
 						implicitHeight: 25
 						onTriggered: {
 							openDlg.memModel = compareMem
+							openDlg.accepted.connect(onAccepted)
 							openDlg.open()
+						}
+
+						function onAccepted() {
+							openDlg.accepted.disconnect(onAccepted)
+							compareModel.compare()
 						}
 					}
 				}
