@@ -6,7 +6,7 @@ Item {
 	property var memModel
 	property var me
 	property bool readOnly: false
-	//property var memEditor
+	property var memEditor
 	property real vPosition: scrollView.ScrollBar.vertical.position
 	property real hPosition: scrollView.ScrollBar.horizontal.position
 	property TextArea editor: edit
@@ -91,6 +91,7 @@ Item {
 			//anchors.fill: parent
 			placeholderText: qsTr("Input value here")
 			selectByMouse: true
+			tabStopDistance: 8
 			property bool canChange
 
 			background: Rectangle {

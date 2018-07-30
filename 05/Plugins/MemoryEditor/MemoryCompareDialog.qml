@@ -11,13 +11,18 @@ ApplicationWindow {
 	height: 480
 	title: qsTr("Memory Compare")
 
-//	header: ToolBar {
-//		height: menuBar.height
-//		Material.background: Theme.primaryColor()
-//		MainMenu {
-//			id: menuBar
-//		}
-//	}
+	header: ToolBar {
+		height: 32
+
+		Row {
+			anchors.fill: parent
+			ToolButton {
+				height: parent.height
+				text: qsTr("Find")
+				onClicked: findPos(false)
+			}
+		}
+	}
 
 	MemoryModel {
 		id: srcMem
@@ -37,15 +42,15 @@ ApplicationWindow {
 		compareModel.compare()
 	}
 
-	function findPos(_text1, _text2) {
-		var i = 0
-		var l1 = _text1.length
-		var l2 = _text2.length
-		for(i = 0; i < l1; ++i) {
-			if(i >= l2 || _text1[i] !== _text2[i])
-				return i
-		}
-		return -1
+	function findPos(findFirst) {
+		var pos
+		if(findFirst)
+			pos = textDiff.findFirst()
+		else
+			pos = textDiff.findPos()
+		var editor = editSrc.editor.text.length > editCompare.editor.text.length ? editSrc.editor : editCompare.editor
+		editor.select(pos.pos, pos.pos+pos.len)
+		editor.selectionColor = "red"
 	}
 
 	Row {
@@ -90,10 +95,13 @@ ApplicationWindow {
 				var me2 = compareMem.get(me.path)
 				editSrc.me = me1
 				editCompare.me = me2
-				var pos = findPos(editSrc.editor.text, editCompare.editor.text)
-				console.debug("MemoryCompareDialog.qml:94",pos)
-				if(pos >= 0)
-					editSrc.editor.cursorPosition = pos
+				textDiff.diff2Texts(editCompare.editor.text, editSrc.editor.text)
+				findPos(true)
+				//console.debug("MemoryCompareDialog.qml:97",pos.pos, pos.len)
+				//var pos = findPos(editSrc.editor.text, editCompare.editor.text)
+				//console.debug("MemoryCompareDialog.qml:94",pos)
+				//if(pos >= 0)
+					//editSrc.editor.cursorPosition = pos
 				//editSrc.editor.selectedTextColor = "red"
 				//editSrc.editor.selectAll()
 				//editSrc.text = me1.isValid() ? me1.val : ""
@@ -135,6 +143,63 @@ ApplicationWindow {
 
 		onAccepted: {
 			compare()
+		}
+	}
+
+	Diff {
+		id: textDiff
+		property int posStart: -1
+		property int posEnd: -1
+
+		function diff2Texts(_a, _b) {
+			diff(_a, _b)
+			console.log("editdistance:" + editdistance());
+			//console.log("lcs:" + getlcs());
+			console.log("ses");
+
+			var i   = 0;
+			var ses = getses();
+			var ses_t = ses.length ? ses[0].t : ses_COMMON
+			var ses_elem = ses.length ? ses[0].elem : ""
+			for (i=0;i<ses.length;++i) {
+				if(ses[i].t === ses_t)
+					ses_elem += ses[i].elem
+				else {
+					var SES = ["-", "", "+"]
+					console.log(SES[ses_t+1], ses_elem)
+					ses_t = ses[i].t
+					ses_elem = ses[i].elem
+				}
+			}
+		}
+
+		function findFirst() {
+			posStart = -1
+			return findPos()
+		}
+
+		function findPos() {
+			console.debug(posStart)
+			var ses = getses();
+			var i   = posStart < 0 ? 0 : posStart;
+			var len = 0;
+			var ses_t = i < ses.length ? ses[i].t : ses_COMMON
+			for (;i<ses.length;++i) {
+				if(ses[i].t === ses_t) {
+					len++
+					continue
+				}
+				else {
+					if(ses_t === ses_ADD) {
+						posStart = i
+						return {"pos": i-len, "len": len}
+					}
+					ses_t = ses[i].t
+					len = 1
+				}
+			}
+			posStart = -1
+			return {"pos": 0, "len": 0}
 		}
 	}
 }
