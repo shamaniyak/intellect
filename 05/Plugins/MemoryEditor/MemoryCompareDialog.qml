@@ -204,22 +204,33 @@ ApplicationWindow {
 				}
 				else {
 					posStart = i
-					if(ses_t === ses_ADD) {
-						lenSumAdd += len
-						return {"pos": i-len-lenSum, "len": len, "t": ses_t}
-					}
-					if(ses_t === ses_DELETE) {
-						lenSum += len
-						return {"pos": i-len-lenSumAdd, "len": len, "t": ses_t}
+					if(ses_t === ses_ADD || ses_t === ses_DELETE) {
+						return makePos(ses_t, i, len)
 					}
 
 					ses_t = ses[i].t
 					len = 1
 				}
 			}
+			var result = {"pos": 0, "len": 0, "t": 0}
+			if(ses_t === ses_ADD || ses_t === ses_DELETE) {
+				result = makePos(ses_t, i, len)
+			}
 			posStart = -1
 			lenSum = 0
 			lenSumAdd = 0
+			return result
+		}
+
+		function makePos(t, p, l) {
+			if(t === ses_ADD) {
+				lenSumAdd += l
+				return {"pos": p-l-lenSum, "len": l, "t": t}
+			}
+			if(t === ses_DELETE) {
+				lenSum += l
+				return {"pos": p-l-lenSumAdd, "len": l, "t": t}
+			}
 			return {"pos": 0, "len": 0, "t": 0}
 		}
 	}
