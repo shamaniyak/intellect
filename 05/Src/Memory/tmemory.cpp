@@ -137,23 +137,18 @@ TMemory::TMemory(const QString &path, const QString &name): TAbstractMemory(),
   name_(name), file_path_(path)
 {
   init();
-
-  //autosave_ = !path.isEmpty();
-
-  createBackup();
 }
 
 TMemory::~TMemory()
 {
   if(getChanged() && autosave_)
     save();
-  //setSelected(nullptr);
-  //delete (TopME*)top_me_;
 }
 
 void TMemory::init()
 {
   CreateTopME();
+  createBackup();
 }
 
 void TMemory::CreateTopME()
@@ -171,8 +166,8 @@ void TMemory::clear()
 
 void TMemory::createBackup()
 {
-  backup_.reset();
   backup_ = std::make_shared<Backup>(this);
+  backup_->init();
 }
 
 //TMemory::TMemory(const TMemory &src):
@@ -214,8 +209,7 @@ void TMemory::setFilePath(const QString &path)
   if(file_path_ == path)
     return;
   file_path_ = path;
-  if(backup_)
-    backup_->init();
+  createBackup();
   setChanged(true);
 }
 
@@ -396,7 +390,6 @@ bool TMemory::open(const QString &fileName)
 {
   bool res = false;
   if(getChanged()) {
-    setChanged(false);
     if(autosave_) {
       res = save();
       if(!res)
@@ -404,10 +397,10 @@ bool TMemory::open(const QString &fileName)
     }
   }
 
-  file_path_ = fileName;
+  setFilePath(fileName);
   res = loadMemory();
 
-  createBackup();
+  setChanged(false);
 
   return res;
 }
@@ -526,7 +519,9 @@ bool TMemory::loadMemory()
 
 void TMemory::saveBackup()
 {
-  if(backup_.get())
+    if(!backup_)
+        createBackup();
+  if(backup_)
     backup_->save();
 }
 
@@ -549,9 +544,10 @@ void Backup::save()
   //    if(current_ == files_.size()-1)
   //      return;
 
+  qDebug() << path_;
   QDir dir(path_);
   if(!dir.exists())
-    if(!dir.mkdir(path_))
+    if(!dir.mkpath(path_))
       return;
 
   // добавим дату и время к имени
