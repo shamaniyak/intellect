@@ -48,9 +48,18 @@ ApplicationWindow {
 			pos = textDiff.findFirst()
 		else
 			pos = textDiff.findPos()
-		var editor = editSrc.editor.text.length > editCompare.editor.text.length ? editSrc.editor : editCompare.editor
+		var color = "green"
+		if(pos.t === 1) {
+			editCompare.editor.deselect()
+		}
+		else {
+			editSrc.editor.deselect()
+			color = "red"
+		}
+
+		var editor = pos.t === 1 ? editSrc.editor : editCompare.editor
 		editor.select(pos.pos, pos.pos+pos.len)
-		editor.selectionColor = "red"
+		editor.selectionColor = color
 	}
 
 	Row {
@@ -150,6 +159,8 @@ ApplicationWindow {
 		id: textDiff
 		property int posStart: -1
 		property int posEnd: -1
+		property int lenSum: 0
+		property int lenSumAdd: 0
 
 		function diff2Texts(_a, _b) {
 			diff(_a, _b)
@@ -175,6 +186,8 @@ ApplicationWindow {
 
 		function findFirst() {
 			posStart = -1
+			lenSum = 0
+			lenSumAdd = 0
 			return findPos()
 		}
 
@@ -190,16 +203,24 @@ ApplicationWindow {
 					continue
 				}
 				else {
+					posStart = i
 					if(ses_t === ses_ADD) {
-						posStart = i
-						return {"pos": i-len, "len": len}
+						lenSumAdd += len
+						return {"pos": i-len-lenSum, "len": len, "t": ses_t}
 					}
+					if(ses_t === ses_DELETE) {
+						lenSum += len
+						return {"pos": i-len-lenSumAdd, "len": len, "t": ses_t}
+					}
+
 					ses_t = ses[i].t
 					len = 1
 				}
 			}
 			posStart = -1
-			return {"pos": 0, "len": 0}
+			lenSum = 0
+			lenSumAdd = 0
+			return {"pos": 0, "len": 0, "t": 0}
 		}
 	}
 }
