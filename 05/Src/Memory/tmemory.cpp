@@ -544,7 +544,6 @@ void Backup::save()
   //    if(current_ == files_.size()-1)
   //      return;
 
-  qDebug() << path_;
   QDir dir(path_);
   if(!dir.exists())
     if(!dir.mkpath(path_))
