@@ -42,7 +42,7 @@ class IObject : public QObject
 
 public:
   typedef std::shared_ptr<JSEngineWrapper> t_jswrapper;
-  typedef std::shared_ptr<QQmlEngineWrapper> t_qmlwrapper;
+  typedef std::shared_ptr<QmlEngineWrapper> t_qmlwrapper;
 
   explicit IObject(QObject *parent = 0);
   ~IObject();
@@ -56,7 +56,7 @@ public:
 
   QObject *getOM();
 
-  QQmlEngineWrapper *getQml() const;
+  QmlEngineWrapper *getQml() const;
 
 signals:
   // Послать запрос объекту с именем receiver.
@@ -118,7 +118,7 @@ private:
   int countLinks_ = 0;
   MemoryWrapper *mem_ = 0;// Данные объекта в виде дерева
   t_jswrapper scr_;// Функционал объекта в виде скрипта, расширяющего его возможности
-  QQmlEngineWrapper *qml_ = 0;// Объект по работе с QML движком
+  QmlEngineWrapper *qml_ = 0;// Объект по работе с QML движком
   QString msg_;// Сообщение об выполненных операциях
   WindowManager *WM_ = 0;// Оконный мэнеджер
   ObjectManager *OM_ = 0;

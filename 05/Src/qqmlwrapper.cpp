@@ -1,5 +1,4 @@
 #include "qqmlwrapper.h"
-#include "Plugins/qmlregistertypes.h"
 
 #include <QDebug>
 #include <QQuickItem>
@@ -19,30 +18,28 @@ public slots:
 
 static DebugObject dbgObj;
 
-QQmlApplicationEngine *QQmlEngineWrapper::engine;
+QQmlApplicationEngine *QmlEngineWrapper::engine;
 
-QQmlEngineWrapper::QQmlEngineWrapper(QObject *parent) : QObject(parent)
+QmlEngineWrapper::QmlEngineWrapper(QObject *parent) : QObject(parent)
 {
-  //QmlMemoryPlugin *plugin = new QmlMemoryPlugin();
-  //QJSEngineMemoryPlugin p1(m_qml);
 }
 
-QQmlEngineWrapper::~QQmlEngineWrapper()
+QmlEngineWrapper::~QmlEngineWrapper()
 {
 
 }
 
-QQmlEngineWrapper::QQmlEngineWrapper(const QQmlEngineWrapper &val) : QObject(val.parent())
+QmlEngineWrapper::QmlEngineWrapper(const QmlEngineWrapper &val) : QObject(val.parent())
 {
   *this = val;
 }
 
-QQmlEngineWrapper &QQmlEngineWrapper::operator =(const QQmlEngineWrapper &)
+QmlEngineWrapper &QmlEngineWrapper::operator =(const QmlEngineWrapper &)
 {
   return *this;
 }
 
-bool QQmlEngineWrapper::evaluate(const QString &txt)
+bool QmlEngineWrapper::evaluate(const QString &txt)
 {
   m_msg = "";
   //engine->loadData(text().toLocal8Bit());
@@ -62,7 +59,7 @@ bool QQmlEngineWrapper::evaluate(const QString &txt)
   return !component.isError();
 }
 
-bool QQmlEngineWrapper::addObject(QObject *_o, const QString &_name)
+bool QmlEngineWrapper::addObject(QObject *_o, const QString &_name)
 {
 //  if(!m_qml)
 //    return false;
@@ -82,7 +79,7 @@ bool QQmlEngineWrapper::addObject(QObject *_o, const QString &_name)
   return true;
 }
 
-QObject *QQmlEngineWrapper::getObject(const QString &name) const
+QObject *QmlEngineWrapper::getObject(const QString &name) const
 {
   if(m_objects.find(name) !=m_objects.end())
     return m_objects[name];
@@ -90,7 +87,7 @@ QObject *QQmlEngineWrapper::getObject(const QString &name) const
   return nullptr;
 }
 
-void QQmlEngineWrapper::init()
+void QmlEngineWrapper::init()
 {
   //QmlRegisterTypes::init();
 
@@ -98,12 +95,12 @@ void QQmlEngineWrapper::init()
   //engine->loadData("import QtQml 2.0\nText { text: \"Hello world!\" }");
 }
 
-QString QQmlEngineWrapper::msg() const
+QString QmlEngineWrapper::msg() const
 {
   return m_msg;
 }
 
-void QQmlEngineWrapper::reset()
+void QmlEngineWrapper::reset()
 {
   if(m_tempObject)
     m_tempObject->deleteLater();
@@ -116,7 +113,7 @@ void QQmlEngineWrapper::reset()
   //m_qml.collectGarbage();
 }
 
-void QQmlEngineWrapper::addImportPath(const QString &path)
+void QmlEngineWrapper::addImportPath(const QString &path)
 {
   createQmlEngine();
   if(m_qml) {
@@ -124,7 +121,7 @@ void QQmlEngineWrapper::addImportPath(const QString &path)
   }
 }
 
-void QQmlEngineWrapper::load(const QString &path)
+void QmlEngineWrapper::load(const QString &path)
 {
   createQmlEngine();
   QQmlComponent component(m_qml);
@@ -137,7 +134,7 @@ void QQmlEngineWrapper::load(const QString &path)
   }
 }
 
-void QQmlEngineWrapper::insertObjectsInQml()
+void QmlEngineWrapper::insertObjectsInQml()
 {
   auto it = m_objects.begin();
   while(it != m_objects.end()) {
@@ -147,7 +144,7 @@ void QQmlEngineWrapper::insertObjectsInQml()
   }
 }
 
-void QQmlEngineWrapper::createQmlEngine()
+void QmlEngineWrapper::createQmlEngine()
 {
   if(!m_qml)
     m_qml = new QQmlEngine();

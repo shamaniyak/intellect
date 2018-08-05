@@ -5,14 +5,14 @@
 #include <QtQml>
 
 //
-class QQmlEngineWrapper : public QObject
+class QmlEngineWrapper : public QObject
 {
   Q_OBJECT
   Q_PROPERTY(QString msg READ msg)
 
 public:
-  explicit QQmlEngineWrapper(QObject *parent=nullptr);
-  ~QQmlEngineWrapper();
+	explicit QmlEngineWrapper(QObject *parent=nullptr);
+	~QmlEngineWrapper();
 
   Q_INVOKABLE bool evaluate(const QString &txt);
 
@@ -40,8 +40,8 @@ private:
 
   static QQmlApplicationEngine *engine;
 
-  QQmlEngineWrapper(const QQmlEngineWrapper &val);
-  QQmlEngineWrapper & operator =(const QQmlEngineWrapper &);
+	QmlEngineWrapper(const QmlEngineWrapper &val);
+	QmlEngineWrapper & operator =(const QmlEngineWrapper &);
 
 };
 

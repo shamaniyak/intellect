@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 {
     Application a(argc, argv);
 
-    QQmlEngineWrapper::init();
+    QmlEngineWrapper::init();
 
 //    QQmlApplicationEngine engine;
 //    engine.load(QUrl(QLatin1String("qrc:/mainqml")));

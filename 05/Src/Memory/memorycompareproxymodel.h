@@ -27,67 +27,67 @@
 
 class MEMORY_EXPORT MemoryCompareProxyModel : public QSortFilterProxyModel
 {
-  Q_OBJECT
-  Q_PROPERTY(FilterType filter READ filter WRITE setFilter)
-    Q_PROPERTY(QMemoryModel* sourceMemory READ sourceMemory WRITE setSourceMemory NOTIFY sourceMemoryChanged)
-    Q_PROPERTY(QMemoryModel* compareMemory READ compareMemory WRITE setCompareMemory NOTIFY compareMemoryChanged)
+	Q_OBJECT
+	Q_PROPERTY(FilterType filter READ filter WRITE setFilter)
+	Q_PROPERTY(QObject* sourceMemory READ sourceMemory WRITE setSourceMemory NOTIFY sourceMemoryChanged)
+	Q_PROPERTY(QObject* compareMemory READ compareMemory WRITE setCompareMemory NOTIFY compareMemoryChanged)
 public:
 
-  // Тип фильтрации элементов
-  enum FilterType
-  {
-    NoFilter,           // Без фильтрации
-    Exist,              // Существуют в обоих моделях
-    NotExist,           // Не существует (удален)
-    NotEqualValue       // В одном и том же элементе данные отличаются
-  };
-  Q_ENUM(FilterType)
+	// Тип фильтрации элементов
+	enum FilterType
+	{
+		NoFilter,           // Без фильтрации
+		Exist,              // Существуют в обоих моделях
+		NotExist,           // Не существует (удален)
+		NotEqualValue       // В одном и том же элементе данные отличаются
+	};
+	Q_ENUM(FilterType)
 
-  explicit MemoryCompareProxyModel(QObject *parent = nullptr);
+	explicit MemoryCompareProxyModel(QObject *parent = nullptr);
 
-  QMemoryModel *sourceMemory() const;
-  void setSourceMemory(QMemoryModel *mem);
+	QObject *sourceMemory() const;
+	void setSourceMemory(QObject *mem);
 
-  QMemoryModel *compareMemory() const;
-  void setCompareMemory(QMemoryModel *mem);
+	QObject *compareMemory() const;
+	void setCompareMemory(QObject *mem);
 
-  FilterType filter() const;
-  void setFilter(const FilterType &filter);
+	FilterType filter() const;
+	void setFilter(const FilterType &filter);
 
-  // QAbstractItemModel interface
+	// QAbstractItemModel interface
 public:
-  Q_INVOKABLE QVariant data(const QModelIndex &index, int role) const override;
-  QHash<int, QByteArray> roleNames() const override;
+	Q_INVOKABLE QVariant data(const QModelIndex &index, int role) const override;
+	QHash<int, QByteArray> roleNames() const override;
 
 signals:
-  void sourceMemoryChanged();
-  void compareMemoryChanged();
+	void sourceMemoryChanged();
+	void compareMemoryChanged();
 
 public slots:
-  bool compare();
-  MEWrapper getMeByIndex(const QModelIndex &index) const;
+	bool compare();
+	MEWrapper getMeByIndex(const QModelIndex &index) const;
 
 private:
-  enum RoleEx {
-      VisibleRole = Qt::UserRole + 1
-  };
+	enum RoleEx {
+		VisibleRole = Qt::UserRole + 1
+	};
 
-  bool checkChanges(MEWrapper &me) const;
-  bool checkChangesRecurs(MEWrapper &me) const;
-  void addFrom(MEWrapper &meFrom, MEWrapper &meTo);
-  // Указатель на текущую память, которую сравнивать
-  QMemoryModel *curMem_ = nullptr;
-  // Указатель на память, с которой сравнивать
-  QMemoryModel *compareMem_ = nullptr;
-  // Результирующая память
-  QMemoryModel *resultMem_ = nullptr;
-  //QMemoryModel *resultMemoryModel_ = nullptr;
-  // Тип фильтрации
-  FilterType filter_ = NoFilter;
+	bool checkChanges(MEWrapper &me) const;
+	bool checkChangesRecurs(MEWrapper &me) const;
+	void addFrom(MEWrapper &meFrom, MEWrapper &meTo);
+	// Указатель на текущую память, которую сравнивать
+	QMemoryModel *curMem_ = nullptr;
+	// Указатель на память, с которой сравнивать
+	QMemoryModel *compareMem_ = nullptr;
+	// Результирующая память
+	QMemoryModel *resultMem_ = nullptr;
+	//QMemoryModel *resultMemoryModel_ = nullptr;
+	// Тип фильтрации
+	FilterType filter_ = NoFilter;
 
-  // QSortFilterProxyModel interface
+	// QSortFilterProxyModel interface
 protected:
-  bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+	bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 };
 
 #endif // MEMORYCOMPAREPROXYMODEL_H

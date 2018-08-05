@@ -24,7 +24,7 @@
 
 IObject::IObject(QObject *parent) : QObject(parent)
   ,scr_(std::make_shared<JSEngineWrapper>())
-  ,qml_(new QQmlEngineWrapper(this))
+  ,qml_(new QmlEngineWrapper(this))
 {
   scr_->addObject(this, "IObj");
   qml_->addObject(this, "IObj");
@@ -162,7 +162,7 @@ void IObject::onQuery(const QString &path, const QString &params)
   run(path, params);
 }
 
-QQmlEngineWrapper *IObject::getQml() const
+QmlEngineWrapper *IObject::getQml() const
 {
   return qml_;
 }
