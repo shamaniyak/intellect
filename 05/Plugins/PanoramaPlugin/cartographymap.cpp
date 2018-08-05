@@ -3,12 +3,13 @@
 
 #include <QtDebug>
 #include <QLibrary>
+#include <QPainter>
 
 static const int MAXSCALE_40M = 40000000;
 static const int MAX_ZOOM = 32;
 static const double MIN_ZOOM = 0.03125;
 
-CartographyMap::CartographyMap(QObject *parent) : QObject(parent)
+CartographyMap::CartographyMap(QObject *parent) : QQuickPaintedItem()
 {
   init();
 }
@@ -21,6 +22,8 @@ CartographyMap::~CartographyMap()
 
 void CartographyMap::init()
 {
+	setAntialiasing(true);
+	setOpaquePainting(true);
   if(!map_)
   {
     map_ = createMapIntegration();
@@ -46,7 +49,19 @@ IMap *CartographyMap::createMapIntegration()
     qDebug() << lib.errorString();
   }
 
-  return map;
+	return map;
+}
+
+void CartographyMap::paint(QPainter *painter)
+{
+	refreshImage();
+	painter->drawImage(0, 0, image_);
+}
+
+void CartographyMap::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
+{
+	Q_UNUSED(oldGeometry)
+	size_ = newGeometry;
 }
 
 IMap *CartographyMap::map() const
@@ -65,22 +80,23 @@ void CartographyMap::setFileMap(const QString &name)
   if(map_)
   {
     map_->setMap(name);
+		long w, h;
+		map_->getMapImageSize(w, h);
+		setSize(QSizeF(w, h));
     emit changed();
 	}
 }
 
-QImage CartographyMap::image()
+void CartographyMap::refreshImage()
 {
-	static QImage image_;
 	if(map_)
 	{
-		if(map_->getImageMap(imageLT_.x(), imageLT_.y(), imageW_, imageH_, image_))
+
+		if(map_->getImageMap(imageLT_.x(), imageLT_.y(), size_.width(), size_.height(), image_))
 		{
 			//bool saved = image_.save("c:\\image.png");
-			return image_;
 		}
 	}
-	return QImage();
 }
 
 void CartographyMap::setMapBright(long value)

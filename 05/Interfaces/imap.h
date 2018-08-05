@@ -12,7 +12,7 @@ class IMap
 {
 
 public:
-  virtual void release() = 0;
+    virtual void release() = 0;
 
     // ПЕРЕВОД КООРДИНАТ
 
@@ -33,7 +33,6 @@ public:
 
     // Получение высоты в точке по прямоугольным координатам
     virtual double getHeight_XmYm(double Xm, double Ym) = 0;
-    virtual double getHeight_XY(double x, double y) = 0;
 
     // Получение магнитного склонения по геодезическим координатам
     virtual bool getMagneticAngle_BL(double B, double L, double* Ma) = 0;
@@ -73,9 +72,7 @@ public:
     // Получить масштаб карты
     virtual int getMapScale() = 0;
     // Установить геодезические координаты центра отображаемой карты
-    virtual void setMapCenter(double B, double L) = 0;
-    // Получить геодезические координаты центра карты
-    virtual void getMapCentre(double &B, double &L) = 0;
+    virtual void setMapCenter(double CenterB, double CenterL) = 0;
     // Рассчитать геодезические координаты центра карты
     virtual void calcCurrentCentreRegion(double &B, double &L) = 0;
     // Прочитать и применить настройки карты из файла (яркость, контраст, контур и слои)

@@ -3,13 +3,13 @@
 
 #include <QObject>
 #include <QImage>
+#include <QQuickPaintedItem>
 
 class IMap;
 
-class CartographyMap : public QObject
+class CartographyMap : public QQuickPaintedItem
 {
-  Q_OBJECT
-	Q_PROPERTY(QImage image READ image NOTIFY imageChanged)
+	Q_OBJECT
 public:
   explicit CartographyMap(QObject *parent = 0);
   ~CartographyMap();
@@ -24,7 +24,7 @@ signals:
 public slots:
   void setFileMap(const QString &name);
 
-	QImage image();
+	void refreshImage();
 
   // ”становить уровень €ркости карты (-16  16)
   void setMapBright(long int value);
@@ -59,10 +59,18 @@ protected:
 
 private:
   IMap *map_ = nullptr;
+	QImage image_;
 	QPointF imageLT_;
 	QPointF maxImageLT_;
-	int imageW_ = 250;
-	int imageH_ = 250;
+	QRectF size_;
+
+	// QQuickPaintedItem interface
+public:
+	void paint(QPainter *painter);
+
+	// QQuickItem interface
+protected:
+	void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry);
 };
 
 #endif // CARTOGRAPHYMAP_H

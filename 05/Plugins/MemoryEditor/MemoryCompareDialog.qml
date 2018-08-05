@@ -11,7 +11,7 @@ ApplicationWindow {
 	height: 480
 	title: qsTr("Memory Compare")
 
-	//property MemoryModel sourceMemory: srcMem
+	property var sourceMemory: srcMem
 
 	header: ToolBar {
 		height: 32
@@ -36,7 +36,7 @@ ApplicationWindow {
 
 	MemoryCompareProxyModel {
 		id: compareModel
-		sourceMemory: srcMem//mainWindow.sourceMemory
+		sourceMemory: mainWindow.sourceMemory
 		compareMemory: compareMem
 	}
 
@@ -97,7 +97,7 @@ ApplicationWindow {
 					implicitHeight: 25
 					onTriggered: {
 						openDlg.memModel = srcMem
-						//sourceMemory = srcMem
+						sourceMemory = srcMem
 						openDlg.open()
 					}
 				}
@@ -159,7 +159,7 @@ ApplicationWindow {
 		property int posEnd: -1
 		property int lenSum: 0
 		property int lenSumAdd: 0
-		property bool canPrintLog: true
+		property bool canPrintLog: false
 
 		function diff2Texts(_a, _b) {
 			diff(_a, _b)
