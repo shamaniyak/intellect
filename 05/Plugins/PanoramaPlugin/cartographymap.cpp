@@ -60,8 +60,9 @@ void CartographyMap::paint(QPainter *painter)
 
 void CartographyMap::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
 {
-	Q_UNUSED(oldGeometry)
+	//Q_UNUSED(oldGeometry)
 	size_ = newGeometry;
+	QQuickPaintedItem::geometryChanged(newGeometry, oldGeometry);
 }
 
 IMap *CartographyMap::map() const
