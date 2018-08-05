@@ -234,5 +234,25 @@ void CartographyMap::setMapCenter(double centerB, double centerL)
   {
     map_->setMapCenter(centerB, centerL);
     emit changed();
-  }
+	}
+}
+
+QPointF CartographyMap::BLtoXY(double B, double L)
+{
+	if(map_) {
+		double x, y;
+		map_->BL_XY(B, L, x, y);
+		return QPointF(x, y);
+	}
+	return QPointF();
+}
+
+QPointF CartographyMap::XYtoBL(double X, double Y)
+{
+	if(map_) {
+		double b, l;
+		map_->XY_BL(X, Y, b, l);
+		return QPointF(b, l);
+	}
+	return QPointF();
 }
