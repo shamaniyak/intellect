@@ -93,7 +93,7 @@ void MemoryController::showVal()
 void MemoryController::memory_change(const ChangeEvent &ev)
 {
   const MEWrapper me = ev.me;
-  EMemoryChange idMsg = ev.type;
+	int idMsg = ev.type;
   switch(idMsg)
   {
   case EMemoryChange::mcNone:

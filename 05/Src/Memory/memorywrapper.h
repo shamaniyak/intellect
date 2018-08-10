@@ -48,12 +48,12 @@ struct MEMORY_EXPORT ChangeEvent
 {
 private:
   Q_GADGET
-  Q_PROPERTY(int type READ getType)
+	Q_PROPERTY(int type MEMBER type)
   Q_PROPERTY(int row MEMBER row)
   Q_PROPERTY(QString path MEMBER path)
   Q_PROPERTY(MEWrapper me MEMBER me)
 public:
-  EMemoryChange type = mcNone;
+	int type = 0;
   MEWrapper me;
   MEWrapper parent;
   int row = 0;
@@ -64,10 +64,9 @@ public:
   QVariant prevVal;
   QString path;
 
-  Q_ENUM(EMemoryChange)
-
-  int getType() {return type;}
+	Q_ENUM(EMemoryChange)
 };
+Q_DECLARE_METATYPE(ChangeEvent)
 
 class MEMORY_EXPORT MemoryWrapper : public QAbstractItemModel
 {
@@ -79,7 +78,6 @@ class MEMORY_EXPORT MemoryWrapper : public QAbstractItemModel
   Q_PROPERTY(bool autosave READ getAutosave WRITE setAutosave)
 
 public:
-
   explicit MemoryWrapper(QObject *parent = 0);
   ~MemoryWrapper();
 
@@ -190,6 +188,5 @@ private:
 };
 //
 //Q_DECLARE_METATYPE(MemoryWrapper*)
-Q_DECLARE_METATYPE(ChangeEvent)
 
 #endif // MEMORYWRAPPER_H

@@ -131,7 +131,7 @@ void MemoryWrapper::deleteMe(const MEWrapper &me)
     return;
 
   ChangeEvent ev;
-  ev.type = EMemoryChange::mcDel;
+	ev.type = mcDel;
   ev.me = me;
   ev.parent = me.parent();
   ev.row = me.getIndex();
@@ -252,7 +252,7 @@ void MemoryWrapper::setVal(const MEWrapper &me, const QVariant &val)
       return;
 
     ChangeEvent ev;
-    ev.type = EMemoryChange::mcEditVal;
+		ev.type = mcEditVal;
     ev.me = me;
     ev.prevVal = me.val();
     ev.parent = me.parent();
@@ -277,7 +277,7 @@ void MemoryWrapper::setName(const MEWrapper &me, const QString &name)
       return;
 
     ChangeEvent ev;
-    ev.type = EMemoryChange::mcEditName;
+		ev.type = mcEditName;
     ev.me = me;
     ev.prevName = me.name();
 

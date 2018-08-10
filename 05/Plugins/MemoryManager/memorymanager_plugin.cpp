@@ -10,6 +10,8 @@ void MemoryManagerPlugin::registerTypes(const char *uri)
 		// @uri memorymanagerplugins
 		qmlRegisterInterface<MemoryWrapper>("MemoryWrapper");
 		qmlRegisterType<QMemoryModel>(uri, 1, 0, "MemoryModel");
+		qRegisterMetaType<ChangeEvent>("ChangeEvent");
+		qmlRegisterUncreatableType<ChangeEvent>(uri, 1, 0, "ChangeEvent", "Can't create ChangeEvent.");
 
     qRegisterMetaType<MEWrapper>("MEWrapper");
     qmlRegisterUncreatableType<MEWrapper>(uri, 1, 0, "MEWrapper", "Can't create MEWrapper.");
