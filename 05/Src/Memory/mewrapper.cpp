@@ -110,7 +110,7 @@ MEWrapper MEWrapper::add(const QString &name, bool checkExist)
   return MEWrapper();
 }
 
-bool MEWrapper::addFrom(MEWrapper &from, bool recurs)
+bool MEWrapper::addFrom(const MEWrapper &from, bool recurs)
 {
   if(!isNull())
     return mem_->addFrom(*this, from, recurs);

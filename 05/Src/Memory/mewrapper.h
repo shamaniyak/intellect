@@ -63,7 +63,7 @@ public:
   QString getPath() const;
 
   Q_INVOKABLE MEWrapper add(const QString &name, bool checkExist = true);
-  Q_INVOKABLE bool addFrom(MEWrapper &from, bool recurs = true);
+	Q_INVOKABLE bool addFrom(const MEWrapper &from, bool recurs = true);
 
   Q_INVOKABLE MEWrapper get(const QString &name);
   Q_INVOKABLE MEWrapper getByI(int i);
