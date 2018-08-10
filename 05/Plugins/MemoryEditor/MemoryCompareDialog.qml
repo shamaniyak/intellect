@@ -12,13 +12,20 @@ ApplicationWindow {
 	title: qsTr("Memory Compare")
 
 	property var sourceMemory: srcMem
+	property var selected
 
 	MemoryModel {
 		id: srcMem
+		onChange: {
+			compare()
+		}
 	}
 
 	MemoryModel {
 		id: compareMem
+		onChange: {
+			compare()
+		}
 	}
 
 	MemoryCompareProxyModel {
@@ -33,6 +40,7 @@ ApplicationWindow {
 
 	function selectElement(index) {
 		var me = compareModel.getMeByIndex(index)
+		selected = me
 		var me1 = sourceMemory.get(me.path)
 		var me2 = compareMem.get(me.path)
 		editSrc.me = me1
@@ -59,6 +67,25 @@ ApplicationWindow {
 		var editor = pos.t === 1 ? editSrc.editor : editCompare.editor
 		editor.select(pos.pos, pos.pos+pos.len)
 		editor.selectionColor = color
+	}
+
+	function copyMeToSrc(me) {
+		if(me.isNull()) return
+		var me2 = compareMem.get(me.path)
+		if(me2.isNull()) return
+		var me1 = sourceMemory.get(me.path)
+		if(me1.isValid()) {
+			me1.val = me2.val
+			return
+		}
+		if(me.parent.isValid())
+			me1 = sourceMemory.get(me.parent.path)
+		if(me1.isNull()) return
+		me1 = me1.add(me.name)
+		if(me1.isValid()) {
+			me1.val = me2.val
+			me1.addFrom(me, true)
+		}
 	}
 
 	header: ToolBar {
@@ -110,6 +137,13 @@ ApplicationWindow {
 						openDlg.open()
 					}
 				}
+				MenuItem {
+					text: qsTr("Copy to src")
+					implicitHeight: 25
+					onTriggered: {
+						copyMeToSrc(selected)
+					}
+				}
 			}
 
 			onClicked: {
@@ -123,6 +157,7 @@ ApplicationWindow {
 
 			MemoryElementEditor {
 				id: editSrc
+				memModel: srcMem
 				width: parent.width / 2
 				height: parent.height
 				onVPositionChanged: {
@@ -134,6 +169,7 @@ ApplicationWindow {
 			}
 			MemoryElementEditor {
 				id: editCompare
+				memModel: compareMem
 				width: parent.width / 2
 				height: parent.height
 				onVPositionChanged: {
