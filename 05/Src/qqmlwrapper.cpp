@@ -39,7 +39,7 @@ QmlEngineWrapper &QmlEngineWrapper::operator =(const QmlEngineWrapper &)
   return *this;
 }
 
-bool QmlEngineWrapper::evaluate(const QString &txt)
+bool QmlEngineWrapper::evaluate(const QString &txt, const QString &path)
 {
   m_msg = "";
   //engine->loadData(text().toLocal8Bit());
@@ -48,7 +48,7 @@ bool QmlEngineWrapper::evaluate(const QString &txt)
   insertObjectsInQml();
 
   QQmlComponent component(m_qml);
-	component.setData(txt.toLocal8Bit(), QUrl(objectName()));
+	component.setData(txt.toLocal8Bit(), QUrl(path));
   if(component.isError())
     m_msg = component.errorString();
   else {

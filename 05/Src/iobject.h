@@ -113,6 +113,7 @@ public slots:
 
 protected slots:
   void onQuery(const QString &path, const QString &params);
+	void onObjectNameChanged();
 
 private:
   int countLinks_ = 0;

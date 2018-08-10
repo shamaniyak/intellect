@@ -26,9 +26,12 @@ IObject::IObject(QObject *parent) : QObject(parent)
   ,scr_(std::make_shared<JSEngineWrapper>())
   ,qml_(new QmlEngineWrapper(this))
 {
-  scr_->addObject(this, "IObj");
+	scr_->addObject(this, "IObj");
   qml_->addObject(this, "IObj");
   //scr_->addObject(mem_, "Memory");
+	setObjectName(QString("IObj:%1").arg((uint)this));
+	onObjectNameChanged();
+	connect(this, &IObject::objectNameChanged, this, &IObject::onObjectNameChanged);
 }
 
 IObject::~IObject()
@@ -159,7 +162,13 @@ void IObject::sendQuery(const QString &receiver, const QString &path, const QStr
 
 void IObject::onQuery(const QString &path, const QString &params)
 {
-  run(path, params);
+	run(path, params);
+}
+
+void IObject::onObjectNameChanged()
+{
+	scr()->setObjectName(objectName());
+	getQml()->setObjectName(objectName());
 }
 
 QmlEngineWrapper *IObject::getQml() const

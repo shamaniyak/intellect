@@ -14,7 +14,7 @@ public:
 	explicit QmlEngineWrapper(QObject *parent=nullptr);
 	~QmlEngineWrapper();
 
-  Q_INVOKABLE bool evaluate(const QString &txt);
+	Q_INVOKABLE bool evaluate(const QString &txt, const QString &path=QString());
 
   bool addObject(QObject *_o, const QString &_name=QString());
   QObject* getObject(const QString &name) const;
