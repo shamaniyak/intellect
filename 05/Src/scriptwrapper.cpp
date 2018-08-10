@@ -1,5 +1,6 @@
 #include "scriptwrapper.h"
 #include <QMainWindow>
+#include <Src/Plugins/qmlregistertypes.h>
 
 ScriptWrapper::ScriptWrapper(QObject *parent) : QObject(parent)
 {
@@ -31,10 +32,6 @@ void ScriptWrapper::initPlugins()
 }
 
 void ScriptWrapper::abort()
-{
-}
-
-void ScriptWrapper::deleteScript()
 {
 }
 
@@ -120,7 +117,7 @@ bool JSEngineWrapper::evaluate(const QString &txt)
 {
   m_jsengine.collectGarbage();
 
-  QJSValue result = m_jsengine.evaluate(txt);
+	QJSValue result = m_jsengine.evaluate(txt, objectName());
   QString msg;
   if(result.isError()) {
     msg = "Line " + result.property("lineNumber").toString();
@@ -160,7 +157,7 @@ void JSEngineWrapper::deleteJSengine()
 
 void JSEngineWrapper::initPlugins()
 {
-    //QJSEngineMemoryPlugin p1(m_jsengine);
+	QmlRegisterTypes::initJSEngine(&m_jsengine);
 }
 
 void JSEngineWrapper::insertObjectsInScript()

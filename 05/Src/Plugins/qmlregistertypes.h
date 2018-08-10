@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+class QJSEngine;
+
 class QmlRegisterTypes : public QObject
 {
   Q_OBJECT
@@ -10,6 +12,7 @@ public:
   explicit QmlRegisterTypes(QObject *parent = nullptr);
 
   static void init();
+	static void initJSEngine(QJSEngine*jse);
 
 signals:
 

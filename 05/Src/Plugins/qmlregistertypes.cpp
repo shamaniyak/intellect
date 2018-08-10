@@ -18,5 +18,11 @@ void QmlRegisterTypes::init()
   //qmlRegisterType<MEWrapper>();
   //qmlRegisterUncreatableType<MEWrapper>("Intellect.MemoryWrapper", 1, 0, "MEWrapper", "MEWrapper: can't create.");
   //qmlRegisterType<QMemoryModel>("Intellect.MemoryModel", 1, 0, "MemoryModel");
-  //qmlRegisterType<MemoryTreeView>("Intellect.MemoryTreeView", 1, 0, "MemoryTreeView");
+	//qmlRegisterType<MemoryTreeView>("Intellect.MemoryTreeView", 1, 0, "MemoryTreeView");
+}
+
+void QmlRegisterTypes::initJSEngine(QJSEngine *jse)
+{
+	auto jsv = jse->newQMetaObject<ChangeEvent>();
+	jse->globalObject().setProperty("ChangeEvent", jsv);
 }

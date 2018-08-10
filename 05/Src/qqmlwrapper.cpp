@@ -48,7 +48,7 @@ bool QmlEngineWrapper::evaluate(const QString &txt)
   insertObjectsInQml();
 
   QQmlComponent component(m_qml);
-  component.setData(txt.toLocal8Bit(), QUrl());
+	component.setData(txt.toLocal8Bit(), QUrl(objectName()));
   if(component.isError())
     m_msg = component.errorString();
   else {

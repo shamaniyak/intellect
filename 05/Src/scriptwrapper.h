@@ -42,9 +42,6 @@ private:
 
   QString m_msg;
 
-  bool m_debug = true;
-
-  void deleteScript();
   void initPlugins();
 };
 
