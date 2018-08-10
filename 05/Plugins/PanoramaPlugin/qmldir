@@ -1,2 +1,3 @@
 module PanoramaPlugin
 plugin PanoramaPlugin
+PanoramaApp 1.0 PanoramaApp.qml

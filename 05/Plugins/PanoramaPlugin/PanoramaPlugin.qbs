@@ -21,6 +21,16 @@ DynamicLibrary {
 	property stringList defines: ["BUILD_PANORAMAPLUGIN_LIB"]
 	property stringList staticLibraries: []
 	property stringList libraryPaths: []
+	property string installBinDir: {
+		var p = FileInfo.relativePath(qbs.installRoot, FileInfo.joinPaths(globalBinPath, putOverBinSubdir))
+		console.info(p)
+		return p
+	}
+	property string installQmlDir: {
+		var p = FileInfo.relativePath(qbs.installRoot, FileInfo.joinPaths(globalBinPath,"qml",prefix,name))
+		console.info(p)
+		return p
+	}
 
 	cpp.includePaths: [globalPath, globalIncludePath, globalInterfacesPath]
 	cpp.defines: project.buildWithEasyProfiler ? defines.concat(["BUILD_WITH_EASY_PROFILER"]) : defines
@@ -33,22 +43,14 @@ DynamicLibrary {
 	Group {
 		fileTagsFilter: ["dynamiclibrary"]
 		qbs.install: false
-		qbs.installDir: {
-			var p = FileInfo.relativePath(qbs.installRoot, FileInfo.joinPaths(globalBinPath, putOverBinSubdir))
-			//console.info(p)
-			return p
-		}
+		qbs.installDir: installBinDir
 	}
 
 	Group {
 		name: "qmldir"
 		files: FileInfo.joinPaths(sourceDirectory,"qmldir")
 		qbs.install: true
-		qbs.installDir: {
-			var p = FileInfo.relativePath(qbs.installRoot, FileInfo.joinPaths(globalBinPath,"qml",product.prefix,product.name))
-			//console.info(p)
-			return p
-		}
+		qbs.installDir: installQmlDir
 	}
 
 	Group {
@@ -57,6 +59,13 @@ DynamicLibrary {
 			"*.cpp",
 			"*.h"
 		]
+	}
+
+	Group {
+		name: "qml"
+		files: ["*.qml"]
+		qbs.install: true
+		qbs.installDir: installQmlDir
 	}
 
 }

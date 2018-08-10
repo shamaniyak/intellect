@@ -205,6 +205,7 @@ void CartographyMap::zoomIn(double B, double L)
         setMapCenter(B, L);
       }
       emit changed();
+			update();
     }
   }
 }
@@ -224,6 +225,7 @@ void CartographyMap::zoomOut(double B, double L)
         setMapCenter(B, L);
       }
       emit changed();
+			update();
     }
   }
 }
@@ -237,7 +239,7 @@ void CartographyMap::setMapCenter(double centerB, double centerL)
 	}
 }
 
-QPointF CartographyMap::BLtoXY(double B, double L)
+QPointF CartographyMap::bl_XY(double B, double L)
 {
 	if(map_) {
 		double x, y;
@@ -247,7 +249,7 @@ QPointF CartographyMap::BLtoXY(double B, double L)
 	return QPointF();
 }
 
-QPointF CartographyMap::XYtoBL(double X, double Y)
+QPointF CartographyMap::xy_BL(double X, double Y)
 {
 	if(map_) {
 		double b, l;

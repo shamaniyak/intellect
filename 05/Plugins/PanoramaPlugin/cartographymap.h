@@ -53,9 +53,9 @@ public slots:
   // Установить геодезические координаты центра отображаемой карты
   void setMapCenter(double centerB, double centerL);
 	// Перевод координат из геодезических в пиксели картинки карты
-	virtual QPointF BLtoXY(double B, double L);
+	virtual QPointF bl_XY(double B, double L);
 	// Перевод координат из пикселей картинки карты в геодезические
-	virtual QPointF XYtoBL(double X, double Y);
+	virtual QPointF xy_BL(double X, double Y);
 
 protected:
   void init();
