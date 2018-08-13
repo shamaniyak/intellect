@@ -104,6 +104,7 @@ void QmlEngineWrapper::reset()
 {
   if(m_tempObject)
     m_tempObject->deleteLater();
+  m_tempObject = nullptr;
   if(m_qml)
   {
     delete m_qml;
