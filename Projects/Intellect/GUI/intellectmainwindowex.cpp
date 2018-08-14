@@ -1,4 +1,4 @@
-ï»¿#include "intellectmainwindowex.h"
+#include "intellectmainwindowex.h"
 #include "ui_mainwindowex.h"
 #include "Src/GUI/logview.h"
 #include "Src/GUI/ScriptEditor/scripteditor.h"
@@ -14,7 +14,7 @@ IntellectMainWindowEx::IntellectMainWindowEx(Intellect *i, QWidget *parent) :
   intellect_(i)
 {
   //setAttribute(Qt::WA_AlwaysShowToolTips);
-  // ÑÐ¾Ð·Ð´Ð°Ñ‚ÑŒ Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¾Ñ€ Ð±Ð°Ð·Ñ‹ Ð·Ð½Ð°Ð½Ð¸Ð¹
+  // ñîçäàòü ðåäàêòîð áàçû çíàíèé
   //createBaseEditor();
 
   createMemoryView();
@@ -44,7 +44,7 @@ void IntellectMainWindowEx::initIntellect()
     return;
 
   intellect_->setMainWindow(this);
-  // Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð¾Ð²Ñ‹Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹
+  // Äîáàâèòü ñêðèïòîâûå îáúåêòû
   intellect_->addObject(treeView_, "TreeMemory");
   intellect_->addObject(treeView_->pmenu(), "TreeMenu");
   //intellect_->addObject(scriptEditor_, "Editor");
@@ -90,12 +90,12 @@ void IntellectMainWindowEx::createBaseEditor()
 
 void IntellectMainWindowEx::createMemoryView()
 {
-  // Ð”ÐµÑ€ÐµÐ²Ð¾ Ð¿Ð°Ð¼ÑÑ‚Ð¸
+  // Äåðåâî ïàìÿòè
   treeView_ = new MemoryTreeView();
   treeView_->setMem(intellect_->obj()->mem());
-  // Ð½Ð¾Ð²Ð°Ñ Ð²ÐºÐ»Ð°Ð´ÐºÐ° Ð´Ð»Ñ Ð´ÐµÑ€ÐµÐ²Ð°
+  // íîâàÿ âêëàäêà äëÿ äåðåâà
   treeDockWidget_ = createNewDockWidget(treeView_, false);
-  treeDockWidget_->setWindowTitle(tr("ÐŸÐ°Ð¼ÑÑ‚ÑŒ"));
+  treeDockWidget_->setWindowTitle(tr("Memory"));
 }
 
 void IntellectMainWindowEx::createLogView()
@@ -105,7 +105,7 @@ void IntellectMainWindowEx::createLogView()
 
   logDockWidget_ = createNewDockWidget(log, false);
   auto wgt = static_cast<QDockWidget*>(logDockWidget_);
-  wgt->setWindowTitle(tr("Ð›Ð¾Ð³"));
+  wgt->setWindowTitle(tr("Log"));
   addDockWidget(Qt::BottomDockWidgetArea, wgt);
 }
 
@@ -123,7 +123,7 @@ void IntellectMainWindowEx::createScriptEditor()
   scriptEditor_ = new ScriptEditor(this);
 
   editorDocWidget_ = createNewDoc(scriptEditor_, false);
-  editorDocWidget_->setWindowTitle(tr("Ð ÐµÐ´Ð°ÐºÑ‚Ð¾Ñ€"));
+  editorDocWidget_->setWindowTitle(tr("Editor"));
 }
 
 void IntellectMainWindowEx::createActions()
@@ -141,11 +141,11 @@ void IntellectMainWindowEx::createToolBar()
   ptb->setObjectName("MainToolBar");
 
   auto act = ptb->addAction("+");
-  act->setToolTip("Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ");
+  act->setToolTip("Add");
   //connect(act, &QAction::triggered, )
 
   act = ptb->addAction("-");
-  act->setToolTip("Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ");
+  act->setToolTip("Remove");
 
   addToolBar(ptb);
 }
@@ -170,7 +170,7 @@ void IntellectMainWindowEx::showLogView(bool show)
 
 void IntellectMainWindowEx::on_action_triggered()
 {
-  //todo: Ð½ÑƒÐ¶Ð½Ð¾ Ð¾ÑÑ‚Ð°Ð²Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð²ÑÐµ ÑÐºÑ€Ð¸Ð¿Ñ‚Ñ‹
+  //todo: íóæíî îñòàâíîâèòü âñå ñêðèïòû
 
   close();
 }
@@ -212,13 +212,13 @@ void IntellectMainWindowEx::loadSettings()
         int w = meTree.get("Width").val().toInt();
         int h = meTree.get("Height").val().toInt();
 
-        // Ñ€Ð°Ð·Ð²ÐµÑ€Ð½ÑƒÑ‚Ñ‹Ðµ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ñ‹
+        // ðàçâåðíóòûå ýëåìåíòû
         auto me = meTree.get("Expanded");
         treeView_->loadExpandItems(me);
 
         treeView_->resize(w, h);
 
-        // Ñ‚ÐµÐºÑƒÑ‰Ð¸Ð¹ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚
+        // òåêóùèé ýëåìåíò
         if(intellect_)
         {
           QString selectedPath;
@@ -255,19 +255,19 @@ void IntellectMainWindowEx::saveSettings()
 
   if(meSettings)
   {
-    // Ñ€Ð°Ð·Ð¼ÐµÑ€Ñ‹ Ð´ÐµÑ€ÐµÐ²Ð°
+    // ðàçìåðû äåðåâà
     auto meTree = meSettings.add("treeView");
     meTree.add("Width").setVal(treeView_->size().width());
     meTree.add("Height").setVal(treeView_->size().height());
-    // Ñ€Ð°Ð·Ð²ÐµÑ€Ð½ÑƒÑ‚Ñ‹Ðµ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ñ‹
+    // ðàçâåðíóòûå ýëåìåíòû
     auto me = meTree.add("Expanded");
     treeView_->saveExpandItems(me);
-    // Ñ‚ÐµÐºÑƒÑ‰Ð¸Ð¹ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚
+    // òåêóùèé ýëåìåíò
     QString selectedPath;
     auto selected = intellect_->obj()->mem()->getSelected();
     if(selected) selectedPath = selected.getPath();
     meTree.add("Selected").setVal(selectedPath);
-    // Ð½Ð° Ð²ÐµÑÑŒ ÑÐºÑ€Ð°Ð½
+    // íà âåñü ýêðàí
     auto meMaximized = meSettings.add("maximized");
     meMaximized.setVal(this->isMaximized());
   }
