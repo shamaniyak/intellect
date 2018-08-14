@@ -18,6 +18,8 @@
 
 #include "qmemorymodel.h"
 
+#include <QMimeData>
+
 QMemoryModel::QMemoryModel(QObject *parent) : MemoryWrapper(parent)
 {
     headers = QStringList({tr("Name"), tr("Value"), tr("Path"), tr("Type")});

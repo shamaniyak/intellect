@@ -20,6 +20,7 @@
 #include <QIODevice>
 #include <QFile>
 #include <QDir>
+#include <QDateTime>
 
 namespace Memory
 {

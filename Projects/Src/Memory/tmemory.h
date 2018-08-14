@@ -19,11 +19,12 @@
 #ifndef TMEMORY_H
 #define TMEMORY_H
 
-#include <QObject>
 #include <memory>
+#include <QObject>
 #include <QVector>
 #include <QMap>
 #include <QStringList>
+#include <QMutex>
 #include "elementsmanager.h"
 
 namespace Memory

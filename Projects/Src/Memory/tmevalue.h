@@ -19,7 +19,6 @@
 #ifndef TMEVALUE_H
 #define TMEVALUE_H
 
-#include <QtCore>
 #include <QVariant>
 #include <QDataStream>
 

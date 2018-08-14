@@ -21,6 +21,7 @@
 
 #include <QMap>
 #include <vector>
+#include <memory>
 #include "tmevalue.h"
 
 namespace Memory

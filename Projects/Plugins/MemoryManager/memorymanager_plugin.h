@@ -1,4 +1,6 @@
-#pragma once
+//#pragma once
+#ifndef MEMORYMANAGER_PLUGIN_H
+#define MEMORYMANAGER_PLUGIN_H
 
 #include <QQmlExtensionPlugin>
 
@@ -10,3 +12,5 @@ class MemoryManagerPlugin : public QQmlExtensionPlugin
 public:
     void registerTypes(const char *uri);
 };
+
+#endif//MEMORYMANAGER_PLUGIN_H

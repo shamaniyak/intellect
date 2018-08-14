@@ -21,10 +21,14 @@ CppApplication {
 	property stringList defines: []
 	property stringList staticLibraries: []
 	property stringList libraryPaths: []
-	property string easyProfDefine: project.buildWithEasyProfiler ? "BUILD_WITH_EASY_PROFILER" : ""
+
+	Properties {
+		condition: project.buildWithEasyProfiler
+		defines: outer.concat("BUILD_WITH_EASY_PROFILER")
+	}
 
 	cpp.includePaths: addIncludes.concat([globalIncludePath])
-	cpp.defines: defines.concat([easyProfDefine])
+	cpp.defines: defines
 	cpp.cxxLanguageVersion: "c++11"
 	//cpp.debugInformation: project.generatePDB
 	//cpp.staticLibraries: project.buildWithEasyProfiler ? staticLibraries.concat(["easy_profiler"]) : staticLibraries

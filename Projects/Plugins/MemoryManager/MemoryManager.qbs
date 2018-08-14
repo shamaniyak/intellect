@@ -20,11 +20,15 @@ DynamicLibrary {
 	property stringList defines: ["BUILD_MEMORY_LIB"]
 	property stringList staticLibraries: []
 	property stringList libraryPaths: []
-	property string easyProfDefine: project.buildWithEasyProfiler ? "BUILD_WITH_EASY_PROFILER" : ""
+
+	Properties {
+		condition: project.buildWithEasyProfiler
+		defines: outer.concat("BUILD_WITH_EASY_PROFILER")
+	}
 
 	cpp.includePaths: [globalIncludePath]
-	cpp.defines: defines.concat([easyProfDefine])
-	cpp.cxxLanguageVersion: "c++11"
+	cpp.defines: defines
+	cpp.cxxLanguageVersion: "c++0x"
 	//cpp.debugInformation: project.generatePDB
 	//cpp.staticLibraries: project.buildWithEasyProfiler ? staticLibraries.concat(["easy_profiler"]) : staticLibraries
 	//cpp.libraryPaths: project.buildWithEasyProfiler ? libraryPaths.concat(FileInfo.joinPaths(project.globalProjectsPath,"3rdparty","easy_profiler","lib","win64")) : libraryPaths
