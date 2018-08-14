@@ -4,10 +4,10 @@ import qbs.FileInfo
 DynamicLibrary {
 	name: "MemoryManager"
 	property string uri: "MemoryManager"
-	property string globalPath: FileInfo.path(FileInfo.path(sourceDirectory))
-	property string globalBinPath: FileInfo.joinPaths(globalPath,"bin/win32",qbs.buildVariant)
-	property string globalModulesPath: globalBinPath + "/qml"
-	property string globalIncludePath: globalPath + "/Src"
+	property string globalPath: project.globalPath
+	property string globalBinPath: project.globalBinPath
+	property string globalModulesPath: project.globalModulesPath
+	property string globalIncludePath: project.globalIncludePath
 
 	Depends { name: "cpp" }
 	Depends { name: "Qt"; submodules: ["core", "widgets", "quick", "qml"] }
@@ -20,9 +20,10 @@ DynamicLibrary {
 	property stringList defines: ["BUILD_MEMORY_LIB"]
 	property stringList staticLibraries: []
 	property stringList libraryPaths: []
+	property string easyProfDefine: project.buildWithEasyProfiler ? "BUILD_WITH_EASY_PROFILER" : ""
 
-	cpp.includePaths: [globalPath, globalIncludePath]
-	cpp.defines: project.buildWithEasyProfiler ? defines.concat(["BUILD_WITH_EASY_PROFILER"]) : defines
+	cpp.includePaths: [globalIncludePath]
+	cpp.defines: defines.concat([easyProfDefine])
 	cpp.cxxLanguageVersion: "c++11"
 	//cpp.debugInformation: project.generatePDB
 	//cpp.staticLibraries: project.buildWithEasyProfiler ? staticLibraries.concat(["easy_profiler"]) : staticLibraries
@@ -33,7 +34,7 @@ DynamicLibrary {
 		fileTagsFilter: ["dynamiclibrary"]
 		qbs.install: true
 		qbs.installDir: {
-			var p = FileInfo.relativePath(qbs.installRoot, FileInfo.joinPaths(globalBinPath, putOverBinSubdir))
+			var p = FileInfo.relativePath(qbs.installRoot, globalBinPath)
 			//console.info(p)
 			return p
 		}
@@ -41,10 +42,10 @@ DynamicLibrary {
 
 	Group {
 		name: "qmldir"
-		files: FileInfo.joinPaths(sourceDirectory,"qmldir")
+		files: ["qmldir"]
 		qbs.install: true
 		qbs.installDir: {
-			var p = FileInfo.relativePath(qbs.installRoot, FileInfo.joinPaths(globalBinPath,"qml",product.prefix,product.name))
+			var p = FileInfo.relativePath(qbs.installRoot, destinationDirectory)
 			//console.info(p)
 			return p
 		}
@@ -55,8 +56,7 @@ DynamicLibrary {
 		files: [
 			"*.cpp",
 			"*.h",
-			"../../Src/Memory/*.cpp",
-			"../../Src/Memory/*.h",
+			FileInfo.joinPaths(globalIncludePath, "Memory/**")
 		]
 	}
 

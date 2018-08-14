@@ -1,6 +1,6 @@
 #include "memorymanager_plugin.h"
-#include "Memory/qmemorymodel.h"
-#include "Memory/memoryeditor.h"
+#include <Memory/qmemorymodel.h>
+#include <Memory/memoryeditor.h>
 #include <Memory/memorycompareproxymodel.h>
 
 #include <qqml.h>
