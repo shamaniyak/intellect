@@ -7,7 +7,7 @@ Product {
 	property string globalPath: project.globalPath
 	property string globalBinPath: project.globalBinPath
 	property string globalModulesPath: project.globalModulesPath
-	property string globalIncludePath: project.globalIncludePath
+	property string globalSourcePath: project.globalSourcePath
 
 	destinationDirectory: FileInfo.joinPaths(globalModulesPath,name)
 
