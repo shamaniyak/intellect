@@ -58,6 +58,7 @@ CppApplication {
 			"../src/talgorithm.*",
 			"../src/windowmanager.*",
 			"../src/commander.*",
+			"../src/processenvironment.*",
 			"../src/qmlmanager/*",
 			"../src/gui/**",
 			"../src/plugins/qmlregistertypes.*",

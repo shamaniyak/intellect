@@ -22,6 +22,7 @@
 #include <memory>
 #include <Src/iobject.h>
 #include <Src/talgorithm.h>
+#include <Src/processenvironment.h>
 
 class WindowManager;
 class QMainWindow;
@@ -55,6 +56,7 @@ public slots:
 
   bool putEnv(const QString &name, const QVariant &val);
   QVariant getEnv(const QString &name);
+  ProcessEnvironment *processEnvironment();
 
   QString urlToNativeFilePath(const QUrl &filePath);
 

@@ -140,6 +140,11 @@ QVariant Intellect::getEnv(const QString &name)
   return QVariant(barr);
 }
 
+ProcessEnvironment *Intellect::processEnvironment()
+{
+    return new ProcessEnvironment();
+}
+
 QString Intellect::urlToNativeFilePath(const QUrl &filePath)
 {
     auto fName = filePath.toLocalFile();

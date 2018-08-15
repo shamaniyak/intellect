@@ -1,5 +1,7 @@
 #include "qqmlwrapper.h"
 
+#include <Src/Plugins/qmlregistertypes.h>
+
 #include <QDebug>
 #include <QQuickItem>
 #include <QQuickView>
@@ -89,7 +91,7 @@ QObject *QmlEngineWrapper::getObject(const QString &name) const
 
 void QmlEngineWrapper::init()
 {
-  //QmlRegisterTypes::init();
+  QmlRegisterTypes::init();
 
   engine = new QQmlApplicationEngine();
   //engine->loadData("import QtQml 2.0\nText { text: \"Hello world!\" }");
