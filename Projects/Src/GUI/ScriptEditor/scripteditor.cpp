@@ -1,9 +1,9 @@
 #include "scripteditor.h"
 #include "highlighter.h"
+#include "SyntaxHighlighter.h"
 
 //#include <Src/iobject.h>
 //#include <Src/Memory/qmemorymodel.h>
-#include <Third/qmlcreator/cpp/SyntaxHighlighter.h>
 
 #include <QDebug>
 #include <QMessageBox>

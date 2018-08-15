@@ -47,7 +47,7 @@ CppApplication {
 	}
 
 	Group {
-		name: "src"
+		name: "src_global"
 		files: [
 			"../Src/iobject.*",
 			"../src/objectmanager.*",
@@ -61,8 +61,14 @@ CppApplication {
 			"../src/processenvironment.*",
 			"../src/qmlmanager/*",
 			"../src/gui/**",
-			"../src/plugins/qmlregistertypes.*",
-			"../Third/qmlcreator/cpp/*.*",
+			"../src/plugins/qmlregistertypes.*"
+		]
+		excludeFiles: []
+	}
+
+	Group {
+		name: "src"
+		files: [
 			"src/*.cpp",
 			"src/*.h",
 			"gui/*.cpp",
