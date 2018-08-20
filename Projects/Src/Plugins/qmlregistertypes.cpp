@@ -4,6 +4,8 @@
 #include "Src/Memory/qmemorymodel.h"
 #include "Src/GUI/MemoryView/memorytreeview.h"
 #include "Src/processenvironment.h"
+#include "Src/GUI/ScriptEditor/SyntaxHighlighter.h"
+#include "Src/GUI/ScriptEditor/QMLHighlighter.h"
 
 #include <QQmlEngine>
 
@@ -16,6 +18,7 @@ void QmlRegisterTypes::init()
 {
     const char *uri = "Intellect";
     qmlRegisterType<ProcessEnvironment>(uri, 1, 0, "ProcessEnvironment");
+		qmlRegisterType<SyntaxHighlighter>(uri, 1, 0, "SyntaxHighlighter");
   //qmlRegisterType<MemoryWrapper>("Intellect.MemoryWrapper", 1, 0, "Memory");
   //qRegisterMetaType<MEWrapper>("MEWrapper");
   //qmlRegisterType<MEWrapper>();

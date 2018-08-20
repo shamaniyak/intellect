@@ -1,5 +1,6 @@
 ﻿import QtQuick 2.10
 import QtQuick.Controls 2.3
+import Intellect 1.0
 
 Item {
 	id: root
@@ -92,6 +93,7 @@ Item {
 			placeholderText: qsTr("Input value here")
 			selectByMouse: true
 			tabStopDistance: 8
+			font.pixelSize: 16
 			property bool canChange
 
 			background: Rectangle {
@@ -125,6 +127,13 @@ Item {
 			}
 
 			//onCursorRectangleChanged: scrollView.ensureVisible(cursorRectangle)
+			// Подсветка синтаксиса
+			SyntaxHighlighter {
+				id: highlighter
+				Component.onCompleted: {
+					setDocument(edit.textDocument)
+				}
+			}
 		}
 	}
 	// Таймер для отложенного сохранения
