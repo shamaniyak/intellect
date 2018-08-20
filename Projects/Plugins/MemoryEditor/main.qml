@@ -38,8 +38,8 @@ ApplicationWindow {
 		id: memModel
 		property var eMemoryChange: ["mcNone", "mcAdd", "mcAddFrom", "mcDel", "mcEditName", "mcEditVal", "mcUpdate", "mcSelect", "mcClear", "mcMove"]
 		onChange: {
-			var mct = eMemoryChange[ev.type]
-			console.log(mct, ev, ev.me)
+			//var mct = eMemoryChange[ev.type]
+			//console.log(mct, ev, ev.me)
 		}
 	}
 
