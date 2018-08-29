@@ -46,7 +46,7 @@ class MEMORY_EXPORT MEWrapper
 public:
   MEWrapper();
   MEWrapper(MemoryWrapper *mem);
-  MEWrapper(const Memory::TME::shared_me &me, MemoryWrapper *mem = 0);
+	MEWrapper(const Memory::TME::shared_me &me, MemoryWrapper *mem = nullptr);
   MEWrapper(const MEWrapper &src);
   ~MEWrapper();
 
@@ -99,7 +99,7 @@ protected:
 
 private:
   std::shared_ptr<Memory::TME> me_ = 0;
-  MemoryWrapper *mem_ = 0;
+	MemoryWrapper *mem_ = nullptr;
 
   friend class MemoryWrapper;
 };

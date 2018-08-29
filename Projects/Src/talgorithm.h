@@ -68,11 +68,11 @@ public slots:
 protected slots:
 
 private:
-  MemoryManager *MM_ = 0;
-  ObjectManager *OM_ = 0;// Мэнеджер объектов
-  PluginManager *PM_ = 0;  // Мэнеджер плагинов
-  WindowManager* WM_ = 0;
-  QmlManager* qml_ = 0;   // Мэнеджер QML
+	MemoryManager *MM_ = nullptr;
+	ObjectManager *OM_ = nullptr;// Мэнеджер объектов
+	PluginManager *PM_ = nullptr;  // Мэнеджер плагинов
+	WindowManager* WM_ = nullptr;
+	QmlManager* qml_ = nullptr;   // Мэнеджер QML
 };
 
 #endif // TALGORITHM_H

@@ -19,10 +19,10 @@
 #ifndef TME_H
 #define TME_H
 
-#include <QMap>
-#include <vector>
-#include <memory>
 #include "tmevalue.h"
+#include <memory>
+#include <vector>
+//#include <QMap>
 
 namespace Memory
 {
@@ -41,9 +41,9 @@ class TME
 {
 public:
 
-  typedef QMap<int,TME*> elements_map;
-  typedef std::vector<TME*> elements_vec;
-  typedef std::shared_ptr<TME> shared_me;
+	//typedef QMap<int,TME*> elements_map;
+	//typedef std::vector<TME*> elements_vec;
+	typedef std::shared_ptr<TME> shared_me;
   typedef std::weak_ptr<TME> weak_me;
   typedef std::vector<shared_me> vec_shared_me;
 

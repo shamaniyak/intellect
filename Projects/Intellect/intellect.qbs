@@ -29,7 +29,7 @@ CppApplication {
 
 	cpp.includePaths: addIncludes.concat([globalIncludePath])
 	cpp.defines: defines
-	cpp.cxxLanguageVersion: "c++11"
+	cpp.cxxLanguageVersion: "c++14"
 	//cpp.debugInformation: project.generatePDB
 	//cpp.staticLibraries: project.buildWithEasyProfiler ? staticLibraries.concat(["easy_profiler"]) : staticLibraries
 	//cpp.libraryPaths: project.buildWithEasyProfiler ? libraryPaths.concat(FileInfo.joinPaths(project.globalProjectsPath,"3rdparty","easy_profiler","lib","win64")) : libraryPaths
