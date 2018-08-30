@@ -158,8 +158,9 @@ QString Intellect::urlToNativeFilePath(const QUrl &filePath)
 void Intellect::startTest(int cnt)
 {
     auto o = getObject("testObject");
-    if(o->mem()->getME().count() == 0)
-        o->mem()->addCount(o->mem()->getME(), cnt);
+		int size = o->mem()->getME().count();
+		if(size < cnt)
+				o->mem()->addCount(o->mem()->getME(), cnt - size);
 
     MEWrapper me = o->mem()->getME(), me1;
     //auto tme = me.getMe();

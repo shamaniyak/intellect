@@ -168,7 +168,7 @@ private:
   typedef QMap<Memory::TME*, MEWrapper> t_mapMeWrappers;
   typedef QMultiMap<QString, MEWrapper*> t_multiMapMeWrappers;
   typedef std::vector<MEWrapper*> t_vecMeWrappers;
-  typedef QHash<uint, MEWrapper> t_hashMeWrappers;
+	typedef QHash<Memory::TME*, MEWrapper> t_hashMeWrappers;
   typedef std::unordered_map<uint, MEWrapper> t_umapMeWrappers;
 
   std::shared_ptr<Memory::TMemory> mem_;
@@ -191,5 +191,12 @@ private:
 };
 //
 //Q_DECLARE_METATYPE(MemoryWrapper*)
+#include <QDebug>
+
+inline uint qHash(const Memory::TME &key, uint seed=0)
+{
+	qDebug() << "yes";
+	return 0;
+}
 
 #endif // MEMORYWRAPPER_H
