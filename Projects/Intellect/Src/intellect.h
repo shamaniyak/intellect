@@ -75,8 +75,8 @@ protected:
   QObject *getMainWindowQObject() const;
 
 private:
-  IObject *obj_ = 0;
-  QMainWindow *mainWindow_ = 0;
+	IObject *obj_ = nullptr;
+	QMainWindow *mainWindow_ = nullptr;
 
   // Пересоздать памяти в папке bkp. Была нужна для устранения ошибки в базе слов.
   void recreateMemory();

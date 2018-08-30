@@ -69,7 +69,7 @@ protected:
 
 private:
   std::shared_ptr<QWidget> top_widget_;
-  QMainWindow *main_window_ =0;
+	QMainWindow *main_window_ = nullptr;
 };
 
 #endif // WINDOWMANAGER_H

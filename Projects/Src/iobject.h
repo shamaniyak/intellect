@@ -117,13 +117,13 @@ protected slots:
 
 private:
   int countLinks_ = 0;
-  MemoryWrapper *mem_ = 0;// Данные объекта в виде дерева
-  t_jswrapper scr_;// Функционал объекта в виде скрипта, расширяющего его возможности
-  QmlEngineWrapper *qml_ = 0;// Объект по работе с QML движком
+	MemoryWrapper *mem_ = nullptr;// Данные объекта в виде дерева
+	t_jswrapper scr_;// Скрипт на языке JavaScript, расширяющего его возможности
+	QmlEngineWrapper *qml_ = nullptr;// Объект по работе с QML движком
   QString msg_;// Сообщение об выполненных операциях
-  WindowManager *WM_ = 0;// Оконный мэнеджер
-  ObjectManager *OM_ = 0;
-  Commander *CM_ = 0;// Мэнеджер команд
+	WindowManager *WM_ = nullptr;// Оконный мэнеджер
+	ObjectManager *OM_ = nullptr;
+	Commander *CM_ = nullptr;// Мэнеджер команд
 };
 
 Q_DECLARE_METATYPE(IObject*)

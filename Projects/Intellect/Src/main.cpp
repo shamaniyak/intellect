@@ -11,6 +11,7 @@ class Application : public QApplication
 public:
   Application(int &argc, char **argv) : QApplication(argc, argv)
   {
+		QmlEngineWrapper::init();
     // создать модель
     // парент нам нужен для того, чтобы при уничтожении скрипта, не уничтожалась модель
     pI = new Intellect(this);
@@ -62,9 +63,7 @@ private:
 
 int main(int argc, char *argv[])
 {
-    Application a(argc, argv);
-
-    QmlEngineWrapper::init();
+		Application a(argc, argv);
 
 //    QQmlApplicationEngine engine;
 //    engine.load(QUrl(QLatin1String("qrc:/mainqml")));
