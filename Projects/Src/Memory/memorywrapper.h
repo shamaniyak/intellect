@@ -29,6 +29,7 @@
 #include <QAbstractItemModel>
 #include <QMap>
 #include <memory>
+#include <unordered_map>
 
 #include "tmemory.h"
 #include "mewrapper.h"
@@ -167,9 +168,11 @@ private:
   typedef QMap<Memory::TME*, MEWrapper> t_mapMeWrappers;
   typedef QMultiMap<QString, MEWrapper*> t_multiMapMeWrappers;
   typedef std::vector<MEWrapper*> t_vecMeWrappers;
+  typedef QHash<uint, MEWrapper> t_hashMeWrappers;
+  typedef std::unordered_map<uint, MEWrapper> t_umapMeWrappers;
 
   std::shared_ptr<Memory::TMemory> mem_;
-  t_mapMeWrappers map_mew_;  // Обертки над TME
+  t_hashMeWrappers mew_;  // Обертки над TME
   // Каждому имени сопоставлен список элементов
   t_multiMapMeWrappers elements_;
   t_vecMeWrappers deleted_; // Список удаленных

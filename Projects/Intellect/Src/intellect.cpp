@@ -155,6 +155,21 @@ QString Intellect::urlToNativeFilePath(const QUrl &filePath)
     return fName;
 }
 
+void Intellect::startTest(int cnt)
+{
+    auto o = getObject("testObject");
+    if(o->mem()->getME().count() == 0)
+        o->mem()->addCount(o->mem()->getME(), cnt);
+
+    MEWrapper me = o->mem()->getME(), me1;
+    //auto tme = me.getMe();
+    for(int i = 0; i < cnt; ++i) {
+        //auto tme1 = tme->getElements().get(i);
+        me1 = me.getByI(i);
+        me1.setVal(i);
+    }
+}
+
 void Intellect::on_start()
 {
   disconnect(this, &TAlgorithm::start, this, &Intellect::on_start);

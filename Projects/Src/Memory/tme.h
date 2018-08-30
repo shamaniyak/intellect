@@ -23,6 +23,7 @@
 #include <vector>
 #include <memory>
 #include "tmevalue.h"
+#include "memoryglobal.h"
 
 namespace Memory
 {
@@ -37,7 +38,7 @@ struct TMEData
 
 // Базовый элемент
 // Для создания элемента верхнего уровня используйте TopME
-class TME
+class MEMORY_EXPORT TME
 {
 public:
 
@@ -47,7 +48,7 @@ public:
   typedef std::weak_ptr<TME> weak_me;
   typedef std::vector<shared_me> vec_shared_me;
 
-  struct Elements
+  struct MEMORY_EXPORT Elements
   {
     Elements();
     void add(const shared_me &me);

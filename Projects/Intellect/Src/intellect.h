@@ -60,6 +60,8 @@ public slots:
 
   QString urlToNativeFilePath(const QUrl &filePath);
 
+  void startTest(int cnt = 1000);
+
 protected slots:
   void on_addObject(QObject *obj);
   void on_start();

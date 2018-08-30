@@ -28,6 +28,7 @@ MemoryWrapper::MemoryWrapper(QObject *parent) : QAbstractItemModel(parent),
   mem_(new Memory::TMemory())
 {
   //qDebug() << Memory::TME::size();
+    //mew_.reserve(1000000);
 }
 
 MemoryWrapper::~MemoryWrapper()
@@ -183,13 +184,10 @@ MEWrapper MemoryWrapper::get(const QString &path)
 
 MEWrapper MemoryWrapper::getById(uint id)
 {
-  auto me = reinterpret_cast<Memory::TME*>(id);
+  //auto me = reinterpret_cast<Memory::TME*>(id);
   MEWrapper resMe;
-  if(!me)
-    return resMe;
-  if(!map_mew_.contains(me))
-    return resMe;
-  return map_mew_[me];
+  resMe = mew_.value(id, resMe);
+  return resMe;
 }
 
 bool MemoryWrapper::getAutosave() const
@@ -510,19 +508,22 @@ void MemoryWrapper::clearDeleted()
 
 void MemoryWrapper::clearMeWrappers()
 {
-  map_mew_.clear();
+  mew_.clear();
 }
 
 MEWrapper MemoryWrapper::CreateMEW(const Memory::TME::shared_me &me)
 {
+    //static int createMEWCnt = 0;
+    //qDebug() << ++createMEWCnt;
   //qDebug() << "MemoryWrapper::CreateMEW" << me.get() << me.use_count();
   if(!me)
     return MEWrapper();
 
-  if(!map_mew_.contains(me.get()))
-    map_mew_[me.get()] = MEWrapper(me, this);
+  uint id = uint(me.get());
+  if(!mew_.contains(id))
+    mew_[id] = MEWrapper(me, this);
 
-  return map_mew_[me.get()];
+  return mew_[id];
 }
 
 void MemoryWrapper::DeleteMEW(Memory::TME::shared_me me)
@@ -530,8 +531,8 @@ void MemoryWrapper::DeleteMEW(Memory::TME::shared_me me)
   if(!me)
     return;
 
-  if(map_mew_.contains(me.get()))
-  {
-    map_mew_.remove(me.get());
+  uint id = uint(me.get());
+  if(mew_.contains(id)) {
+    mew_.remove(id);
   }
 }
