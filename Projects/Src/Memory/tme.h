@@ -19,9 +19,6 @@
 #ifndef TME_H
 #define TME_H
 
-#include <QMap>
-#include <vector>
-#include <memory>
 #include "tmevalue.h"
 #include "memoryglobal.h"
 #include <memory>
