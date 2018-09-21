@@ -168,11 +168,11 @@ private:
   typedef QMap<Memory::TME*, MEWrapper> t_mapMeWrappers;
   typedef QMultiMap<QString, MEWrapper*> t_multiMapMeWrappers;
   typedef std::vector<MEWrapper*> t_vecMeWrappers;
-	typedef QHash<Memory::TME*, MEWrapper> t_hashMeWrappers;
+	typedef QHash<uint, MEWrapper> t_hashMeWrappers;
   typedef std::unordered_map<uint, MEWrapper> t_umapMeWrappers;
 
   std::shared_ptr<Memory::TMemory> mem_;
-  t_hashMeWrappers mew_;  // Обертки над TME
+	t_hashMeWrappers mew_;  // Обертки над TME
   // Каждому имени сопоставлен список элементов
   t_multiMapMeWrappers elements_;
   t_vecMeWrappers deleted_; // Список удаленных

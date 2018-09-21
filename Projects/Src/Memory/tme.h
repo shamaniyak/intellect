@@ -114,6 +114,11 @@ public:
   static int size();
 
   static shared_me create(shared_me parent, int id=-1, QVariant val=QVariant());
+	static void reserve(uint count);
+	static shared_me getById(uint id);
+	static void remove(uint id);
+
+	uint id_ = 0;
 
 protected:
 

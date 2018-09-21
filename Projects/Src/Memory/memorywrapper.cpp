@@ -28,7 +28,7 @@ MemoryWrapper::MemoryWrapper(QObject *parent) : QAbstractItemModel(parent),
   mem_(new Memory::TMemory())
 {
   //qDebug() << Memory::TME::size();
-		mew_.reserve(999983);
+		//mew_.reserve(999983);
 }
 
 MemoryWrapper::~MemoryWrapper()
@@ -184,9 +184,10 @@ MEWrapper MemoryWrapper::get(const QString &path)
 
 MEWrapper MemoryWrapper::getById(uint id)
 {
-	auto me = reinterpret_cast<Memory::TME*>(id);
-  MEWrapper resMe;
-	resMe = mew_.value(me, resMe);
+	//auto me = reinterpret_cast<Memory::TME*>(id);
+	//auto me = Memory::TME::getById(id);
+	//MEWrapper resMe(me, this);
+	MEWrapper resMe = mew_.value(id, MEWrapper());
   return resMe;
 }
 
@@ -249,15 +250,19 @@ void MemoryWrapper::setVal(const MEWrapper &me, const QVariant &val)
     if(val == me.val())
       return;
 
-    ChangeEvent ev;
+		ChangeEvent ev;
 		ev.type = mcEditVal;
-    ev.me = me;
-    ev.prevVal = me.val();
-    ev.parent = me.parent();
-    ev.path = me.getPath();
-    ev.row = me.getIndex();
+		ev.me = me;
+		ev.prevVal = me.val();
 
-    me.getMe()->setVal(val);
+		me.getMe()->setVal(val);
+
+		if(!canChange_)
+			return;
+
+			ev.parent = me.parent();
+			ev.path = me.getPath();
+		ev.row = me.getIndex();
 
     auto index = getIndexByMe(me);
     dataChanged(index, index, {ValueColumn});
@@ -514,16 +519,17 @@ void MemoryWrapper::clearMeWrappers()
 MEWrapper MemoryWrapper::CreateMEW(const Memory::TME::shared_me &me)
 {
     //static int createMEWCnt = 0;
-    //qDebug() << ++createMEWCnt;
   //qDebug() << "MemoryWrapper::CreateMEW" << me.get() << me.use_count();
   if(!me)
     return MEWrapper();
+	//qDebug() << me->id_;
+	//return MEWrapper(me, this);
 
-	//uint id = uint(me.get());
-	if(!mew_.contains(me.get()))
-		mew_[me.get()] = MEWrapper(me, this);
+	uint id = uint(me.get());
+	if(!mew_.contains(id))
+		mew_[id] = MEWrapper(me, this);
 
-	return mew_[me.get()];
+	return mew_[id];
 }
 
 void MemoryWrapper::DeleteMEW(Memory::TME::shared_me me)
@@ -531,8 +537,8 @@ void MemoryWrapper::DeleteMEW(Memory::TME::shared_me me)
   if(!me)
     return;
 
-	//uint id = uint(me.get());
-	if(mew_.contains(me.get())) {
-		mew_.remove(me.get());
-  }
+	uint id = uint(me.get());
+	if(mew_.contains(id)) {
+		mew_.remove(id);
+	}
 }

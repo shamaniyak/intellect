@@ -127,7 +127,7 @@ MEWrapper MEWrapper::get(const QString &name)
 MEWrapper MEWrapper::getByI(int i)
 {
   if(!isNull()) {
-    return mem_->CreateMEW(me_->getElements().get(i));
+		return mem_->CreateMEW(me_->getElements().get(i));
   }
 
   return MEWrapper();
@@ -201,7 +201,8 @@ bool MEWrapper::isValid() const
 
 uint MEWrapper::getUid() const
 {
-  return reinterpret_cast<uint>(me_.get());
+	return reinterpret_cast<uint>(me_.get());
+	//return me_->id_;
 }
 
 MEWrapper &MEWrapper::operator =(const MEWrapper &src)

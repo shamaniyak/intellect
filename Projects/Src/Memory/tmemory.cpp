@@ -27,6 +27,7 @@ namespace Memory
 
 TAbstractMemory::TAbstractMemory()
 {
+	//TME::reserve(1000000);
 }
 
 TAbstractMemory::~TAbstractMemory()

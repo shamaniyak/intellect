@@ -21,6 +21,10 @@
 
 //#include <algorithm>
 #include <QDebug>
+#include <set>
+
+static std::vector<Memory::TME::shared_me> g_items_;
+static std::set<uint> g_free_id_;
 
 namespace Memory
 {
@@ -258,7 +262,28 @@ TME::shared_me TME::create(shared_me parent, int id, QVariant val)
 {
   shared_me me = std::make_shared<TME>(parent, id, val);
   if(parent) parent->add(me);
-  return me;
+//	g_items_.push_back(me);
+//	me->id_ = g_items_.size() -1;
+	return me;
+}
+
+void TME::reserve(uint count)
+{
+	g_items_.reserve(count);
+}
+
+TME::shared_me TME::getById(uint id)
+{
+	//проверка на свободный id
+	if(id >= g_items_.size() || g_free_id_.count(id) > 0)
+		return TME::shared_me();
+	return g_items_[id];
+}
+
+void TME::remove(uint id)
+{
+	g_free_id_.insert(id);
+	g_items_[id] = shared_me();
 }
 
 void TME::setParent(shared_me parent)
