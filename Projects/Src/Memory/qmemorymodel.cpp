@@ -310,6 +310,10 @@ bool QMemoryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, in
   if (action == Qt::IgnoreAction)
     return true;
 
+  auto meParent = getMeByIndex(parent);
+  if(!meParent)
+    return false;
+
   int beginRow;
 
   if (row > -1)
@@ -322,21 +326,20 @@ bool QMemoryModel::dropMimeData(const QMimeData *data, Qt::DropAction action, in
   QByteArray encodedData = data->data("application/vnd.text.list");
   QDataStream stream(&encodedData, QIODevice::ReadOnly);
 
-//  while (!stream.atEnd())
-//  {
-//    Memory::TME me(getME().getMe());
-//    me.load(stream);
+  Memory::TopME::shared_top_me me = std::make_shared<Memory::TopME>(this->mem_.get());
+  while (!stream.atEnd())
+  {
+    me->clear();
+    me->load(stream, me);
 
-//    auto meParent = getMeByIndex(parent);
-//    if(!meParent)
-//      meParent = getME();
-//    auto me1 = add(meParent, me.name());
-//    if(me1) {
-//      me1.setVal(me.val());
-//      move(me1, meParent, beginRow);
-//      addFrom(me1, MEWrapper(&me), true);
-//    }
-//  }
+    auto me1 = add(meParent, me->name());
+    if(me1) {
+      me1.setVal(me->val());
+      move(me1, meParent, beginRow);
+      addFrom(me1, MEWrapper(me, this), true);
+    }
+    ++beginRow;
+  }
 
   //  QStringList newItems;
 //  int rows = 0;
