@@ -201,11 +201,11 @@ bool TME::move_to(int pos)
   return p->childs_.move(getIndex(), pos);
 }
 
-void TME::load(QDataStream &ds)
+void TME::load(QDataStream &ds, const shared_me &parent)
 {
   ds >> id_name_;
   val_.load(ds);
-  //childs_.load(ds, this);
+  childs_.load(ds, parent);
 }
 
 void TME::save(QDataStream &ds) const
@@ -387,8 +387,8 @@ void TME::Elements::load(QDataStream &ds, shared_me parent)
   for(int i =0; i <cnt; ++i)
   {
     auto me = TME::create(parent);
-    me->load(ds);
-    me->getElements().load(ds, me);
+    me->load(ds, me);
+    //me->getElements().load(ds, me);
   }
 }
 

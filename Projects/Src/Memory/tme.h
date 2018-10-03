@@ -99,7 +99,7 @@ public:
 
   bool move_to(int pos=-1);
 
-  void load(QDataStream &ds);
+  void load(QDataStream &ds, const shared_me &parent);
   void save(QDataStream &ds) const;
 
   int id_name() const;

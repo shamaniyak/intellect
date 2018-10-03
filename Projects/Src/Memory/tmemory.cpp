@@ -500,8 +500,8 @@ bool TMemory::loadMemory()
   in >> words_;
 
   getTopME()->clear();
-  getTopME()->load(in);
-  getTopME()->getElements().load(in, getTopME());
+  getTopME()->load(in, getTopME());
+  //getTopME()->getElements().load(in, getTopME());
 
   // установить текущий
   auto me = getTopME();
