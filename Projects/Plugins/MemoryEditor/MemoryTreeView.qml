@@ -52,7 +52,7 @@ TreeView {
 		Rectangle {
 			property var editor
 			color: {
-				return styleData.selected ? "#007FFF" : "white"
+				return styleData.selected ? "#007FFF" : model ? model.decoration || "white" : "white"
 			}
 
 			Text {

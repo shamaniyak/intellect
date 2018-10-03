@@ -45,7 +45,7 @@ Diff {
 	}
 
 	function findPos() {
-		console.debug(posStart)
+		//console.debug(posStart)
 		var ses = getses();
 		var i   = posStart < 0 ? 0 : posStart;
 		var len = 0;
