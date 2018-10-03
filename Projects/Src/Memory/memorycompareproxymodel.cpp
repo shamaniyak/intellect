@@ -97,13 +97,13 @@ QVariant MemoryCompareProxyModel::data(const QModelIndex &index, int role) const
 		auto me2 = compareMem_->get(path);
 		// Если такого элемента не было, значит добавлен
 		if(!me1) {
-			QColor brush(Qt::green);
+            QColor brush(Qt::red);
 			return QVariant(brush);
 		}
 		// если был, а теперь нету, значит удален
 		else if(!me2)
 		{
-			QColor brush(Qt::red);
+            QColor brush(Qt::green);
 			return QVariant(brush);
 		}
 		// если изменилось значение
